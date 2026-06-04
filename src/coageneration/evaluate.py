@@ -48,6 +48,57 @@ def coa_diversity(coas: List[CourseOfAction]) -> float:
     return total / count if count > 0 else 0.0
 
 
+def chain_coverage_score(coas: List[CourseOfAction]) -> float:
+    """Fraction of COAs that have a non-empty multi-step chain.
+
+    A higher score means the dataset captures chained / sequential
+    reasoning rather than single flat actions.
+    """
+    if not coas:
+        return 0.0
+    with_chain = sum(1 for c in coas if len(c.chain) > 1)
+    return with_chain / len(coas)
+
+
+def action_diversity_score(coas: List[CourseOfAction]) -> float:
+    """Normalised entropy of action-type distribution across all COAs.
+
+    Returns a value in [0, 1] where 1 means perfectly uniform distribution
+    over action types (maximum diversity) and 0 means all actions are identical.
+    """
+    import math
+
+    counts: Dict[str, int] = {}
+    for coa in coas:
+        for atype in coa.all_action_types():
+            counts[atype] = counts.get(atype, 0) + 1
+    total = sum(counts.values())
+    if total == 0:
+        return 0.0
+    n_types = len(counts)
+    if n_types <= 1:
+        return 0.0
+    entropy = -sum(
+        (c / total) * math.log(c / total) for c in counts.values() if c > 0
+    )
+    max_entropy = math.log(n_types)
+    return entropy / max_entropy if max_entropy > 0 else 0.0
+
+
+def tool_utilisation_rate(coas: List[CourseOfAction]) -> float:
+    """Fraction of actions across all COAs that carry a tool call."""
+    total_actions = 0
+    tool_actions = 0
+    for coa in coas:
+        for action in coa.actions:
+            total_actions += 1
+            if action.tool_call is not None:
+                tool_actions += 1
+    if total_actions == 0:
+        return 0.0
+    return tool_actions / total_actions
+
+
 def episode_summary(states: List[GameState]) -> Dict:
     """Summarise a completed episode."""
     if not states:

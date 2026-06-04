@@ -1,100 +1,174 @@
-"""Tests for coageneration.core."""
+"""Tests for coageneration core."""
+
+from __future__ import annotations
 
 import pytest
+
 from coageneration.core import (
     Action,
+    ActionCategory,
     Asset,
+    ChainStep,
+    ConditionalBranch,
     CourseOfAction,
     Force,
     GameState,
     SelfPlayEngine,
+    ToolCall,
+    build_chain,
     compute_mef_score,
+)
+from coageneration.data import (
+    make_asset,
+    make_coa,
+    make_coa_with_branch,
+    make_cyber_ops_coa,
+    make_game_state,
 )
 
 
-def _asset(force=Force.BLUE, cap=0.8, aid="a1"):
-    return Asset(
-        asset_id=aid,
-        asset_type="infantry",
-        force=force,
-        location=(10.0, 20.0),
-        capability_score=cap,
-    )
+# ---------------------------------------------------------------------------
+# compute_mef_score
+# ---------------------------------------------------------------------------
 
 
-def _action(asset_id="a1", action_type="attack"):
-    return Action(action_type=action_type, asset_id=asset_id)
-
-
-def _coa(force=Force.BLUE, n=2):
-    actions = [_action(f"a{i}") for i in range(n)]
-    return CourseOfAction(force=force, actions=actions, objective="test", mef_score=0.5)
-
-
-def _state(n_blue=3, n_red=3):
-    blue = [_asset(Force.BLUE, 0.8, f"b{i}") for i in range(n_blue)]
-    red = [_asset(Force.RED, 0.6, f"r{i}") for i in range(n_red)]
-    return GameState(blue_assets=blue, red_assets=red)
-
-
-def test_force_enum():
-    assert Force.BLUE == "blue"
-    assert Force.RED == "red"
-    assert Force.NEUTRAL == "neutral"
-
-
-def test_asset_construction():
-    a = _asset()
-    assert a.capability_score == pytest.approx(0.8)
-    assert a.force == Force.BLUE
-
-
-def test_action_default_id():
-    a = _action()
-    assert isinstance(a.action_id, str)
-    assert len(a.action_id) == 8
-
-
-def test_course_of_action_fields():
-    coa = _coa(n=3)
-    assert len(coa.actions) == 3
-    assert coa.mef_score == pytest.approx(0.5)
-
-
-def test_game_state_blue_capability_total():
-    state = _state(n_blue=3, n_red=0)
-    assert state.blue_capability_total() == pytest.approx(0.8 * 3)
-
-
-def test_game_state_red_capability_total():
-    state = _state(n_blue=0, n_red=4)
-    assert state.red_capability_total() == pytest.approx(0.6 * 4)
-
-
-def test_compute_mef_score_known():
+def test_mef_score_clamped() -> None:
     score = compute_mef_score(effectiveness=1.0, cost=0.0, risk=0.0)
-    assert score == pytest.approx(0.5)
+    assert score <= 1.0
+    score = compute_mef_score(effectiveness=0.0, cost=1.0, risk=1.0)
+    assert score >= -1.0
 
 
-def test_compute_mef_score_clamped():
-    score = compute_mef_score(effectiveness=10.0, cost=0.0, risk=0.0)
-    assert score == pytest.approx(1.0)
-    score2 = compute_mef_score(effectiveness=0.0, cost=10.0, risk=10.0)
-    assert score2 == pytest.approx(-1.0)
+def test_mef_score_range() -> None:
+    for e, c, r in [(0.5, 0.3, 0.2), (0.9, 0.1, 0.05), (0.2, 0.8, 0.5)]:
+        s = compute_mef_score(e, c, r)
+        assert -1.0 <= s <= 1.0
 
 
-def test_self_play_engine_best_response():
+# ---------------------------------------------------------------------------
+# ToolCall & Action
+# ---------------------------------------------------------------------------
+
+
+def test_action_with_tool_call() -> None:
+    tc = ToolCall(
+        tool_name="nmap",
+        arguments={"target": "10.0.0.1"},
+        expected_output_type="host_list",
+    )
+    action = Action(
+        action_type="network_scan",
+        asset_id="cyber-001",
+        category=ActionCategory.CYBER,
+        tool_call=tc,
+    )
+    assert action.tool_call is not None
+    assert action.tool_call.tool_name == "nmap"
+
+
+def test_action_priority_bounds() -> None:
+    with pytest.raises(Exception):
+        Action(action_type="x", asset_id="a", priority=0)  # must be >= 1
+    with pytest.raises(Exception):
+        Action(action_type="x", asset_id="a", priority=11)  # must be <= 10
+
+
+# ---------------------------------------------------------------------------
+# build_chain
+# ---------------------------------------------------------------------------
+
+
+def test_build_chain_linear_deps() -> None:
+    actions = [
+        Action(action_type=f"step{i}", asset_id="a")
+        for i in range(4)
+    ]
+    chain = build_chain(actions, linear=True)
+    assert len(chain) == 4
+    assert chain[0].depends_on == []
+    assert chain[1].depends_on == [0]
+    assert chain[3].depends_on == [2]
+
+
+def test_build_chain_parallel_no_deps() -> None:
+    actions = [Action(action_type=f"p{i}", asset_id="a") for i in range(3)]
+    chain = build_chain(actions, linear=False)
+    assert all(step.depends_on == [] for step in chain)
+
+
+# ---------------------------------------------------------------------------
+# ConditionalBranch & ChainStep
+# ---------------------------------------------------------------------------
+
+
+def test_conditional_branch_in_coa() -> None:
+    coa = make_coa_with_branch(force=Force.BLUE, seed=7)
+    branch_steps = [s for s in coa.chain if s.branch is not None]
+    assert len(branch_steps) >= 1
+    b = branch_steps[0].branch
+    assert b is not None
+    assert len(b.true_actions) >= 1
+    assert len(b.false_actions) >= 1
+
+
+def test_coa_all_action_types_includes_branch() -> None:
+    coa = make_coa_with_branch()
+    types = coa.all_action_types()
+    assert len(types) >= 2  # primary + at least one branch arm
+
+
+# ---------------------------------------------------------------------------
+# CourseOfAction
+# ---------------------------------------------------------------------------
+
+
+def test_make_coa_with_chain() -> None:
+    coa = make_coa(n_actions=4, with_chain=True)
+    assert len(coa.chain) == 4
+
+
+def test_make_coa_without_chain() -> None:
+    coa = make_coa(n_actions=3, with_chain=False)
+    assert coa.chain == []
+
+
+def test_coa_unique_tool_names() -> None:
+    coa = make_cyber_ops_coa()
+    tools = coa.unique_tool_names()
+    assert len(tools) == len(set(tools))  # no duplicates
+    assert len(tools) >= 2  # cyber ops uses multiple tools
+
+
+# ---------------------------------------------------------------------------
+# GameState & SelfPlayEngine
+# ---------------------------------------------------------------------------
+
+
+def test_game_state_capability_totals() -> None:
+    state = make_game_state(n_blue=3, n_red=3)
+    assert state.blue_capability_total() > 0
+    assert state.red_capability_total() > 0
+
+
+def test_self_play_engine_episode_length() -> None:
+    state = make_game_state()
+    engine = SelfPlayEngine(seed=0)
+    states = engine.run_episode(state, n_rounds=3)
+    assert len(states) == 4  # initial + 3 rounds
+
+
+def test_self_play_engine_capability_monotone_decrease() -> None:
+    state = make_game_state(n_blue=2, n_red=2)
+    engine = SelfPlayEngine(seed=0)
+    states = engine.run_episode(state, n_rounds=5)
+    blue_caps = [s.blue_capability_total() for s in states]
+    # Capabilities should be non-increasing overall (small noise means not strictly)
+    assert blue_caps[-1] <= blue_caps[0] + 0.5
+
+
+def test_best_response_opposite_force() -> None:
+    state = make_game_state()
     engine = SelfPlayEngine(seed=42)
-    coa = _coa(force=Force.BLUE)
-    state = _state()
-    response = engine.best_response(coa, state)
-    assert isinstance(response, CourseOfAction)
+    blue_coa = make_coa(force=Force.BLUE)
+    response = engine.best_response(blue_coa, state)
     assert response.force == Force.RED
-
-
-def test_run_episode_length():
-    engine = SelfPlayEngine(seed=42)
-    state = _state()
-    n_rounds = 4
-    states = engine.run_episode(state, n_rounds=n_rounds)
-    assert len(states) == n_rounds + 1

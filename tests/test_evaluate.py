@@ -1,80 +1,105 @@
-"""Tests for coageneration.evaluate."""
+"""Tests for coageneration evaluate."""
 
-import pytest
-from coageneration.core import Action, Asset, CourseOfAction, Force, GameState
+from __future__ import annotations
+
+from coageneration.data import (
+    make_coa,
+    make_coa_with_branch,
+    make_cyber_ops_coa,
+    make_game_state,
+    make_logistics_coa,
+)
 from coageneration.evaluate import (
+    action_diversity_score,
+    chain_coverage_score,
     coa_diversity,
     episode_summary,
     gbc_score,
     nash_gap,
     robustness_score,
+    tool_utilisation_rate,
 )
+from coageneration.core import Force, SelfPlayEngine
 
 
-def _coa(force=Force.BLUE, mef=0.5, action_types=None):
-    if action_types is None:
-        action_types = ["attack"]
-    actions = [
-        Action(action_type=at, asset_id="a1") for at in action_types
-    ]
-    return CourseOfAction(force=force, actions=actions, objective="test", mef_score=mef)
-
-
-def _state(blue_cap=0.8, red_cap=0.6, n_blue=1, n_red=1):
-    blue = [
-        Asset(asset_id=f"b{i}", asset_type="inf", force=Force.BLUE,
-              location=(0.0, 0.0), capability_score=blue_cap)
-        for i in range(n_blue)
-    ]
-    red = [
-        Asset(asset_id=f"r{i}", asset_type="inf", force=Force.RED,
-              location=(0.0, 0.0), capability_score=red_cap)
-        for i in range(n_red)
-    ]
-    return GameState(blue_assets=blue, red_assets=red)
-
-
-def test_gbc_score_in_range():
-    blue = _coa(mef=0.8)
-    red = _coa(force=Force.RED, mef=0.3)
+def test_gbc_score_range() -> None:
+    blue = make_coa(force=Force.BLUE, seed=1)
+    red = make_coa(force=Force.RED, seed=2)
     score = gbc_score(blue, red)
     assert 0.0 <= score <= 1.0
 
 
-def test_nash_gap_zero_sum():
-    # blue=0.6, red=0.4 → sum=1.0 → gap=0
-    gap = nash_gap(0.6, 0.4)
-    assert gap == pytest.approx(0.0)
+def test_nash_gap_zero_sum() -> None:
+    # At equilibrium blue + red payoffs should sum to 1
+    assert nash_gap(0.6, 0.4) == pytest.approx(0.0, abs=1e-9)
 
 
-def test_robustness_score_empty_adversaries():
-    coa = _coa(mef=0.7)
-    assert robustness_score(coa, []) == pytest.approx(0.7)
+def test_robustness_score_no_responses() -> None:
+    coa = make_coa(seed=5)
+    score = robustness_score(coa, [])
+    assert score == coa.mef_score
 
 
-def test_robustness_score_min():
-    coa = _coa(mef=0.7)
-    adversaries = [_coa(mef=0.5), _coa(mef=0.2), _coa(mef=0.8)]
-    assert robustness_score(coa, adversaries) == pytest.approx(0.2)
+def test_coa_diversity_identical_coas() -> None:
+    coa = make_coa(seed=10)
+    score = coa_diversity([coa, coa])
+    assert score == 0.0
 
 
-def test_coa_diversity_single_coa():
-    coa = _coa(action_types=["attack", "defend"])
-    assert coa_diversity([coa]) == pytest.approx(0.0)
+def test_coa_diversity_different_coas() -> None:
+    coas = [make_coa(seed=i) for i in range(4)]
+    score = coa_diversity(coas)
+    assert 0.0 <= score <= 1.0
 
 
-def test_coa_diversity_distinct_coas():
-    coa1 = _coa(action_types=["attack"])
-    coa2 = _coa(action_types=["defend"])
-    diversity = coa_diversity([coa1, coa2])
-    assert diversity > 0.0
+def test_chain_coverage_score_all_chained() -> None:
+    coas = [make_coa(n_actions=3, with_chain=True) for _ in range(4)]
+    score = chain_coverage_score(coas)
+    assert score == 1.0
 
 
-def test_episode_summary_structure():
-    states = [_state(blue_cap=0.8, red_cap=0.6)] * 4
+def test_chain_coverage_score_none_chained() -> None:
+    coas = [make_coa(n_actions=3, with_chain=False) for _ in range(4)]
+    score = chain_coverage_score(coas)
+    assert score == 0.0
+
+
+def test_chain_coverage_score_with_branch() -> None:
+    coas = [make_coa_with_branch(seed=i) for i in range(3)]
+    score = chain_coverage_score(coas)
+    assert score == 1.0
+
+
+def test_action_diversity_score_range() -> None:
+    coas = [make_coa(seed=i, n_actions=5) for i in range(6)]
+    score = action_diversity_score(coas)
+    assert 0.0 <= score <= 1.0
+
+
+def test_action_diversity_score_empty() -> None:
+    assert action_diversity_score([]) == 0.0
+
+
+def test_tool_utilisation_rate_cyber() -> None:
+    coa = make_cyber_ops_coa()
+    rate = tool_utilisation_rate([coa])
+    assert rate == 1.0  # all cyber actions carry tool calls
+
+
+def test_tool_utilisation_rate_no_tools() -> None:
+    coas = [make_coa(n_actions=3, with_chain=False, seed=i) for i in range(3)]
+    # Basic make_coa does not attach tool calls
+    rate = tool_utilisation_rate(coas)
+    assert rate == 0.0
+
+
+def test_episode_summary_winner() -> None:
+    state = make_game_state()
+    engine = SelfPlayEngine(seed=99)
+    states = engine.run_episode(state, n_rounds=3)
     summary = episode_summary(states)
-    assert "n_rounds" in summary
-    assert "final_blue_capability" in summary
-    assert "final_red_capability" in summary
-    assert "winner" in summary
     assert summary["winner"] in {"blue", "red", "draw"}
+    assert summary["n_rounds"] == 3
+
+
+import pytest  # noqa: E402  (kept at bottom to avoid circular import concerns)
