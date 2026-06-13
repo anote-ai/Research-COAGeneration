@@ -151,17 +151,38 @@ def build_chain(
     return steps
 
 
-class SelfPlayEngine:
-    """Alternating self-play between BLUE and RED."""
+class Policy:
+    """Abstract interface for a COA generation policy."""
 
-    def __init__(self, seed: int = 42) -> None:
+    def generate_coa(
+        self, game_state: "GameState", opponent_coa: "CourseOfAction"
+    ) -> "CourseOfAction":
+        raise NotImplementedError
+
+
+class SelfPlayEngine:
+    """Alternating self-play between BLUE and RED.
+
+    Pass a ``policy`` to replace the built-in random best-response with any
+    ``Policy``-compatible object (e.g. ``LLMPolicy``).
+    """
+
+    def __init__(self, seed: int = 42, policy: Optional[Policy] = None) -> None:
         self.seed = seed
         self._rng = random.Random(seed)
+        self.policy = policy
 
     def best_response(
         self, coa: CourseOfAction, game_state: GameState
     ) -> CourseOfAction:
-        """Generate an adversarial response COA with perturbed actions."""
+        """Generate an adversarial response COA.
+
+        If a policy was provided at construction it is used; otherwise falls
+        back to the built-in random response.
+        """
+        if self.policy is not None:
+            return self.policy.generate_coa(game_state, coa)
+
         response_force = Force.RED if coa.force == Force.BLUE else Force.BLUE
         assets = (
             game_state.red_assets

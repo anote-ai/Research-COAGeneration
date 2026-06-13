@@ -9,11 +9,13 @@ from .core import (
     CourseOfAction,
     Force,
     GameState,
+    Policy,
     SelfPlayEngine,
     ToolCall,
     build_chain,
     compute_mef_score,
 )
+from .llm_policy import LLMPolicy
 from .data import (
     make_action,
     make_asset,
@@ -44,6 +46,8 @@ __all__ = [
     "CourseOfAction",
     "Force",
     "GameState",
+    "LLMPolicy",
+    "Policy",
     "SelfPlayEngine",
     "ToolCall",
     "build_chain",
