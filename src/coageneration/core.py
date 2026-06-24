@@ -121,6 +121,27 @@ class GameState(BaseModel):
         return sum(a.capability_score for a in self.red_assets)
 
 
+class ScenarioProfile(BaseModel):
+    """Metadata describing a synthetic evaluation scenario."""
+
+    scenario_id: str
+    terrain_type: str
+    force_size: str
+    operational_phase: str
+    domains: List[str]
+    framing: str = "neutral"
+    loac_ambiguity: str = "low"
+    historical_reference: Optional[str] = None
+
+
+class ScenarioCase(BaseModel):
+    """A reproducible scenario bundle for COA evaluation."""
+
+    profile: ScenarioProfile
+    game_state: GameState
+    seed_coas: List[CourseOfAction] = Field(default_factory=list)
+
+
 def compute_mef_score(
     effectiveness: float,
     cost: float,

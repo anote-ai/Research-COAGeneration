@@ -13,10 +13,15 @@ from coageneration.evaluate import (
     action_diversity_score,
     chain_coverage_score,
     coa_diversity,
+    doctrinal_alignment_score,
     episode_summary,
+    fm30_rubric_scores,
+    framing_sensitivity_delta,
     gbc_score,
+    lanchester_wargame_outcome,
     nash_gap,
     robustness_score,
+    rubric_inter_rater_agreement,
     tool_utilisation_rate,
 )
 from coageneration.core import Force, SelfPlayEngine
@@ -91,6 +96,42 @@ def test_tool_utilisation_rate_no_tools() -> None:
     # Basic make_coa does not attach tool calls
     rate = tool_utilisation_rate(coas)
     assert rate == 0.0
+
+
+def test_fm30_rubric_scores_range() -> None:
+    coa = make_logistics_coa()
+    scores = fm30_rubric_scores(coa)
+    assert "sustainment" in scores
+    assert all(0.0 <= score <= 1.0 for score in scores.values())
+
+
+def test_doctrinal_alignment_score_range() -> None:
+    coa = make_coa_with_branch(objective="protect civilians while isolating threat")
+    score = doctrinal_alignment_score(coa)
+    assert 0.0 <= score <= 1.0
+
+
+def test_rubric_inter_rater_agreement_identical() -> None:
+    ratings = [
+        {"objective_clarity": 0.8, "sustainment": 0.4},
+        {"objective_clarity": 0.8, "sustainment": 0.4},
+    ]
+    assert rubric_inter_rater_agreement(ratings) == pytest.approx(1.0)
+
+
+def test_framing_sensitivity_delta() -> None:
+    delta = framing_sensitivity_delta({"blue": 0.8, "neutral": 0.7, "adversary": 0.55})
+    assert delta == pytest.approx(0.25)
+
+
+def test_lanchester_wargame_outcome_shape() -> None:
+    state = make_game_state()
+    blue = make_logistics_coa(force=Force.BLUE)
+    red = make_coa(force=Force.RED, seed=88)
+    outcome = lanchester_wargame_outcome(state, blue, red, steps=3)
+    assert outcome["winner"] in {"blue", "red", "draw"}
+    assert outcome["blue_remaining"] >= 0.0
+    assert outcome["red_remaining"] >= 0.0
 
 
 def test_episode_summary_winner() -> None:

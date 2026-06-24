@@ -14,6 +14,8 @@ from .core import (
     CourseOfAction,
     Force,
     GameState,
+    ScenarioCase,
+    ScenarioProfile,
     ToolCall,
     build_chain,
     compute_mef_score,
@@ -324,6 +326,137 @@ def make_info_ops_coa(force: Force = Force.BLUE, seed: int = 3) -> CourseOfActio
         mef_score=mef,
         domain="information_ops",
     )
+
+
+def make_urban_operations_case(seed: int = 10, framing: str = "neutral") -> ScenarioCase:
+    """Dense urban scenario with ISR, maneuver, logistics, and restraint needs."""
+    state = make_game_state(n_blue=6, n_red=5, seed=seed)
+    profile = ScenarioProfile(
+        scenario_id=f"urban-{seed}",
+        terrain_type="urban",
+        force_size="company",
+        operational_phase="stability",
+        domains=["land", "cyber", "information"],
+        framing=framing,
+        loac_ambiguity="high",
+        historical_reference="synthetic urban stability operation",
+    )
+    coas = [
+        make_coa_with_branch(
+            force=Force.BLUE,
+            objective="isolate hostile element while protecting civilians",
+            seed=seed,
+        ),
+        make_info_ops_coa(force=Force.BLUE, seed=seed + 1),
+        make_logistics_coa(force=Force.BLUE, seed=seed + 2),
+    ]
+    return ScenarioCase(profile=profile, game_state=state, seed_coas=coas)
+
+
+def make_maritime_operations_case(seed: int = 20, framing: str = "neutral") -> ScenarioCase:
+    """Maritime interdiction scenario with surveillance and escalation control."""
+    rng = random.Random(seed)
+    blue_assets = [
+        Asset(
+            asset_id=f"blue-mar-{i:03d}",
+            asset_type=["destroyer", "patrol_aircraft", "boarding_team"][i % 3],
+            force=Force.BLUE,
+            location=(rng.uniform(0, 40), rng.uniform(0, 100)),
+            capability_score=rng.uniform(0.55, 0.95),
+        )
+        for i in range(5)
+    ]
+    red_assets = [
+        Asset(
+            asset_id=f"red-mar-{i:03d}",
+            asset_type=["fast_boat", "merchant_cover", "coastal_sensor"][i % 3],
+            force=Force.RED,
+            location=(rng.uniform(60, 100), rng.uniform(0, 100)),
+            capability_score=rng.uniform(0.45, 0.85),
+        )
+        for i in range(4)
+    ]
+    actions = [
+        make_action(
+            asset_id="blue-mar-001",
+            action_type="maritime_surveillance",
+            category=ActionCategory.INTELLIGENCE,
+            priority=1,
+            tool_name="ais_fusion",
+        ),
+        make_action(
+            asset_id="blue-mar-000",
+            action_type="hail_and_query",
+            category=ActionCategory.INFORMATION,
+            priority=2,
+            tool_name="comms_log",
+        ),
+        make_action(
+            asset_id="blue-mar-002",
+            action_type="compliant_boarding",
+            category=ActionCategory.KINETIC,
+            priority=3,
+        ),
+    ]
+    coa = CourseOfAction(
+        force=Force.BLUE,
+        actions=actions,
+        chain=build_chain(actions),
+        objective="interdict suspected smuggling vessel with minimum escalation",
+        mef_score=compute_mef_score(0.72, 0.28, 0.22),
+        domain="maritime",
+    )
+    profile = ScenarioProfile(
+        scenario_id=f"maritime-{seed}",
+        terrain_type="maritime",
+        force_size="task_group",
+        operational_phase="interdiction",
+        domains=["maritime", "air", "information"],
+        framing=framing,
+        loac_ambiguity="medium",
+        historical_reference="synthetic maritime interdiction",
+    )
+    return ScenarioCase(
+        profile=profile,
+        game_state=GameState(blue_assets=blue_assets, red_assets=red_assets),
+        seed_coas=[coa],
+    )
+
+
+def make_multi_domain_operations_case(
+    seed: int = 30, framing: str = "neutral"
+) -> ScenarioCase:
+    """Multi-domain scenario spanning land, cyber, information, and logistics."""
+    state = make_game_state(n_blue=8, n_red=8, seed=seed)
+    profile = ScenarioProfile(
+        scenario_id=f"multi-domain-{seed}",
+        terrain_type="mixed",
+        force_size="battalion",
+        operational_phase="large_scale_combat",
+        domains=["land", "air", "cyber", "information", "logistics"],
+        framing=framing,
+        loac_ambiguity="medium",
+        historical_reference="synthetic large-scale combat operation",
+    )
+    return ScenarioCase(
+        profile=profile,
+        game_state=state,
+        seed_coas=[
+            make_cyber_ops_coa(force=Force.BLUE, seed=seed),
+            make_info_ops_coa(force=Force.BLUE, seed=seed + 1),
+            make_logistics_coa(force=Force.BLUE, seed=seed + 2),
+            make_coa(force=Force.BLUE, n_actions=5, seed=seed + 3),
+        ],
+    )
+
+
+def make_scenario_corpus(seed: int = 100) -> List[ScenarioCase]:
+    """Return a small, diverse corpus for benchmark smoke tests."""
+    return [
+        make_urban_operations_case(seed=seed, framing="blue"),
+        make_maritime_operations_case(seed=seed + 1, framing="neutral"),
+        make_multi_domain_operations_case(seed=seed + 2, framing="adversary"),
+    ]
 
 
 def make_game_state(

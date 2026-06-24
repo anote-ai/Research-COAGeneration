@@ -4,7 +4,17 @@ from __future__ import annotations
 
 from typing import Dict, List
 
-from .core import CourseOfAction, GameState
+from .core import ActionCategory, CourseOfAction, GameState
+
+
+FM30_RUBRIC_WEIGHTS: Dict[str, float] = {
+    "objective_clarity": 0.20,
+    "intelligence_preparation": 0.18,
+    "combined_arms_balance": 0.18,
+    "sustainment": 0.14,
+    "risk_mitigation": 0.15,
+    "tempo_and_sequencing": 0.15,
+}
 
 
 def gbc_score(blue_coa: CourseOfAction, red_coa: CourseOfAction) -> float:
@@ -97,6 +107,139 @@ def tool_utilisation_rate(coas: List[CourseOfAction]) -> float:
     if total_actions == 0:
         return 0.0
     return tool_actions / total_actions
+
+
+def fm30_rubric_scores(coa: CourseOfAction) -> Dict[str, float]:
+    """Heuristic FM 3-0 inspired rubric scores in [0, 1].
+
+    This is a benchmark feature extractor, not a substitute for validation by
+    doctrine experts. It rewards clear objectives, intelligence preparation,
+    combined-arms diversity, sustainment, explicit risk controls, and chained
+    sequencing.
+    """
+    action_types = [atype.lower() for atype in coa.all_action_types()]
+    categories = {action.category for action in coa.actions}
+    for step in coa.chain:
+        if step.action is not None:
+            categories.add(step.action.category)
+        if step.branch is not None:
+            categories.update(action.category for action in step.branch.true_actions)
+            categories.update(action.category for action in step.branch.false_actions)
+
+    objective_terms = [term for term in coa.objective.split() if len(term) > 3]
+    objective_clarity = min(1.0, len(objective_terms) / 6.0)
+
+    intelligence_terms = {"recon", "scan", "surveillance", "analysis", "assess"}
+    intelligence_preparation = 1.0 if (
+        ActionCategory.INTELLIGENCE in categories
+        or any(any(term in atype for term in intelligence_terms) for atype in action_types)
+    ) else 0.0
+
+    combined_arms_balance = min(1.0, len(categories) / 4.0)
+
+    sustainment_terms = {"log", "supply", "resupply", "convoy", "distribute"}
+    sustainment = 1.0 if (
+        ActionCategory.LOGISTICS in categories
+        or any(any(term in atype for term in sustainment_terms) for atype in action_types)
+    ) else 0.0
+
+    risk_terms = {"protect", "civilian", "withdraw", "minimum", "restraint", "compliant"}
+    risk_mitigation = 1.0 if (
+        any(term in coa.objective.lower() for term in risk_terms)
+        or any(any(term in atype for term in risk_terms) for atype in action_types)
+    ) else min(1.0, len([a for a in coa.actions if a.preconditions]) / 2.0)
+
+    if len(coa.chain) <= 1:
+        tempo_and_sequencing = 0.0
+    else:
+        ordered_steps = sum(1 for step in coa.chain if step.depends_on)
+        tempo_and_sequencing = ordered_steps / max(1, len(coa.chain) - 1)
+
+    return {
+        "objective_clarity": objective_clarity,
+        "intelligence_preparation": intelligence_preparation,
+        "combined_arms_balance": combined_arms_balance,
+        "sustainment": sustainment,
+        "risk_mitigation": risk_mitigation,
+        "tempo_and_sequencing": tempo_and_sequencing,
+    }
+
+
+def doctrinal_alignment_score(
+    coa: CourseOfAction, weights: Dict[str, float] | None = None
+) -> float:
+    """Weighted aggregate of ``fm30_rubric_scores`` in [0, 1]."""
+    rubric = fm30_rubric_scores(coa)
+    active_weights = weights or FM30_RUBRIC_WEIGHTS
+    weight_total = sum(active_weights.values())
+    if weight_total <= 0:
+        return 0.0
+    score = sum(rubric.get(key, 0.0) * weight for key, weight in active_weights.items())
+    return max(0.0, min(1.0, score / weight_total))
+
+
+def rubric_inter_rater_agreement(ratings: List[Dict[str, float]]) -> float:
+    """Mean pairwise agreement for rubric validator scores in [0, 1]."""
+    if len(ratings) <= 1:
+        return 1.0
+    criteria = sorted({key for rating in ratings for key in rating})
+    if not criteria:
+        return 0.0
+    total = 0.0
+    count = 0
+    for i in range(len(ratings)):
+        for j in range(i + 1, len(ratings)):
+            diffs = [
+                abs(ratings[i].get(key, 0.0) - ratings[j].get(key, 0.0))
+                for key in criteria
+            ]
+            total += 1.0 - min(1.0, sum(diffs) / len(diffs))
+            count += 1
+    return total / count if count else 0.0
+
+
+def framing_sensitivity_delta(frame_scores: Dict[str, float]) -> float:
+    """Return max-min score spread across scenario framing variants."""
+    if len(frame_scores) <= 1:
+        return 0.0
+    values = list(frame_scores.values())
+    return max(values) - min(values)
+
+
+def lanchester_wargame_outcome(
+    state: GameState,
+    blue_coa: CourseOfAction,
+    red_coa: CourseOfAction,
+    steps: int = 10,
+    attrition_rate: float = 0.03,
+) -> Dict[str, float | str]:
+    """Stylized Lanchester-style outcome linked to COA quality scores."""
+    blue = state.blue_capability_total()
+    red = state.red_capability_total()
+    blue_effect = max(0.05, 1.0 + blue_coa.mef_score + doctrinal_alignment_score(blue_coa))
+    red_effect = max(0.05, 1.0 + red_coa.mef_score + doctrinal_alignment_score(red_coa))
+
+    for _ in range(max(0, steps)):
+        blue_loss = attrition_rate * red * red_effect
+        red_loss = attrition_rate * blue * blue_effect
+        blue = max(0.0, blue - blue_loss)
+        red = max(0.0, red - red_loss)
+        if blue == 0.0 or red == 0.0:
+            break
+
+    if blue > red:
+        winner = "blue"
+    elif red > blue:
+        winner = "red"
+    else:
+        winner = "draw"
+    return {
+        "blue_remaining": blue,
+        "red_remaining": red,
+        "blue_doctrinal_alignment": doctrinal_alignment_score(blue_coa),
+        "red_doctrinal_alignment": doctrinal_alignment_score(red_coa),
+        "winner": winner,
+    }
 
 
 def episode_summary(states: List[GameState]) -> Dict:
