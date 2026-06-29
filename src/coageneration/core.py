@@ -172,6 +172,59 @@ def build_chain(
     return steps
 
 
+_RESPONSE_ACTION_TYPES = ["attack", "defend", "maneuver", "recon", "jam", "spoof"]
+
+
+def _random_response_coa(
+    opponent_coa: "CourseOfAction",
+    game_state: "GameState",
+    responding_force: "Force",
+    rng: random.Random,
+) -> "CourseOfAction":
+    """Generate a single random counter-COA for ``responding_force``."""
+    assets = (
+        game_state.red_assets
+        if responding_force == Force.RED
+        else game_state.blue_assets
+    )
+    categories = list(ActionCategory)
+    if not assets:
+        actions = [
+            Action(
+                action_type="hold",
+                asset_id="dummy",
+                priority=1,
+                category=ActionCategory.LOGISTICS,
+            )
+        ]
+    else:
+        asset = rng.choice(assets)
+        actions = [
+            Action(
+                action_type=rng.choice(_RESPONSE_ACTION_TYPES),
+                category=rng.choice(categories),
+                target_location=(rng.uniform(0, 100), rng.uniform(0, 100)),
+                asset_id=asset.asset_id,
+                priority=rng.randint(1, 10),
+                expected_duration_s=rng.uniform(30, 600),
+            )
+            for _ in range(max(1, len(opponent_coa.actions)))
+        ]
+
+    mef = compute_mef_score(
+        rng.uniform(0.3, 0.9),
+        rng.uniform(0.1, 0.5),
+        rng.uniform(0.1, 0.4),
+    )
+    return CourseOfAction(
+        force=responding_force,
+        actions=actions,
+        chain=build_chain(actions),
+        objective=f"counter: {opponent_coa.objective}",
+        mef_score=mef,
+    )
+
+
 class Policy:
     """Abstract interface for a COA generation policy."""
 
@@ -181,11 +234,46 @@ class Policy:
         raise NotImplementedError
 
 
+class SampledBestResponsePolicy(Policy):
+    """Sample ``n_samples`` random COAs and return the one with the highest MEF.
+
+    This is a substantial improvement over single-sample random play: by
+    evaluating multiple candidates and selecting the best, the responding
+    force behaves more like a greedy optimizer than a coin-flip — tightening
+    the self-play loop and making Nash-gap convergence meaningful.
+
+    Args:
+        n_samples: Number of candidate COAs to generate per call. Higher
+            values give better best-response approximations at the cost of
+            more computation. Default is 8.
+        seed: Random seed for reproducibility.
+    """
+
+    def __init__(self, n_samples: int = 8, seed: int = 0) -> None:
+        if n_samples < 1:
+            raise ValueError("n_samples must be >= 1")
+        self.n_samples = n_samples
+        self._rng = random.Random(seed)
+
+    def generate_coa(
+        self, game_state: "GameState", opponent_coa: "CourseOfAction"
+    ) -> "CourseOfAction":
+        responding_force = (
+            Force.RED if opponent_coa.force == Force.BLUE else Force.BLUE
+        )
+        candidates = [
+            _random_response_coa(opponent_coa, game_state, responding_force, self._rng)
+            for _ in range(self.n_samples)
+        ]
+        return max(candidates, key=lambda c: c.mef_score)
+
+
 class SelfPlayEngine:
     """Alternating self-play between BLUE and RED.
 
-    Pass a ``policy`` to replace the built-in random best-response with any
-    ``Policy``-compatible object (e.g. ``LLMPolicy``).
+    Pass a ``policy`` to replace the built-in single-sample random best-response
+    with any ``Policy``-compatible object (e.g. ``SampledBestResponsePolicy``
+    or ``LLMPolicy``).
     """
 
     def __init__(self, seed: int = 42, policy: Optional[Policy] = None) -> None:
@@ -198,60 +286,14 @@ class SelfPlayEngine:
     ) -> CourseOfAction:
         """Generate an adversarial response COA.
 
-        If a policy was provided at construction it is used; otherwise falls
-        back to the built-in random response.
+        Delegates to ``self.policy`` if one was provided; otherwise falls back
+        to a single random sample.
         """
         if self.policy is not None:
             return self.policy.generate_coa(game_state, coa)
 
         response_force = Force.RED if coa.force == Force.BLUE else Force.BLUE
-        assets = (
-            game_state.red_assets
-            if response_force == Force.RED
-            else game_state.blue_assets
-        )
-        categories = list(ActionCategory)
-        if not assets:
-            response_actions = [
-                Action(
-                    action_type="hold",
-                    asset_id="dummy",
-                    priority=1,
-                    category=ActionCategory.LOGISTICS,
-                )
-            ]
-        else:
-            asset = self._rng.choice(assets)
-            response_actions = [
-                Action(
-                    action_type=self._rng.choice(
-                        ["attack", "defend", "maneuver", "recon", "jam", "spoof"]
-                    ),
-                    category=self._rng.choice(categories),
-                    target_location=(
-                        self._rng.uniform(0, 100),
-                        self._rng.uniform(0, 100),
-                    ),
-                    asset_id=asset.asset_id,
-                    priority=self._rng.randint(1, 10),
-                    expected_duration_s=self._rng.uniform(30, 600),
-                )
-                for _ in range(max(1, len(coa.actions)))
-            ]
-
-        effectiveness = self._rng.uniform(0.3, 0.9)
-        cost = self._rng.uniform(0.1, 0.5)
-        risk = self._rng.uniform(0.1, 0.4)
-        mef = compute_mef_score(effectiveness, cost, risk)
-        chain = build_chain(response_actions)
-
-        return CourseOfAction(
-            force=response_force,
-            actions=response_actions,
-            chain=chain,
-            objective=f"counter: {coa.objective}",
-            mef_score=mef,
-        )
+        return _random_response_coa(coa, game_state, response_force, self._rng)
 
     def run_episode(
         self, initial_state: GameState, n_rounds: int = 3
