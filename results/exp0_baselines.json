@@ -1,0 +1,45 @@
+{
+  "experiment": "exp0_baselines",
+  "description": "Real, locally-computed comparison of B0 (random), B1 (greedy MEF), and B2 (scripted heuristic) baselines against randomly-sampled RED best-responses, using the synthetic scenario generators in coageneration.data. No LLM calls were made for this run.",
+  "n_seeds": 30,
+  "baselines": [
+    {
+      "name": "B0_random",
+      "n_seeds": 30,
+      "mean_gbc": 0.5204,
+      "stdev_gbc": 0.0293,
+      "p10_worst_case_mef": -0.0079,
+      "min_worst_case_mef": -0.0536,
+      "mean_doctrinal_alignment": 0.4947,
+      "action_diversity_jaccard": 0.7153
+    },
+    {
+      "name": "B1_greedy_mef",
+      "n_seeds": 30,
+      "mean_gbc": 0.5533,
+      "stdev_gbc": 0.0135,
+      "p10_worst_case_mef": -0.0204,
+      "min_worst_case_mef": -0.0536,
+      "mean_doctrinal_alignment": 0.488,
+      "action_diversity_jaccard": 0.7321
+    },
+    {
+      "name": "B2_scripted_heuristic",
+      "n_seeds": 30,
+      "mean_gbc": 0.4928,
+      "stdev_gbc": 0.0131,
+      "p10_worst_case_mef": -0.0204,
+      "min_worst_case_mef": -0.0451,
+      "mean_doctrinal_alignment": 0.8217,
+      "action_diversity_jaccard": 0.0
+    }
+  ],
+  "b3_llm_self_play": {
+    "status": "NOT EXECUTED",
+    "reason": "Requires ANTHROPIC_API_KEY and network access; not run in this session. Run `python scripts/run_demo.py --llm` and `pytest tests/test_llm_policy.py` manually, then extend this script with a real B3/B4 + LLM-guided self-play comparison."
+  },
+  "scenario_corpus_smoke_test": {
+    "n_scenario_cases": 3,
+    "note": "make_scenario_corpus() produces urban/maritime/multi-domain cases; not yet wired into this experiment's main loop."
+  }
+}
