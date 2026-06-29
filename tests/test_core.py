@@ -13,6 +13,7 @@ from coageneration.core import (
     CourseOfAction,
     Force,
     GameState,
+    SampledBestResponsePolicy,
     SelfPlayEngine,
     ToolCall,
     build_chain,
@@ -172,3 +173,71 @@ def test_best_response_opposite_force() -> None:
     blue_coa = make_coa(force=Force.BLUE)
     response = engine.best_response(blue_coa, state)
     assert response.force == Force.RED
+
+
+# ---------------------------------------------------------------------------
+# SampledBestResponsePolicy
+# ---------------------------------------------------------------------------
+
+
+def test_sampled_policy_returns_correct_force() -> None:
+    state = make_game_state(n_blue=3, n_red=3, seed=0)
+    blue_coa = make_coa(force=Force.BLUE, seed=0)
+    policy = SampledBestResponsePolicy(n_samples=5, seed=1)
+    result = policy.generate_coa(state, blue_coa)
+    assert result.force == Force.RED
+
+
+def test_sampled_policy_red_responds_as_blue() -> None:
+    state = make_game_state(n_blue=3, n_red=3, seed=0)
+    red_coa = make_coa(force=Force.RED, seed=0)
+    policy = SampledBestResponsePolicy(n_samples=5, seed=2)
+    result = policy.generate_coa(state, red_coa)
+    assert result.force == Force.BLUE
+
+
+def test_sampled_policy_picks_highest_mef() -> None:
+    # With enough samples, sampled policy should consistently beat single-sample.
+    state = make_game_state(n_blue=5, n_red=5, seed=7)
+    blue_coa = make_coa(force=Force.BLUE, seed=7)
+
+    single_scores = [
+        SelfPlayEngine(seed=i).best_response(blue_coa, state).mef_score
+        for i in range(20)
+    ]
+    policy = SampledBestResponsePolicy(n_samples=16, seed=99)
+    sampled_score = policy.generate_coa(state, blue_coa).mef_score
+
+    # Sampled policy should beat the average of single-sample attempts.
+    assert sampled_score >= sum(single_scores) / len(single_scores)
+
+
+def test_sampled_policy_chain_populated() -> None:
+    state = make_game_state(n_blue=3, n_red=3, seed=3)
+    blue_coa = make_coa(force=Force.BLUE, n_actions=3, seed=3)
+    policy = SampledBestResponsePolicy(n_samples=4, seed=4)
+    result = policy.generate_coa(state, blue_coa)
+    assert len(result.chain) == len(result.actions)
+
+
+def test_sampled_policy_n_samples_validation() -> None:
+    with pytest.raises(ValueError):
+        SampledBestResponsePolicy(n_samples=0)
+
+
+def test_sampled_policy_reproducible_with_same_seed() -> None:
+    state = make_game_state(n_blue=3, n_red=3, seed=5)
+    blue_coa = make_coa(force=Force.BLUE, seed=5)
+    p1 = SampledBestResponsePolicy(n_samples=6, seed=42)
+    p2 = SampledBestResponsePolicy(n_samples=6, seed=42)
+    r1 = p1.generate_coa(state, blue_coa)
+    r2 = p2.generate_coa(state, blue_coa)
+    assert r1.mef_score == r2.mef_score
+
+
+def test_engine_with_sampled_policy_episode() -> None:
+    state = make_game_state(n_blue=4, n_red=4, seed=6)
+    policy = SampledBestResponsePolicy(n_samples=8, seed=6)
+    engine = SelfPlayEngine(seed=6, policy=policy)
+    states = engine.run_episode(state, n_rounds=4)
+    assert len(states) == 5
