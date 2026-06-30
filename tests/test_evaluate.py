@@ -133,6 +133,18 @@ def test_framing_sensitivity_delta() -> None:
     assert delta == pytest.approx(0.25)
 
 
+def test_framing_sensitivity_delta_nonzero_for_urban_case() -> None:
+    from coageneration.data import make_urban_operations_case
+
+    scores = {
+        framing: doctrinal_alignment_score(
+            make_urban_operations_case(seed=10, framing=framing).seed_coas[0]
+        )
+        for framing in ("blue", "neutral", "adversary")
+    }
+    assert framing_sensitivity_delta(scores) > 0.0
+
+
 def test_lanchester_wargame_outcome_shape() -> None:
     state = make_game_state()
     blue = make_logistics_coa(force=Force.BLUE)
