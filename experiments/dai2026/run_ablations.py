@@ -13,7 +13,7 @@ from metarouter import (
 
 
 if __name__ == "__main__":
-    output = Path("results/metarouter_ablations")
+    output = Path("results/dai2026/ablations")
     tasks = generate_tasks()
     traces = run_benchmark(tasks=tasks, policies=ablation_policies(), seeds=30)
     export_tasks(tasks, output)

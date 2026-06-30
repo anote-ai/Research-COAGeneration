@@ -7,7 +7,7 @@ import csv
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def read_indexed(path: Path, key: str) -> dict[str, dict[str, str]]:
@@ -21,7 +21,7 @@ def close(actual: str, expected: float, tolerance: float = 5e-4) -> None:
 
 
 def main() -> None:
-    summary = read_indexed(ROOT / "results/metarouter/summary.csv", "policy")
+    summary = read_indexed(ROOT / "results/dai2026/main/summary.csv", "policy")
     close(summary["adaptive"]["success_rate"], 0.7944444444)
     close(summary["static_workload"]["success_rate"], 0.7670370370)
     close(summary["one_shot"]["success_rate"], 0.6742592593)
@@ -30,13 +30,13 @@ def main() -> None:
     close(summary["adaptive"]["mean_latency_s"], 20.4513333333)
 
     comparisons = read_indexed(
-        ROOT / "results/metarouter/comparisons.csv", "baseline"
+        ROOT / "results/dai2026/main/comparisons.csv", "baseline"
     )
     close(comparisons["static_workload"]["success_difference"], 0.0274074074)
     close(comparisons["one_shot"]["success_difference"], 0.1201851852)
 
     ablations = read_indexed(
-        ROOT / "results/metarouter_ablations/summary.csv", "policy"
+        ROOT / "results/dai2026/ablations/summary.csv", "policy"
     )
     close(ablations["adaptive_no_verify"]["success_rate"], 0.7474074074)
     close(ablations["adaptive_single_action"]["success_rate"], 0.6814814815)
@@ -45,4 +45,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -25,15 +25,16 @@ not production or live-LLM results.
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
-metarouter-benchmark --seeds 30 --output results/metarouter
-python scripts/run_metarouter_ablations.py
-python scripts/plot_metarouter_results.py
-python scripts/check_paper_results.py
+metarouter-benchmark --seeds 30 --output results/dai2026/main
+python experiments/dai2026/run_ablations.py
+python experiments/dai2026/plot_results.py
+python experiments/dai2026/check_paper_results.py
 pytest -q
 ```
 
-The DAI 2026 draft and literature notes are under `paper/`. Generated summaries,
-task profiles, comparisons, ablations, and raw traces are under `results/`.
+Venue-specific manuscripts are under `papers/`, experiments under `experiments/`,
+benchmark definitions under `benchmarks/`, and generated artifacts under `results/`.
+The shared implementation remains under `src/metarouter/`.
 
 ## MEF + GBC Problem Framing
 

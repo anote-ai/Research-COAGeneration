@@ -15,9 +15,9 @@ os.environ.setdefault(
 import matplotlib.pyplot as plt
 
 
-ROOT = Path(__file__).resolve().parents[1]
-SUMMARY = ROOT / "results/metarouter/summary.csv"
-OUTPUT_DIR = ROOT / "paper/figures"
+ROOT = Path(__file__).resolve().parents[2]
+SUMMARY = ROOT / "results/dai2026/main/summary.csv"
+OUTPUT_DIR = ROOT / "papers/dai2026/figures"
 
 
 def main() -> None:

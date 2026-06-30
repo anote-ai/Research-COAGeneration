@@ -291,9 +291,9 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 metarouter-benchmark --seeds 30 \
-  --output results/metarouter
-python scripts/run_metarouter_ablations.py
-python scripts/check_paper_results.py
+  --output results/dai2026/main
+python experiments/dai2026/run_ablations.py
+python experiments/dai2026/check_paper_results.py
 pytest -q
 \end{verbatim}
 

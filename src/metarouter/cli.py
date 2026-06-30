@@ -12,7 +12,9 @@ from .workloads import generate_tasks
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seeds", type=int, default=30)
-    parser.add_argument("--output", type=Path, default=Path("results/metarouter"))
+    parser.add_argument(
+        "--output", type=Path, default=Path("results/dai2026/main")
+    )
     args = parser.parse_args()
 
     tasks = generate_tasks()
