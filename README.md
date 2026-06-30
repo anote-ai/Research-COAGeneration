@@ -79,6 +79,22 @@ python scripts/run_demo.py
 pytest tests/ -v
 ```
 
+## Reproducing all results
+
+```bash
+./run_all.sh
+```
+
+Runs the full test suite, the COAGeneration self-play demo, the metarouter
+benchmark (30 seeds), ablations, figure generation, and paper-claim
+verification in one command. No GPU or API keys required — everything uses
+the offline seeded simulator and synthetic scenario generators. Expected
+runtime: ~5-10 minutes on a laptop.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
 ## Venues
 
 - **DAI 2026** — Distributed AI workshop
