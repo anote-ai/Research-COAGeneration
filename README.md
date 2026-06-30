@@ -10,6 +10,30 @@ self-play.
 assets, and strategies are entirely synthetic and do not represent any real
 military doctrine, operations, or advice.
 
+## MetaRoute-Bench
+
+The repository also contains `metarouter`, an independent benchmark for the
+meta-decision layer of agentic systems. It compares when policies decompose,
+use tools, execute code, delegate, verify, and answer directly across synthetic
+data-analysis, research, and document-processing workload profiles.
+
+The current results come from an explicit seeded offline execution model. They
+are useful for testing evaluation methodology and policy tradeoffs, but they are
+not production or live-LLM results.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+metarouter-benchmark --seeds 30 --output results/metarouter
+python scripts/run_metarouter_ablations.py
+python scripts/check_paper_results.py
+pytest -q
+```
+
+The DAI 2026 draft and literature notes are under `paper/`. Generated summaries,
+task profiles, comparisons, ablations, and raw traces are under `results/`.
+
 ## MEF + GBC Problem Framing
 
 A **Course of Action (COA)** is scored by the **Mission Effectiveness Function (MEF)**:
