@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0"]
+dev = ["matplotlib>=3.8", "pytest>=7.0"]
 
 [project.scripts]
 metarouter-benchmark = "metarouter.cli:main"

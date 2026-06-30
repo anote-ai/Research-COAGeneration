@@ -27,6 +27,7 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 metarouter-benchmark --seeds 30 --output results/metarouter
 python scripts/run_metarouter_ablations.py
+python scripts/plot_metarouter_results.py
 python scripts/check_paper_results.py
 pytest -q
 ```
