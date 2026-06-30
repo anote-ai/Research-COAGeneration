@@ -10,7 +10,13 @@ from coageneration.data import (
     make_logistics_coa,
 )
 from coageneration.evaluate import (
+    BootstrapResult,
     action_diversity_score,
+    bootstrap_ci,
+    bootstrap_ci_coa_diversity,
+    bootstrap_ci_doctrinal_alignment,
+    bootstrap_ci_gbc,
+    bootstrap_ci_nash_gap,
     chain_coverage_score,
     coa_diversity,
     doctrinal_alignment_score,
@@ -144,3 +150,93 @@ def test_episode_summary_winner() -> None:
 
 
 import pytest  # noqa: E402  (kept at bottom to avoid circular import concerns)
+
+
+# ---------------------------------------------------------------------------
+# bootstrap_ci — core function
+# ---------------------------------------------------------------------------
+
+
+def test_bootstrap_ci_returns_bootstrap_result() -> None:
+    coas = [make_coa(seed=i) for i in range(10)]
+    result = bootstrap_ci(coa_diversity, coas, n_boot=200, seed=0)
+    assert isinstance(result, BootstrapResult)
+
+
+def test_bootstrap_ci_bounds_ordered() -> None:
+    coas = [make_coa(seed=i) for i in range(10)]
+    result = bootstrap_ci(coa_diversity, coas, n_boot=500, seed=1)
+    assert result.lower <= result.mean <= result.upper
+
+
+def test_bootstrap_ci_in_valid_range() -> None:
+    coas = [make_coa(seed=i) for i in range(8)]
+    result = bootstrap_ci(coa_diversity, coas, n_boot=300, seed=2)
+    assert 0.0 <= result.lower
+    assert result.upper <= 1.0
+
+
+def test_bootstrap_ci_reproducible() -> None:
+    coas = [make_coa(seed=i) for i in range(6)]
+    r1 = bootstrap_ci(coa_diversity, coas, n_boot=200, seed=42)
+    r2 = bootstrap_ci(coa_diversity, coas, n_boot=200, seed=42)
+    assert r1.mean == r2.mean
+    assert r1.lower == r2.lower
+    assert r1.upper == r2.upper
+
+
+def test_bootstrap_ci_wider_at_higher_confidence() -> None:
+    coas = [make_coa(seed=i) for i in range(12)]
+    r95 = bootstrap_ci(coa_diversity, coas, n_boot=500, confidence=0.95, seed=5)
+    r80 = bootstrap_ci(coa_diversity, coas, n_boot=500, confidence=0.80, seed=5)
+    assert (r95.upper - r95.lower) >= (r80.upper - r80.lower)
+
+
+def test_bootstrap_ci_empty_data_raises() -> None:
+    with pytest.raises(ValueError, match="empty"):
+        bootstrap_ci(coa_diversity, [], n_boot=100)
+
+
+def test_bootstrap_ci_bad_confidence_raises() -> None:
+    coas = [make_coa(seed=0)]
+    with pytest.raises(ValueError):
+        bootstrap_ci(coa_diversity, coas, confidence=1.5)
+
+
+def test_bootstrap_ci_str_representation() -> None:
+    coas = [make_coa(seed=i) for i in range(6)]
+    result = bootstrap_ci(coa_diversity, coas, n_boot=100, seed=0)
+    s = str(result)
+    assert "95% CI" in s
+    assert "–" in s
+
+
+# ---------------------------------------------------------------------------
+# Convenience wrappers
+# ---------------------------------------------------------------------------
+
+
+def test_bootstrap_ci_doctrinal_alignment_range() -> None:
+    coas = [make_coa(seed=i) for i in range(10)]
+    result = bootstrap_ci_doctrinal_alignment(coas, n_boot=300, seed=0)
+    assert 0.0 <= result.lower <= result.upper <= 1.0
+
+
+def test_bootstrap_ci_gbc_range() -> None:
+    pairs = [(make_coa(force=Force.BLUE, seed=i), make_coa(force=Force.RED, seed=i + 50))
+             for i in range(8)]
+    result = bootstrap_ci_gbc(pairs, n_boot=300, seed=0)
+    assert 0.0 <= result.lower <= result.upper <= 1.0
+
+
+def test_bootstrap_ci_coa_diversity_single_element() -> None:
+    coas = [make_coa(seed=0)]
+    result = bootstrap_ci_coa_diversity(coas, n_boot=100, seed=0)
+    assert result.lower == result.upper == result.mean == 0.0
+
+
+def test_bootstrap_ci_nash_gap_at_equilibrium() -> None:
+    pairs = [(0.6, 0.4)] * 20
+    result = bootstrap_ci_nash_gap(pairs, n_boot=200, seed=0)
+    assert result.mean == pytest.approx(0.0, abs=1e-9)
+    assert result.lower == pytest.approx(0.0, abs=1e-9)
