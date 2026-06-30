@@ -241,3 +241,26 @@ def test_engine_with_sampled_policy_episode() -> None:
     engine = SelfPlayEngine(seed=6, policy=policy)
     states = engine.run_episode(state, n_rounds=4)
     assert len(states) == 5
+
+
+def test_generate_candidates_returns_n_samples() -> None:
+    state = make_game_state(n_blue=3, n_red=3, seed=0)
+    blue_coa = make_coa(force=Force.BLUE, seed=0)
+    policy = SampledBestResponsePolicy(n_samples=5, seed=1)
+    candidates = policy.generate_candidates(state, blue_coa)
+    assert len(candidates) == 5
+    assert all(c.force == Force.RED for c in candidates)
+
+
+def test_generate_candidates_best_matches_generate_coa() -> None:
+    # generate_coa should pick the max-MEF candidate from the same stream
+    # generate_candidates would produce for a freshly-seeded policy.
+    state = make_game_state(n_blue=3, n_red=3, seed=2)
+    blue_coa = make_coa(force=Force.BLUE, seed=2)
+    policy = SampledBestResponsePolicy(n_samples=6, seed=3)
+    candidates = policy.generate_candidates(state, blue_coa)
+    best = max(candidates, key=lambda c: c.mef_score)
+
+    policy2 = SampledBestResponsePolicy(n_samples=6, seed=3)
+    result = policy2.generate_coa(state, blue_coa)
+    assert result.mef_score == best.mef_score

@@ -142,6 +142,102 @@ def bootstrap_ci_nash_gap(
     return bootstrap_ci(_mean_gap, payoff_pairs, n_boot=n_boot, confidence=confidence, seed=seed)
 
 
+@dataclass
+class CandidateScore:
+    """Per-candidate scores within a multi-COA comparison."""
+
+    coa_id: str
+    mef_score: float
+    doctrinal_alignment: float
+    rank: int
+
+
+@dataclass
+class CoaComparison:
+    """Comparative analysis across a set of candidate COAs for one scenario.
+
+    Attributes:
+        candidates: The COAs that were compared, in input order.
+        scores: Per-candidate ``CandidateScore`` entries, ``rank`` 1 = best MEF.
+        best: The candidate with the highest MEF score.
+        diversity: Mean pairwise Jaccard distance of action types (0 = identical).
+        mef_spread: max(mef_score) - min(mef_score) across candidates.
+        pareto_optimal_ids: ``coa_id`` of candidates not dominated by any other
+            on both (mef_score, doctrinal_alignment) simultaneously.
+    """
+
+    candidates: List[CourseOfAction]
+    scores: List[CandidateScore]
+    best: CourseOfAction
+    diversity: float
+    mef_spread: float
+    pareto_optimal_ids: List[str]
+
+
+def compare_coas(candidates: List[CourseOfAction]) -> CoaComparison:
+    """Compare a set of candidate COAs for the same scenario.
+
+    Ranks candidates by MEF score, computes doctrinal alignment for each,
+    measures action-type diversity across the set, and identifies the
+    Pareto-optimal subset on (mef_score, doctrinal_alignment) — candidates
+    not strictly dominated by any other candidate on both dimensions.
+
+    Args:
+        candidates: At least one candidate COA. Typically 3+ for a
+            meaningful comparison (e.g. from
+            ``SampledBestResponsePolicy.generate_candidates``).
+
+    Returns:
+        A ``CoaComparison`` summarising the set.
+    """
+    if not candidates:
+        raise ValueError("candidates must not be empty")
+
+    alignments = [doctrinal_alignment_score(c) for c in candidates]
+    order = sorted(
+        range(len(candidates)), key=lambda i: candidates[i].mef_score, reverse=True
+    )
+    ranks = [0] * len(candidates)
+    for rank, idx in enumerate(order, start=1):
+        ranks[idx] = rank
+
+    scores = [
+        CandidateScore(
+            coa_id=candidates[i].coa_id,
+            mef_score=candidates[i].mef_score,
+            doctrinal_alignment=alignments[i],
+            rank=ranks[i],
+        )
+        for i in range(len(candidates))
+    ]
+
+    pareto_optimal_ids = []
+    for i in range(len(candidates)):
+        dominated = False
+        for j in range(len(candidates)):
+            if i == j:
+                continue
+            mef_ge = candidates[j].mef_score >= candidates[i].mef_score
+            da_ge = alignments[j] >= alignments[i]
+            mef_gt = candidates[j].mef_score > candidates[i].mef_score
+            da_gt = alignments[j] > alignments[i]
+            if mef_ge and da_ge and (mef_gt or da_gt):
+                dominated = True
+                break
+        if not dominated:
+            pareto_optimal_ids.append(candidates[i].coa_id)
+
+    mef_values = [c.mef_score for c in candidates]
+    return CoaComparison(
+        candidates=candidates,
+        scores=scores,
+        best=candidates[order[0]],
+        diversity=coa_diversity(candidates),
+        mef_spread=max(mef_values) - min(mef_values),
+        pareto_optimal_ids=pareto_optimal_ids,
+    )
+
+
 FM30_RUBRIC_WEIGHTS: Dict[str, float] = {
     "objective_clarity": 0.20,
     "intelligence_preparation": 0.18,

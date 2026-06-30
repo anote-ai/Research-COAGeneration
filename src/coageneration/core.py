@@ -255,16 +255,26 @@ class SampledBestResponsePolicy(Policy):
         self.n_samples = n_samples
         self._rng = random.Random(seed)
 
-    def generate_coa(
+    def generate_candidates(
         self, game_state: "GameState", opponent_coa: "CourseOfAction"
-    ) -> "CourseOfAction":
+    ) -> List["CourseOfAction"]:
+        """Generate ``n_samples`` distinct candidate COAs without selecting one.
+
+        Useful for surfacing multi-COA comparisons (see ``evaluate.compare_coas``)
+        rather than only ever seeing the single best-response winner.
+        """
         responding_force = (
             Force.RED if opponent_coa.force == Force.BLUE else Force.BLUE
         )
-        candidates = [
+        return [
             _random_response_coa(opponent_coa, game_state, responding_force, self._rng)
             for _ in range(self.n_samples)
         ]
+
+    def generate_coa(
+        self, game_state: "GameState", opponent_coa: "CourseOfAction"
+    ) -> "CourseOfAction":
+        candidates = self.generate_candidates(game_state, opponent_coa)
         return max(candidates, key=lambda c: c.mef_score)
 
 

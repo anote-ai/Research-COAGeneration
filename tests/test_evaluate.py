@@ -11,6 +11,8 @@ from coageneration.data import (
 )
 from coageneration.evaluate import (
     BootstrapResult,
+    CandidateScore,
+    CoaComparison,
     action_diversity_score,
     bootstrap_ci,
     bootstrap_ci_coa_diversity,
@@ -19,6 +21,7 @@ from coageneration.evaluate import (
     bootstrap_ci_nash_gap,
     chain_coverage_score,
     coa_diversity,
+    compare_coas,
     doctrinal_alignment_score,
     episode_summary,
     fm30_rubric_scores,
@@ -30,7 +33,7 @@ from coageneration.evaluate import (
     rubric_inter_rater_agreement,
     tool_utilisation_rate,
 )
-from coageneration.core import Force, SelfPlayEngine
+from coageneration.core import Force, SampledBestResponsePolicy, SelfPlayEngine
 
 
 def test_gbc_score_range() -> None:
@@ -240,3 +243,74 @@ def test_bootstrap_ci_nash_gap_at_equilibrium() -> None:
     result = bootstrap_ci_nash_gap(pairs, n_boot=200, seed=0)
     assert result.mean == pytest.approx(0.0, abs=1e-9)
     assert result.lower == pytest.approx(0.0, abs=1e-9)
+
+
+# ---------------------------------------------------------------------------
+# compare_coas
+# ---------------------------------------------------------------------------
+
+
+def test_compare_coas_returns_comparison() -> None:
+    coas = [make_coa(seed=i) for i in range(4)]
+    result = compare_coas(coas)
+    assert isinstance(result, CoaComparison)
+    assert len(result.scores) == 4
+    assert all(isinstance(s, CandidateScore) for s in result.scores)
+
+
+def test_compare_coas_empty_raises() -> None:
+    with pytest.raises(ValueError, match="empty"):
+        compare_coas([])
+
+
+def test_compare_coas_single_candidate() -> None:
+    coa = make_coa(seed=0)
+    result = compare_coas([coa])
+    assert result.best.coa_id == coa.coa_id
+    assert result.diversity == 0.0
+    assert result.mef_spread == 0.0
+    assert result.pareto_optimal_ids == [coa.coa_id]
+
+
+def test_compare_coas_best_has_rank_one() -> None:
+    coas = [make_coa(seed=i) for i in range(5)]
+    result = compare_coas(coas)
+    best_score = next(s for s in result.scores if s.coa_id == result.best.coa_id)
+    assert best_score.rank == 1
+    assert result.best.mef_score == max(c.mef_score for c in coas)
+
+
+def test_compare_coas_ranks_are_a_permutation() -> None:
+    coas = [make_coa(seed=i) for i in range(6)]
+    result = compare_coas(coas)
+    ranks = sorted(s.rank for s in result.scores)
+    assert ranks == list(range(1, 7))
+
+
+def test_compare_coas_mef_spread_matches_range() -> None:
+    coas = [make_coa(seed=i) for i in range(5)]
+    result = compare_coas(coas)
+    mef_values = [c.mef_score for c in coas]
+    assert result.mef_spread == pytest.approx(max(mef_values) - min(mef_values))
+
+
+def test_compare_coas_pareto_optimal_includes_best() -> None:
+    coas = [make_coa(seed=i) for i in range(5)]
+    result = compare_coas(coas)
+    assert result.best.coa_id in result.pareto_optimal_ids
+
+
+def test_compare_coas_pareto_optimal_nonempty() -> None:
+    coas = [make_coa(seed=i) for i in range(8)]
+    result = compare_coas(coas)
+    assert 1 <= len(result.pareto_optimal_ids) <= len(coas)
+
+
+def test_compare_coas_from_sampled_policy_candidates() -> None:
+    state = make_game_state(n_blue=3, n_red=3, seed=1)
+    blue_coa = make_coa(force=Force.BLUE, seed=1)
+    policy = SampledBestResponsePolicy(n_samples=5, seed=2)
+    candidates = policy.generate_candidates(state, blue_coa)
+    result = compare_coas(candidates)
+    assert len(result.candidates) == 5
+    assert result.best.force == Force.RED
