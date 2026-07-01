@@ -29,6 +29,9 @@ PAPER_NUMBERS: dict[str, dict[str, float]] = {
     "candidate_diversity":           {"mean": 0.732, "ci_lower": 0.720, "ci_upper": 0.745},
     "candidate_mef_spread":          {"mean": 0.254, "ci_lower": 0.245, "ci_upper": 0.264},
     "n_pareto_optimal":              {"mean": 2.149, "ci_lower": 1.978, "ci_upper": 2.333},
+    "gbc_llm":                       {"mean": 0.549, "ci_lower": 0.546, "ci_upper": 0.552},
+    "nash_gap_llm":                  {"mean": 0.150, "ci_lower": 0.143, "ci_upper": 0.157},
+    "red_doctrinal_alignment_llm":   {"mean": 0.804, "ci_lower": 0.780, "ci_upper": 0.831},
     "framing_sensitivity_delta":     {"mean": 0.045, "ci_lower": 0.045, "ci_upper": 0.045},
 }
 
