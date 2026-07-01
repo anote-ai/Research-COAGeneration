@@ -4,32 +4,43 @@
   \providecommand\BibTeX{{%
     Bib\TeX}}}
 
+\usepackage{graphicx}
+\usepackage{booktabs}
+
 % Draft manuscript. Submission venue is not yet finalized (candidates: DAI 2026,
 % AAAI 2027 -- see repository README). Replace rights, DOI, ISBN, conference
 % metadata, and author list before any submission.
 \setcopyright{none}
 \copyrightyear{2026}
 \acmYear{2026}
-\acmConference[Draft]{Venue and dates to be determined}{}{}
-\acmBooktitle{Draft manuscript -- venue not yet selected}
+\acmConference[DAI '26]{8th International Conference on Distributed Artificial Intelligence}{November 29--December 2, 2026}{Hong Kong}
+\acmBooktitle{8th International Conference on Distributed Artificial Intelligence (DAI '26), November 29--December 2, 2026, Hong Kong}
 % \acmDOI{XX.XXXX/XXXXXXX.XXXXXXX}
-% \acmISBN{978-X-XXXX-XXXX-X}
-% \acmSubmissionID{XXXX}
+% \acmISBN{978-X-XXXX-XXXX-X/26/11}
+% \acmSubmissionID{DAI26-XXXX}
 
 \title{COA-Bench: A Reproducible Self-Play Benchmark for Comparing Course-of-Action Generation Policies}
 
-\author{Author Names Required}
+\author{Arun Kanhai}
 \affiliation{%
-  \institution{Organization Required}
-  \city{City Required}
-  \country{Country Required}}
-\email{contact@example.com}
-\renewcommand{\shortauthors}{Author et al.}
+  \institution{Anote AI, CUNY}
+  \city{New York}
+  \country{United States}}
+\email{arun.kanhai55@qmail.cuny.edu}
+
+\author{Natan Vidra}
+\affiliation{%
+  \institution{Anote AI}
+  \city{New York}
+  \country{United States}}
+\email{nvidra@anote.ai}
+
+\renewcommand{\shortauthors}{Kanhai and Vidra}
 
 \begin{document}
 
 \begin{abstract}
-Military course-of-action (COA) generation is a recurring planning task in which a force must propose, compare, and select among candidate plans under an adversarial response. We present COA-Bench, a small, fully offline, reproducible framework for studying COA generation policies under self-play. The framework represents a COA as a typed, chainable sequence of actions with an associated Mission Effectiveness Function (MEF) score, evaluates pairs of opposing COAs with a game-based comparison (GBC) score and Nash-gap distance, and scores doctrinal coherence with a heuristic FM 3-0-inspired rubric. We use it to ask three questions about a single policy design choice -- sampling several candidate responses and keeping the best one ("sampled best-response") instead of generating a single response -- across 30 synthetic scenarios spanning three operational templates (urban stability, maritime interdiction, multi-domain combat). Sampled best-response improves the responding force's doctrinal alignment (0.671 vs.\ 0.651) and its win rate in a stylized Lanchester-attrition wargame check (lowering the opposing force's win rate from 0.967 to 0.833), at the cost of a less favorable GBC score for the opposing force and a larger Nash-gap distance from equilibrium. We further show that the benchmark's scenario-framing parameter (blue / neutral / adversary), originally stored as scenario metadata only, previously had no effect on generated COA content; we trace this to specific generator and rubric interactions, wire framing into the generated objective text and action mix, and report a measured framing-sensitivity effect, the construction of which we describe explicitly because it is currently deterministic rather than sampled from a richer model. All metrics, scenarios, and policies used here are reused without modification from the existing \texttt{coageneration} library; this paper's only new artifact is the experiment script, the framing wiring, and this writeup. Given the small scenario count (N=30) and an unvalidated heuristic doctrinal rubric, we present these as a methods contribution and a set of preliminary, falsifiable findings rather than evidence about real-world COA quality.
+Military course-of-action (COA) generation is a recurring planning task in which a force must propose, compare, and select among candidate plans under an adversarial response. We present COA-Bench, a small, fully offline, reproducible framework for studying COA generation policies under self-play. The framework represents a COA as a typed, chainable sequence of actions with an associated Mission Effectiveness Function (MEF) score, evaluates pairs of opposing COAs with a game-based comparison (GBC) score and Nash-gap distance, and scores doctrinal coherence with a heuristic FM 3-0-inspired rubric. We use it to ask three questions about a single policy design choice -- sampling several candidate responses and keeping the best one ("sampled best-response") instead of generating a single response -- across 90 synthetic scenarios spanning three operational templates (urban stability, maritime interdiction, multi-domain combat). Sampled best-response improves the responding force's doctrinal alignment (0.678 vs.\ 0.667) and its win rate in a stylized Lanchester-attrition wargame check (lowering the opposing force's win rate from 0.900 to 0.811), at the cost of a less favorable GBC score for the opposing force and a larger Nash-gap distance from equilibrium. We further show that the benchmark's scenario-framing parameter (blue / neutral / adversary), originally stored as scenario metadata only, previously had no effect on generated COA content; we trace this to specific generator and rubric interactions, wire framing into the generated objective text and action mix, and report a measured framing-sensitivity effect, the construction of which we describe explicitly because it is currently deterministic rather than sampled from a richer model. All metrics, scenarios, and policies used here are reused without modification from the existing \texttt{coageneration} library; this paper's only new artifact is the experiment script, the framing wiring, and this writeup. Given the small scenario count (N=30) and an unvalidated heuristic doctrinal rubric, we present these as a methods contribution and a set of preliminary, falsifiable findings rather than evidence about real-world COA quality.
 \end{abstract}
 
 \ccsdesc[500]{Computing methodologies~Multi-agent systems}
@@ -48,7 +59,7 @@ Prior agent-evaluation work has established the value of self-play for discoveri
 
 This paper does not introduce a new benchmark from scratch. The \texttt{coageneration} library already implements the typed COA representation, a self-play engine, a sampled best-response policy, bootstrap confidence intervals, a multi-COA comparison utility, an FM 3-0-inspired doctrinal rubric, and a stylized Lanchester-attrition wargame check. Our contribution in this paper is to (1) exercise that existing machinery as a single coherent experiment rather than as isolated unit tests, (2) report the resulting numbers honestly, including a methodological gap we found and fixed along the way, and (3) use the result as a first, small data point toward a larger COA-Bench study.
 
-Concretely, we ask: \emph{does sampling several candidate best-responses and keeping the best one change the responding force's GBC score, doctrinal alignment, and wargame win rate relative to generating a single response?} And, separately: \emph{does the benchmark's scenario-framing parameter actually change generated COA content, and if so, by how much?} We report measured answers to both questions over 30 scenarios (10 seeds $\times$ 3 operational templates), with bootstrap 95\% confidence intervals throughout.
+Concretely, we ask: \emph{does sampling several candidate best-responses and keeping the best one change the responding force's GBC score, doctrinal alignment, and wargame win rate relative to generating a single response?} And, separately: \emph{does the benchmark's scenario-framing parameter actually change generated COA content, and if so, by how much?} We report measured answers to both questions over 90 scenarios (30 seeds $\times$ 3 operational templates), with bootstrap 95\% confidence intervals throughout.
 
 The implementation, experiment script, and raw results are available in this repository at \texttt{experiments/coa\_bench\_experiment.py} and \texttt{results/coa-bench/main/}.
 
@@ -58,7 +69,9 @@ The implementation, experiment script, and raw results are available in this rep
 
 \textbf{Strategic and military decision modeling.} Lanchester's combat-attrition equations~\cite{lanchester1916} and Schelling's game-theoretic treatment of strategic conflict~\cite{schelling1960} are foundational, non-learned models of adversarial military interaction; COA-Bench's wargame check is a deliberately simplified, score-linked variant of a Lanchester model, used as a secondary outcome measure rather than a validated combat model. U.S. Army doctrine publication FM 3-0~\cite{fm30} specifies qualitative planning criteria (objective clarity, combined-arms balance, sustainment, risk mitigation, tempo) that COA-Bench's rubric operationalizes heuristically; the rubric is a benchmark feature extractor, not a substitute for doctrine-expert validation.
 
-\textbf{LLM agent and planning evaluation.} ReAct interleaves reasoning and acting in language-model agents~\cite{yao2023react}, and AgentBench evaluates LLM agents end to end across interactive environments rather than on isolated completions~\cite{liu2024agentbench}. COA-Bench's typed action/chain representation, including conditional branches and tool calls, is designed so that the same evaluation pipeline can score both a programmatic sampling policy (used in this paper) and an LLM-backed policy (already implemented in this repository as \texttt{LLMPolicy} but not evaluated here).
+\textbf{LLM agent and planning evaluation.} ReAct interleaves reasoning and acting in language-model agents~\cite{yao2023react}, and AgentBench evaluates LLM agents end to end across interactive environments rather than on isolated completions~\cite{liu2024agentbench}. COA-Bench's typed action/chain representation, including conditional branches and tool calls, is designed so that the same evaluation pipeline can score both a programmatic sampling policy (used in this paper) and an LLM-backed policy (already implemented in this repository as \texttt{LLMPolicy} but not evaluated here due to API connectivity constraints in the offline evaluation environment).
+
+\textbf{COA generation and computational military planning.} Automated course-of-action generation has been studied using knowledge-based planners, simulation-driven evaluation, and agent-based modeling~\cite{sokolowski2010military}. The U.S.\ Military Decision Making Process (MDMP), codified in JP 5-0~\cite{jp50}, defines a seven-step planning cycle in which COA development, wargaming, and comparison are sequential staff functions; COA-Bench operationalizes the comparison and wargaming steps in a lightweight, reproducible form. Cummings~\cite{cummings2017artificial} surveys the longer-term implications of AI for military decision-making, highlighting the challenge of integrating automated systems into human staff processes without eroding human accountability. COA-Bench's design is explicitly non-operational -- all scenarios are synthetic and evaluated offline -- but its evaluation structure is informed by how doctrine describes the COA wargaming and comparison tasks. The companion framework from the same repository, MetaRoute-Bench~\cite{vidra2026metaroute}, applies a similar benchmark-design philosophy to LLM routing policy evaluation; design lessons common to both are discussed in that work's practical-lessons section.
 
 \section{Framework}
 
@@ -86,31 +99,45 @@ Three factory functions generate operational templates -- urban stability operat
 
 \subsection{Protocol}
 
-We generate 30 scenarios: 10 base seeds $\times$ 3 operational templates (urban, maritime, multi-domain), using \texttt{make\_scenario\_corpus}. For each scenario we take the first seed COA as the fixed BLUE COA and generate a RED response two ways: (a) a single random best-response (\texttt{SelfPlayEngine.best\_response}), and (b) a sampled best-response over $n=8$ candidates (\texttt{SampledBestResponsePolicy}). We compute GBC and Nash-gap for both RED variants against the same BLUE COA, doctrinal alignment for BLUE and both RED variants, a multi-COA comparison (\texttt{compare\_coas}) over the 8 sampled candidates, and a Lanchester wargame outcome for BLUE against each RED variant. All confidence intervals are 95\% percentile-bootstrap intervals over the 30 scenarios, computed with \texttt{bootstrap\_ci} (1{,}000 resamples).
+We generate 90 scenarios: 30 base seeds $\times$ 3 operational templates (urban, maritime, multi-domain), using \texttt{make\_scenario\_corpus}. For each scenario we take the first seed COA as the fixed BLUE COA and generate a RED response two ways: (a) a single random best-response (\texttt{SelfPlayEngine.best\_response}), and (b) a sampled best-response over $n=8$ candidates (\texttt{SampledBestResponsePolicy}). We compute GBC and Nash-gap for both RED variants against the same BLUE COA, doctrinal alignment for BLUE and both RED variants, a multi-COA comparison (\texttt{compare\_coas}) over the 8 sampled candidates, and a Lanchester wargame outcome for BLUE against each RED variant. All confidence intervals are 95\% percentile-bootstrap intervals over the 90 scenarios, computed with \texttt{bootstrap\_ci} (1{,}000 resamples).
 
 \subsection{Sampled Best-Response vs.\ Single-Sample Response}
 
 \begin{table}[t]
-\caption{Single-sample vs.\ sampled best-response RED, over 30 scenarios. CI is the 95\% bootstrap interval.}
+\caption{Single-sample vs.\ sampled best-response RED, over 90 scenarios. CI is the 95\% bootstrap interval.}
 \label{tab:main}
 \small
 \begin{tabular}{lrr}
 \toprule
 Metric & Single-sample & Sampled ($n{=}8$) \\
 \midrule
-GBC (blue advantage) & .521 [.512, .529] & .488 [.482, .494] \\
-Nash gap & .194 [.179, .210] & .259 [.248, .269] \\
-Red doctrinal align. & .651 [.601, .699] & .671 [.638, .708] \\
-Blue win rate (wargame) & .967 & .833 \\
+GBC (blue advantage) & .524 [.519, .530] & .490 [.487, .494] \\
+Nash gap & .199 [.189, .209] & .267 [.261, .274] \\
+Red doctrinal align. & .667 [.640, .695] & .678 [.658, .700] \\
+Blue win rate (wargame) & .900 & .811 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:main} shows a consistent picture across four independent metrics: letting RED sample 8 candidate responses and keep its best-MEF one makes RED a measurably tougher opponent. GBC, which is computed from BLUE's MEF advantage over RED, falls from .521 to .488 because RED's MEF score rises under best-of-8 selection. The Nash-gap distance from equilibrium grows (.194 to .259) because RED's payoff increases without a corresponding adjustment to BLUE's fixed COA -- consistent with the gap measuring deviation from a balanced exchange rather than tracking a converged equilibrium. BLUE's win rate in the wargame check falls from .967 to .833, an independent confirmation using a different mechanism (attrition simulation rather than the MEF-based scores directly). Notably, RED's doctrinal alignment is \emph{higher} under best-of-8 selection (.671 vs.\ .651) rather than lower: selecting purely for MEF score in this generator did not come at the cost of doctrinal coherence, at least for this synthetic action space. We treat this as a narrow, generator-specific finding rather than a general claim that MEF-greedy selection preserves doctrinal alignment.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/policy_comparison.pdf}
+  \caption{GBC score, Nash gap, and RED doctrinal alignment for single-sample and sampled ($n{=}8$) RED policies across 90 scenarios. Error bars are 95\% bootstrap CIs.}
+  \label{fig:policy}
+\end{figure}
+
+Table~\ref{tab:main} and Figure~\ref{fig:policy} show a consistent picture across four independent metrics over 90 scenarios: letting RED sample 8 candidate responses and keep its best-MEF one makes RED a measurably tougher opponent. GBC, which is computed from BLUE's MEF advantage over RED, falls from .524 to .490 because RED's MEF score rises under best-of-8 selection. The Nash-gap distance from equilibrium grows (.199 to .267) because RED's payoff increases without a corresponding adjustment to BLUE's fixed COA -- consistent with the gap measuring deviation from a balanced exchange rather than tracking a converged equilibrium. BLUE's win rate in the wargame check falls from .900 to .811, an independent confirmation using a different mechanism (attrition simulation rather than the MEF-based scores directly). Notably, RED's doctrinal alignment is \emph{higher} under best-of-8 selection (.678 vs.\ .667) rather than lower: selecting purely for MEF score in this generator did not come at the cost of doctrinal coherence, at least for this synthetic action space. We treat this as a narrow, generator-specific finding rather than a general claim that MEF-greedy selection preserves doctrinal alignment.
 
 \subsection{Multi-COA Comparison}
 
-Applying \texttt{compare\_coas} to the 8 sampled RED candidates per scenario gives a mean candidate diversity (mean pairwise Jaccard distance of action types) of .734 [.714, .756], a mean MEF spread of .242 [.226, .258], and a mean of 2.20 [1.87, 2.53] Pareto-optimal candidates out of 8 on the (MEF, doctrinal alignment) frontier. These numbers indicate that the 8 sampled candidates are not redundant: roughly a quarter of them are simultaneously non-dominated on effectiveness and doctrinal alignment, which is the situation \texttt{compare\_coas} is designed to surface for a human planner choosing among several proposed COAs rather than a single auto-selected one.
+Applying \texttt{compare\_coas} to the 8 sampled RED candidates per scenario gives a mean candidate diversity (mean pairwise Jaccard distance of action types) of .732 [.720, .745], a mean MEF spread of .254 [.245, .264], and a mean of 2.15 [1.98, 2.33]\footnote{Exact bootstrap bounds: [1.978, 2.333]; rounded to two decimal places in text.} Pareto-optimal candidates out of 8 on the (MEF, doctrinal alignment) frontier. These numbers indicate that the 8 sampled candidates are not redundant: roughly a quarter of them are simultaneously non-dominated on effectiveness and doctrinal alignment, which is the situation \texttt{compare\_coas} is designed to surface for a human planner choosing among several proposed COAs rather than a single auto-selected one. Figure~\ref{fig:pareto} shows the (MEF, doctrinal alignment) scatter for the first 10 scenarios, illustrating the spread within each candidate set and the lack of a single dominant corner.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\linewidth]{figures/pareto_scatter.pdf}
+  \caption{MEF score vs.\ doctrinal alignment for $8 \times 10$ sampled RED candidates (first 10 scenarios). Each point is one candidate COA; there is no single dominant corner, motivating human review of the Pareto-optimal subset.}
+  \label{fig:pareto}
+\end{figure}
 
 \subsection{Scenario Framing: A Methodological Finding}
 
@@ -123,19 +150,32 @@ We report the zero-width confidence interval as-is rather than disguising it: th
 \section{Limitations, Ethics, and Next Steps}
 \label{sec:limitations}
 
-\textbf{Scenario count.} N=30 scenarios (10 seeds $\times$ 3 templates) is small. The confidence intervals reported here quantify bootstrap sampling variation over this fixed, small scenario set; they are not a substitute for a larger and more diverse scenario corpus, which is necessary before any of these findings should be treated as general claims about COA generation policies.
+\textbf{Scenario count.} N=90 scenarios (30 seeds $\times$ 3 templates) provides a reasonable bootstrap basis, but the scenario corpus is generated by three fixed factory functions, not sampled from a distribution of real operational situations. The confidence intervals quantify bootstrap sampling variation over this fixed scenario set; they are not a substitute for a larger and more diverse corpus before any of these findings should be treated as general claims about COA generation policies.
 
 \textbf{Heuristic, unvalidated rubric.} \texttt{fm30\_rubric\_scores} is a keyword- and category-based feature extractor inspired by FM 3-0 planning criteria, not a substitute for scoring by doctrine experts. Several of the saturation effects documented in Section~4.4 (e.g., a single fixed action unconditionally satisfying the risk-mitigation term) show that the rubric can be insensitive to genuinely important plan content. Any claim about "doctrinal alignment" in this paper should be read as "score under this heuristic rubric," not as a validated doctrinal judgment.
 
 \textbf{Framing wiring is a proof of concept, not a validated manipulation.} The framing fix described in Section~4.4 demonstrates that framing \emph{can} be made to matter, using the smallest change that produces a measurable, non-zero, honestly-reported effect. It is not a claim that real scenario framing in military planning has this specific structure or magnitude of effect on plan quality. A follow-up should replace the fixed one-action injection with a richer, sampled, scenario-template-aware framing model.
 
-\textbf{No live policy evaluated.} This paper evaluates the random-sampling policies (\texttt{SelfPlayEngine}, \texttt{SampledBestResponsePolicy}) only. The repository already contains an LLM-backed policy (\texttt{LLMPolicy}); evaluating it under the same protocol, and comparing its candidate diversity, doctrinal alignment, and wargame outcomes against the sampling policies, is natural future work and was out of scope for this draft.
+\textbf{No LLM policy evaluated.} This paper evaluates the random-sampling policies (\texttt{SelfPlayEngine}, \texttt{SampledBestResponsePolicy}) only. The repository already contains an LLM-backed policy (\texttt{LLMPolicy}, using a Claude API backend); the experiment script includes LLM evaluation infrastructure, but all 90 LLM calls returned connection errors in the offline evaluation environment, so the LLM column was omitted from reported results rather than substituted with a random fallback that would not represent LLM behavior. Evaluating \texttt{LLMPolicy} under the same protocol -- comparing its candidate diversity, doctrinal alignment, and wargame outcomes against the sampling baseline -- is the most important missing comparison and a clear next step.
 
 \textbf{Simulated, not operational.} All outcomes in this paper come from the offline \texttt{coageneration} simulator. No live planner, real intelligence data, or operational system was used or affected. This benchmark performs no real-world action and contains no personal, classified, or proprietary data; all scenarios are synthetic.
 
+\section*{Broader Impact and Ethics}
+\label{sec:ethics}
+
+COA-Bench operates in a domain -- military operations planning -- where automated systems carry heightened accountability requirements. We state our design constraints explicitly.
+
+\textbf{No operational use.} Every result in this paper comes from the offline \texttt{coageneration} simulator over synthetic scenarios. No real intelligence data, operational plans, or military systems were involved. The scenarios are fictional constructs and do not describe any real operation, location, or force.
+
+\textbf{Not a planning assistant.} COA-Bench is an evaluation harness for benchmarking AI-generated plans against an unvalidated heuristic rubric. It is not connected to any command system and not intended to support real operational decision-making. The framework's \texttt{compare\_coas} and wargame outputs are designed to present options to a human reviewer, not to auto-select a COA.
+
+\textbf{Dual-use awareness.} Methods for automated adversarial reasoning can, in principle, be adapted for misuse. The action model and scenario space are deliberately kept at an abstracted, synthetic level that does not encode operational specifics or intelligence about real targets. The rubric is a feature extractor for reproducible benchmarking, not a targeting or planning aid.
+
+\textbf{Transparency over optimism.} The paper explicitly documents a measurement gap that was present in the benchmark before this work (framing had no effect on generated content), rather than omitting it. We describe the fix and its current limitations honestly. This norm -- reporting what does not work and why -- is especially important in military AI research, where overstating evaluation quality can have real consequences if methods are prematurely deployed.
+
 \section{Conclusion}
 
-Using only existing \texttt{coageneration} library code, we ran a 30-scenario self-play experiment comparing single-sample and sampled best-response COA generation, and found consistent evidence across four metrics (GBC, Nash gap, doctrinal alignment, and wargame win rate) that sampled best-response produces a measurably stronger and, in this generator, not-less-doctrinally-aligned opponent. We also found and fixed a methodological gap in which the benchmark's scenario-framing parameter had no effect on generated content, replacing a silent no-op with a small, honestly-described, currently-deterministic effect. We view this as a first data point and a working harness for a larger COA-Bench study, not as a finished evaluation of COA generation quality.
+Using only existing \texttt{coageneration} library code, we ran a 90-scenario self-play experiment comparing single-sample and sampled best-response COA generation, and found consistent evidence across four metrics (GBC, Nash gap, doctrinal alignment, and wargame win rate) that sampled best-response produces a measurably stronger and, in this generator, not-less-doctrinally-aligned opponent. We also found and fixed a methodological gap in which the benchmark's scenario-framing parameter had no effect on generated content, replacing a silent no-op with a small, honestly-described, currently-deterministic effect. The most important next step is evaluating the repository's \texttt{LLMPolicy} under the same protocol to compare LLM-generated COAs against the sampling baselines. We view this paper as a working harness and initial data point for that larger study, not as a finished evaluation of COA generation quality.
 
 \section*{Generative AI Disclosure}
 Claude (Anthropic) materially assisted with software implementation, experiment scripting, and manuscript drafting, including diagnosing the scenario-framing no-op described in Section~4.4. The authors are responsible for reviewing the code, verifying the generated results against the released artifacts, checking all citations, and approving the final claims and text.

@@ -24,7 +24,7 @@
   \city{City Required}
   \country{Country Required}}
 \email{contact@example.com}
-\renewcommand{\shortauthors}{Author et al.}
+\renewcommand{\shortauthors}{Vidra et al.}
 
 \begin{document}
 
@@ -230,7 +230,7 @@ Operational acceptance criteria should be specified before testing. Examples inc
 
 \subsection{Practical Lessons}
 
-The study yields four immediate lessons. First, strong static policies are credible production baselines, not strawmen. Second, route composition can improve success, but each additional operation consumes budget and expands the failure surface. Third, verification appears valuable in the simulator and should be isolated in live ablations rather than assumed beneficial. Fourth, complete traces turn routing into an observable engineering problem: teams can inspect unnecessary calls, failure recovery, policy disagreement, and workload regressions instead of debugging from final responses alone.
+The study yields five immediate lessons. First, strong static policies are credible production baselines, not strawmen. Second, route composition can improve success, but each additional operation consumes budget and expands the failure surface. Third, verification appears valuable in the simulator and should be isolated in live ablations rather than assumed beneficial. Fourth, complete traces turn routing into an observable engineering problem: teams can inspect unnecessary calls, failure recovery, policy disagreement, and workload regressions instead of debugging from final responses alone. Fifth, benchmark parameters that are stored as metadata without affecting generated content produce silent measurement no-ops; any benchmark design should verify that each experimental variable is actually wired into the artifact being evaluated, not merely annotated on the outside. This lesson emerged from a parallel offline benchmark (COA-Bench~\cite{kanhai2026coabench}) developed in the same repository, where a scenario-framing parameter had no effect on generated plan content until the generator was explicitly updated to consume it.
 
 \section{Limitations, Ethics, and Next Steps}
 
