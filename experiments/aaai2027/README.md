@@ -1,5 +1,13 @@
 # AAAI 2027 Experiments
 
-This directory will contain training, live execution, generalization,
-calibration, and ablation runners for the learned router. It must not report the
-DAI offline simulator results as AAAI evidence.
+- `run_executable.py`: generate splits, fit and calibrate the raw-text router,
+  run eight held-out policies, and export task-level traces and paired tests.
+- `run_ablations.py`: evaluate character features, calibration, composition,
+  and budget enforcement.
+- `plot_executable.py`: generate the paper tradeoff figure from exported CSVs.
+- `run_sensitivity.py`: evaluate training-set size and route-threshold sensitivity
+  on standard and locked challenge splits.
+
+Run from the repository root after `pip install -e ".[dev]"`. These experiments
+use machine-checked executable outcomes. The earlier DAI seeded simulator is not
+used as AAAI evidence.

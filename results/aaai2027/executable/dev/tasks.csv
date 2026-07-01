@@ -1,0 +1,73 @@
+task_id,split,workload,kind,prompt,expected_answer,required_actions,unavailable_actions,cost_budget
+dev-data_analysis-000,dev,data_analysis,direct_literal,Respond exactly with the supplied value R000.,R000,,,4.5
+dev-data_analysis-001,dev,data_analysis,aggregate,"Using computation, obtain the maximum for 38, 24, 5, 32, 33, 26, 12.",38,execute_code,,4.5
+dev-data_analysis-002,dev,data_analysis,filtered_sum,Separate entries tagged green and total only that subset: green:15; green:21; other:23; green:18; other:18; green:3; other:19; green:5.,62,decompose|execute_code,,4.5
+dev-data_analysis-003,dev,data_analysis,direct_literal,Respond exactly with the supplied value R003.,R003,,,4.5
+dev-data_analysis-004,dev,data_analysis,aggregate,"Using computation, obtain the maximum for 19, 12, 9, 6, 9, 32, 24.",32,execute_code,,4.5
+dev-data_analysis-005,dev,data_analysis,filtered_sum,Separate entries tagged green and total only that subset: green:14; other:9; other:16; other:3; other:7; other:3; other:9; green:24.,38,decompose|execute_code,,4.5
+dev-data_analysis-006,dev,data_analysis,direct_literal,Respond exactly with the supplied value R006.,R006,,,4.5
+dev-data_analysis-007,dev,data_analysis,aggregate,"Using computation, obtain the maximum for 14, 11, 4, 14, 30, 13, 10.",30,execute_code,,4.5
+dev-data_analysis-008,dev,data_analysis,filtered_sum,Separate entries tagged green and total only that subset: other:13; green:9; other:11; green:21; green:21; other:18; green:23; green:15.,89,decompose|execute_code,,4.5
+dev-data_analysis-009,dev,data_analysis,direct_literal,Respond exactly with the supplied value R009.,R009,,,4.5
+dev-data_analysis-010,dev,data_analysis,aggregate,"Using computation, obtain the maximum for 40, 21, 6, 27, 32, 5, 23.",40,execute_code,,4.5
+dev-data_analysis-011,dev,data_analysis,filtered_sum,Separate entries tagged green and total only that subset: green:4; green:5; green:8; green:17; other:16; green:24; other:24; other:9.,58,decompose|execute_code,,4.5
+dev-data_analysis-012,dev,data_analysis,direct_literal,Respond exactly with the supplied value R012.,R012,,,4.5
+dev-data_analysis-013,dev,data_analysis,aggregate,"Using computation, obtain the maximum for 12, 9, 5, 36, 13, 32, 10.",36,execute_code,,4.5
+dev-data_analysis-014,dev,data_analysis,filtered_sum,Separate entries tagged green and total only that subset: green:8; other:4; green:2; green:25; green:4; green:5; other:22; green:20.,64,decompose|execute_code,,4.5
+dev-data_analysis-015,dev,data_analysis,direct_literal,Respond exactly with the supplied value R015.,R015,,,4.5
+dev-data_analysis-016,dev,data_analysis,aggregate,"Using computation, obtain the maximum for 12, 11, 6, 22, 6, 6, 26.",26,execute_code,,4.5
+dev-data_analysis-017,dev,data_analysis,filtered_sum,Separate entries tagged green and total only that subset: other:7; other:4; green:9; other:18; other:23; green:24; green:9; other:3.,42,decompose|execute_code,,4.5
+dev-data_analysis-018,dev,data_analysis,direct_literal,Respond exactly with the supplied value R018.,R018,,,4.5
+dev-data_analysis-019,dev,data_analysis,aggregate,"Using computation, obtain the maximum for 36, 17, 11, 12, 31, 34, 33.",36,execute_code,,4.5
+dev-data_analysis-020,dev,data_analysis,filtered_sum,Separate entries tagged green and total only that subset: other:21; green:11; green:12; green:3; other:20; green:24; other:2; other:22.,50,decompose|execute_code,,4.5
+dev-data_analysis-021,dev,data_analysis,direct_literal,Respond exactly with the supplied value R021.,R021,,,4.5
+dev-data_analysis-022,dev,data_analysis,aggregate,"Using computation, obtain the maximum for 29, 39, 37, 33, 25, 24, 3.",39,execute_code,,4.5
+dev-data_analysis-023,dev,data_analysis,filtered_sum,Separate entries tagged green and total only that subset: green:17; green:18; other:12; green:14; green:15; green:16; green:3; other:4.,83,decompose|execute_code,,4.5
+dev-research-000,dev,research,direct_literal,Respond exactly with the supplied value R000.,R000,,,4.5
+dev-research-001,dev,research,research_fact,Consult the frozen source collection: what is Orion-01's code?,CODE-101,use_tool,,4.5
+dev-research-002,dev,research,research_multihop,"Resolve the intermediate organization, then retrieve the city connected to Lead-02.",Oslo,decompose|use_tool,,4.5
+dev-research-003,dev,research,research_conflict,Retrieve the sources and check recency before reporting Program-03's status.,active,use_tool|verify,,4.5
+dev-research-004,dev,research,research_outage,"With search offline, route this to the specialist: code for Atlas-04.",SP-304,delegate,use_tool,4.5
+dev-research-005,dev,research,direct_literal,Respond exactly with the supplied value R005.,R005,,,4.5
+dev-research-006,dev,research,research_fact,Consult the frozen source collection: what is Orion-06's code?,CODE-106,use_tool,,4.5
+dev-research-007,dev,research,research_multihop,"Resolve the intermediate organization, then retrieve the city connected to Lead-07.",Lima,decompose|use_tool,,4.5
+dev-research-008,dev,research,research_conflict,Retrieve the sources and check recency before reporting Program-08's status.,completed,use_tool|verify,,4.5
+dev-research-009,dev,research,research_outage,"With search offline, route this to the specialist: code for Atlas-09.",SP-309,delegate,use_tool,4.5
+dev-research-010,dev,research,direct_literal,Respond exactly with the supplied value R010.,R010,,,4.5
+dev-research-011,dev,research,research_fact,Consult the frozen source collection: what is Orion-11's code?,CODE-111,use_tool,,4.5
+dev-research-012,dev,research,research_multihop,"Resolve the intermediate organization, then retrieve the city connected to Lead-12.",Montreal,decompose|use_tool,,4.5
+dev-research-013,dev,research,research_conflict,Retrieve the sources and check recency before reporting Program-13's status.,active,use_tool|verify,,4.5
+dev-research-014,dev,research,research_outage,"With search offline, route this to the specialist: code for Atlas-14.",SP-314,delegate,use_tool,4.5
+dev-research-015,dev,research,direct_literal,Respond exactly with the supplied value R015.,R015,,,4.5
+dev-research-016,dev,research,research_fact,Consult the frozen source collection: what is Orion-16's code?,CODE-116,use_tool,,4.5
+dev-research-017,dev,research,research_multihop,"Resolve the intermediate organization, then retrieve the city connected to Lead-17.",Nairobi,decompose|use_tool,,4.5
+dev-research-018,dev,research,research_conflict,Retrieve the sources and check recency before reporting Program-18's status.,completed,use_tool|verify,,4.5
+dev-research-019,dev,research,research_outage,"With search offline, route this to the specialist: code for Atlas-19.",SP-319,delegate,use_tool,4.5
+dev-research-020,dev,research,direct_literal,Respond exactly with the supplied value R020.,R020,,,4.5
+dev-research-021,dev,research,research_fact,Consult the frozen source collection: what is Orion-21's code?,CODE-121,use_tool,,4.5
+dev-research-022,dev,research,research_multihop,"Resolve the intermediate organization, then retrieve the city connected to Lead-22.",Oslo,decompose|use_tool,,4.5
+dev-research-023,dev,research,research_conflict,Retrieve the sources and check recency before reporting Program-23's status.,active,use_tool|verify,,4.5
+dev-document_processing-000,dev,document_processing,direct_literal,Respond exactly with the supplied value R000.,R000,,,4.5
+dev-document_processing-001,dev,document_processing,document_extract,Parse this record and report its Region: Record ID: D-001; Region: V-001; Status: valid,V-001,use_tool,,4.5
+dev-document_processing-002,dev,document_processing,invoice_reconcile,"Reconcile the invoice by parsing its lines, calculating the total, and checking the stated amount: Invoice I-002; Items: 34,22,35,8; Stated total: 97",99,use_tool|execute_code|verify,,4.5
+dev-document_processing-003,dev,document_processing,date_normalize,Parse then send to the locale specialist to normalize the EU date: Case C-003; Date: 13/04/2024; Locale: EU,2024-04-13,use_tool|delegate,,4.5
+dev-document_processing-004,dev,document_processing,crossfield_check,Separate the field requirements before parsing and checking this record: Asset record; Region=SW; Serial=8004; Owner=Team-4,SW-8004,decompose|use_tool|verify,,4.5
+dev-document_processing-005,dev,document_processing,direct_literal,Respond exactly with the supplied value R005.,R005,,,4.5
+dev-document_processing-006,dev,document_processing,document_extract,Parse this record and report its Account: Record ID: D-006; Account: V-006; Status: valid,V-006,use_tool,,4.5
+dev-document_processing-007,dev,document_processing,invoice_reconcile,"Reconcile the invoice by parsing its lines, calculating the total, and checking the stated amount: Invoice I-007; Items: 30,7,4,28; Stated total: 72",69,use_tool|execute_code|verify,,4.5
+dev-document_processing-008,dev,document_processing,date_normalize,Parse then send to the locale specialist to normalize the US date: Case C-008; Date: 09/18/2026; Locale: US,2026-09-18,use_tool|delegate,,4.5
+dev-document_processing-009,dev,document_processing,crossfield_check,Separate the field requirements before parsing and checking this record: Asset record; Region=NE; Serial=8009; Owner=Team-4,NE-8009,decompose|use_tool|verify,,4.5
+dev-document_processing-010,dev,document_processing,direct_literal,Respond exactly with the supplied value R010.,R010,,,4.5
+dev-document_processing-011,dev,document_processing,document_extract,Parse this record and report its Owner: Record ID: D-011; Owner: V-011; Status: valid,V-011,use_tool,,4.5
+dev-document_processing-012,dev,document_processing,invoice_reconcile,"Reconcile the invoice by parsing its lines, calculating the total, and checking the stated amount: Invoice I-012; Items: 7,9,28,31; Stated total: 73",75,use_tool|execute_code|verify,,4.5
+dev-document_processing-013,dev,document_processing,date_normalize,Parse then send to the locale specialist to normalize the EU date: Case C-013; Date: 23/05/2025; Locale: EU,2025-05-23,use_tool|delegate,,4.5
+dev-document_processing-014,dev,document_processing,crossfield_check,Separate the field requirements before parsing and checking this record: Asset record; Region=CE; Serial=8014; Owner=Team-4,CE-8014,decompose|use_tool|verify,,4.5
+dev-document_processing-015,dev,document_processing,direct_literal,Respond exactly with the supplied value R015.,R015,,,4.5
+dev-document_processing-016,dev,document_processing,document_extract,Parse this record and report its Region: Record ID: D-016; Region: V-016; Status: valid,V-016,use_tool,,4.5
+dev-document_processing-017,dev,document_processing,invoice_reconcile,"Reconcile the invoice by parsing its lines, calculating the total, and checking the stated amount: Invoice I-017; Items: 20,4,16,12; Stated total: 55",52,use_tool|execute_code|verify,,4.5
+dev-document_processing-018,dev,document_processing,date_normalize,Parse then send to the locale specialist to normalize the US date: Case C-018; Date: 01/13/2024; Locale: US,2024-01-13,use_tool|delegate,,4.5
+dev-document_processing-019,dev,document_processing,crossfield_check,Separate the field requirements before parsing and checking this record: Asset record; Region=SW; Serial=8019; Owner=Team-4,SW-8019,decompose|use_tool|verify,,4.5
+dev-document_processing-020,dev,document_processing,direct_literal,Respond exactly with the supplied value R020.,R020,,,4.5
+dev-document_processing-021,dev,document_processing,document_extract,Parse this record and report its Account: Record ID: D-021; Account: V-021; Status: valid,V-021,use_tool,,4.5
+dev-document_processing-022,dev,document_processing,invoice_reconcile,"Reconcile the invoice by parsing its lines, calculating the total, and checking the stated amount: Invoice I-022; Items: 30,32,15,30; Stated total: 105",107,use_tool|execute_code|verify,,4.5
+dev-document_processing-023,dev,document_processing,date_normalize,Parse then send to the locale specialist to normalize the EU date: Case C-023; Date: 18/06/2026; Locale: EU,2026-06-18,use_tool|delegate,,4.5

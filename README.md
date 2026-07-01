@@ -17,9 +17,9 @@ meta-decision layer of agentic systems. It compares when policies decompose,
 use tools, execute code, delegate, verify, and answer directly across synthetic
 data-analysis, research, and document-processing workload profiles.
 
-The current results come from an explicit seeded offline execution model. They
-are useful for testing evaluation methodology and policy tradeoffs, but they are
-not production or live-LLM results.
+The AAAI study adds a raw-text, budget-aware router and an executable benchmark
+with exact answer checking. The earlier DAI results remain an explicit seeded
+offline execution model. Neither study claims production or live-LLM results.
 
 ```bash
 python -m venv .venv
@@ -29,6 +29,9 @@ metarouter-benchmark --seeds 30 --output results/dai2026/main
 python experiments/dai2026/run_ablations.py
 python experiments/dai2026/plot_results.py
 python experiments/dai2026/check_paper_results.py
+python experiments/aaai2027/run_executable.py
+python experiments/aaai2027/run_ablations.py
+python experiments/aaai2027/plot_executable.py
 pytest -q
 ```
 

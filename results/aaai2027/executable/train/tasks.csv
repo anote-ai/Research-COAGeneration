@@ -1,0 +1,217 @@
+task_id,split,workload,kind,prompt,expected_answer,required_actions,unavailable_actions,cost_budget
+train-data_analysis-000,train,data_analysis,direct_literal,Return the literal answer R000.,R000,,,4.5
+train-data_analysis-001,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 31, 25, 26, 28, 29, 29, 28.",31,execute_code,,4.5
+train-data_analysis-002,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:3; green:18; green:6; other:17; green:25; green:10; other:19; other:25.",59,decompose|execute_code,,4.5
+train-data_analysis-003,train,data_analysis,direct_literal,Return the literal answer R003.,R003,,,4.5
+train-data_analysis-004,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 11, 17, 5, 26, 34, 40, 34.",40,execute_code,,4.5
+train-data_analysis-005,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from green:22; other:2; other:8; green:3; other:20; green:13; other:19; green:10.",48,decompose|execute_code,,4.5
+train-data_analysis-006,train,data_analysis,direct_literal,Return the literal answer R006.,R006,,,4.5
+train-data_analysis-007,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 8, 7, 17, 40, 7, 36, 38.",40,execute_code,,4.5
+train-data_analysis-008,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:21; other:22; other:11; green:13; green:3; green:16; green:11; other:14.",43,decompose|execute_code,,4.5
+train-data_analysis-009,train,data_analysis,direct_literal,Return the literal answer R009.,R009,,,4.5
+train-data_analysis-010,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 28, 16, 22, 35, 9, 13, 11.",35,execute_code,,4.5
+train-data_analysis-011,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from green:23; green:21; other:6; other:22; other:7; green:21; green:14; green:24.",103,decompose|execute_code,,4.5
+train-data_analysis-012,train,data_analysis,direct_literal,Return the literal answer R012.,R012,,,4.5
+train-data_analysis-013,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 36, 13, 17, 8, 31, 4, 24.",36,execute_code,,4.5
+train-data_analysis-014,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from green:16; other:13; other:13; other:7; green:11; green:11; green:7; green:20.",65,decompose|execute_code,,4.5
+train-data_analysis-015,train,data_analysis,direct_literal,Return the literal answer R015.,R015,,,4.5
+train-data_analysis-016,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 3, 24, 36, 12, 14, 11, 13.",36,execute_code,,4.5
+train-data_analysis-017,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from green:19; green:5; other:22; green:5; other:7; other:18; other:20; green:21.",50,decompose|execute_code,,4.5
+train-data_analysis-018,train,data_analysis,direct_literal,Return the literal answer R018.,R018,,,4.5
+train-data_analysis-019,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 26, 40, 22, 37, 39, 14, 37.",40,execute_code,,4.5
+train-data_analysis-020,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:16; other:22; other:22; other:25; other:2; green:7; other:23; other:13.",7,decompose|execute_code,,4.5
+train-data_analysis-021,train,data_analysis,direct_literal,Return the literal answer R021.,R021,,,4.5
+train-data_analysis-022,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 20, 21, 29, 17, 6, 13, 20.",29,execute_code,,4.5
+train-data_analysis-023,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:24; other:10; other:14; other:6; green:6; other:12; other:21; green:20.",26,decompose|execute_code,,4.5
+train-data_analysis-024,train,data_analysis,direct_literal,Return the literal answer R024.,R024,,,4.5
+train-data_analysis-025,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 5, 18, 23, 22, 9, 38, 34.",38,execute_code,,4.5
+train-data_analysis-026,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from green:17; green:12; green:6; other:12; green:24; green:4; green:20; other:9.",83,decompose|execute_code,,4.5
+train-data_analysis-027,train,data_analysis,direct_literal,Return the literal answer R027.,R027,,,4.5
+train-data_analysis-028,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 22, 26, 11, 8, 33, 18, 14.",33,execute_code,,4.5
+train-data_analysis-029,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:19; green:6; other:13; other:2; other:5; green:3; other:10; other:18.",9,decompose|execute_code,,4.5
+train-data_analysis-030,train,data_analysis,direct_literal,Return the literal answer R030.,R030,,,4.5
+train-data_analysis-031,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 12, 20, 36, 5, 11, 6, 20.",36,execute_code,,4.5
+train-data_analysis-032,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:12; green:7; green:2; green:7; green:24; other:20; other:4; other:7.",40,decompose|execute_code,,4.5
+train-data_analysis-033,train,data_analysis,direct_literal,Return the literal answer R033.,R033,,,4.5
+train-data_analysis-034,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 34, 8, 12, 40, 11, 37, 12.",40,execute_code,,4.5
+train-data_analysis-035,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:21; green:18; green:10; green:20; green:7; green:5; green:19; other:15.",79,decompose|execute_code,,4.5
+train-data_analysis-036,train,data_analysis,direct_literal,Return the literal answer R036.,R036,,,4.5
+train-data_analysis-037,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 31, 30, 11, 3, 23, 16, 21.",31,execute_code,,4.5
+train-data_analysis-038,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from green:13; other:5; green:4; green:3; green:24; green:8; other:12; green:15.",67,decompose|execute_code,,4.5
+train-data_analysis-039,train,data_analysis,direct_literal,Return the literal answer R039.,R039,,,4.5
+train-data_analysis-040,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 39, 26, 31, 6, 15, 37, 10.",39,execute_code,,4.5
+train-data_analysis-041,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from green:2; green:15; green:19; green:22; other:2; other:19; other:18; other:12.",58,decompose|execute_code,,4.5
+train-data_analysis-042,train,data_analysis,direct_literal,Return the literal answer R042.,R042,,,4.5
+train-data_analysis-043,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 29, 7, 29, 4, 6, 4, 28.",29,execute_code,,4.5
+train-data_analysis-044,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from green:18; green:7; other:11; green:15; other:25; other:19; green:12; other:7.",52,decompose|execute_code,,4.5
+train-data_analysis-045,train,data_analysis,direct_literal,Return the literal answer R045.,R045,,,4.5
+train-data_analysis-046,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 16, 25, 31, 40, 4, 28, 20.",40,execute_code,,4.5
+train-data_analysis-047,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:16; other:20; green:5; other:3; green:11; green:4; green:16; other:3.",36,decompose|execute_code,,4.5
+train-data_analysis-048,train,data_analysis,direct_literal,Return the literal answer R048.,R048,,,4.5
+train-data_analysis-049,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 21, 40, 31, 35, 23, 13, 12.",40,execute_code,,4.5
+train-data_analysis-050,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from green:8; green:18; green:11; green:2; other:22; green:3; green:16; green:13.",71,decompose|execute_code,,4.5
+train-data_analysis-051,train,data_analysis,direct_literal,Return the literal answer R051.,R051,,,4.5
+train-data_analysis-052,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 3, 13, 12, 10, 9, 34, 29.",34,execute_code,,4.5
+train-data_analysis-053,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from green:11; other:23; other:16; other:16; green:16; green:11; green:18; green:24.",80,decompose|execute_code,,4.5
+train-data_analysis-054,train,data_analysis,direct_literal,Return the literal answer R054.,R054,,,4.5
+train-data_analysis-055,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 28, 34, 19, 20, 34, 13, 31.",34,execute_code,,4.5
+train-data_analysis-056,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:23; green:22; other:19; green:9; other:24; green:23; green:17; other:12.",71,decompose|execute_code,,4.5
+train-data_analysis-057,train,data_analysis,direct_literal,Return the literal answer R057.,R057,,,4.5
+train-data_analysis-058,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 5, 33, 18, 7, 23, 18, 18.",33,execute_code,,4.5
+train-data_analysis-059,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:15; other:14; other:20; other:19; other:21; other:14; green:23; other:6.",23,decompose|execute_code,,4.5
+train-data_analysis-060,train,data_analysis,direct_literal,Return the literal answer R060.,R060,,,4.5
+train-data_analysis-061,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 15, 12, 21, 32, 27, 15, 40.",40,execute_code,,4.5
+train-data_analysis-062,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:24; other:15; other:15; green:20; other:23; green:16; other:5; other:21.",36,decompose|execute_code,,4.5
+train-data_analysis-063,train,data_analysis,direct_literal,Return the literal answer R063.,R063,,,4.5
+train-data_analysis-064,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 9, 23, 3, 6, 33, 12, 21.",33,execute_code,,4.5
+train-data_analysis-065,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:24; green:11; other:5; other:13; other:3; other:25; other:12; other:25.",11,decompose|execute_code,,4.5
+train-data_analysis-066,train,data_analysis,direct_literal,Return the literal answer R066.,R066,,,4.5
+train-data_analysis-067,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 12, 31, 11, 30, 29, 13, 39.",39,execute_code,,4.5
+train-data_analysis-068,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:2; other:18; other:16; green:8; other:16; green:6; green:19; green:19.",52,decompose|execute_code,,4.5
+train-data_analysis-069,train,data_analysis,direct_literal,Return the literal answer R069.,R069,,,4.5
+train-data_analysis-070,train,data_analysis,aggregate,"Calculate the maximum of these measurements: 17, 31, 12, 28, 21, 21, 34.",34,execute_code,,4.5
+train-data_analysis-071,train,data_analysis,filtered_sum,"Decompose the subgroup: first identify green records, then calculate their sum from other:6; green:5; green:18; green:8; green:14; green:4; other:20; green:24.",73,decompose|execute_code,,4.5
+train-research-000,train,research,direct_literal,Return the literal answer R000.,R000,,,4.5
+train-research-001,train,research,research_fact,Look up the archive and report the code for project Orion-01.,CODE-101,use_tool,,4.5
+train-research-002,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-02?,Oslo,decompose|use_tool,,4.5
+train-research-003,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-03.,active,use_tool|verify,,4.5
+train-research-004,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-04's code.,SP-304,delegate,use_tool,4.5
+train-research-005,train,research,direct_literal,Return the literal answer R005.,R005,,,4.5
+train-research-006,train,research,research_fact,Look up the archive and report the code for project Orion-06.,CODE-106,use_tool,,4.5
+train-research-007,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-07?,Lima,decompose|use_tool,,4.5
+train-research-008,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-08.,completed,use_tool|verify,,4.5
+train-research-009,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-09's code.,SP-309,delegate,use_tool,4.5
+train-research-010,train,research,direct_literal,Return the literal answer R010.,R010,,,4.5
+train-research-011,train,research,research_fact,Look up the archive and report the code for project Orion-11.,CODE-111,use_tool,,4.5
+train-research-012,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-12?,Montreal,decompose|use_tool,,4.5
+train-research-013,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-13.,active,use_tool|verify,,4.5
+train-research-014,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-14's code.,SP-314,delegate,use_tool,4.5
+train-research-015,train,research,direct_literal,Return the literal answer R015.,R015,,,4.5
+train-research-016,train,research,research_fact,Look up the archive and report the code for project Orion-16.,CODE-116,use_tool,,4.5
+train-research-017,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-17?,Nairobi,decompose|use_tool,,4.5
+train-research-018,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-18.,completed,use_tool|verify,,4.5
+train-research-019,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-19's code.,SP-319,delegate,use_tool,4.5
+train-research-020,train,research,direct_literal,Return the literal answer R020.,R020,,,4.5
+train-research-021,train,research,research_fact,Look up the archive and report the code for project Orion-21.,CODE-121,use_tool,,4.5
+train-research-022,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-22?,Oslo,decompose|use_tool,,4.5
+train-research-023,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-23.,active,use_tool|verify,,4.5
+train-research-024,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-24's code.,SP-324,delegate,use_tool,4.5
+train-research-025,train,research,direct_literal,Return the literal answer R025.,R025,,,4.5
+train-research-026,train,research,research_fact,Look up the archive and report the code for project Orion-26.,CODE-126,use_tool,,4.5
+train-research-027,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-27?,Lima,decompose|use_tool,,4.5
+train-research-028,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-28.,completed,use_tool|verify,,4.5
+train-research-029,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-29's code.,SP-329,delegate,use_tool,4.5
+train-research-030,train,research,direct_literal,Return the literal answer R030.,R030,,,4.5
+train-research-031,train,research,research_fact,Look up the archive and report the code for project Orion-31.,CODE-131,use_tool,,4.5
+train-research-032,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-32?,Montreal,decompose|use_tool,,4.5
+train-research-033,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-33.,active,use_tool|verify,,4.5
+train-research-034,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-34's code.,SP-334,delegate,use_tool,4.5
+train-research-035,train,research,direct_literal,Return the literal answer R035.,R035,,,4.5
+train-research-036,train,research,research_fact,Look up the archive and report the code for project Orion-36.,CODE-136,use_tool,,4.5
+train-research-037,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-37?,Nairobi,decompose|use_tool,,4.5
+train-research-038,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-38.,completed,use_tool|verify,,4.5
+train-research-039,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-39's code.,SP-339,delegate,use_tool,4.5
+train-research-040,train,research,direct_literal,Return the literal answer R040.,R040,,,4.5
+train-research-041,train,research,research_fact,Look up the archive and report the code for project Orion-41.,CODE-141,use_tool,,4.5
+train-research-042,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-42?,Oslo,decompose|use_tool,,4.5
+train-research-043,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-43.,active,use_tool|verify,,4.5
+train-research-044,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-44's code.,SP-344,delegate,use_tool,4.5
+train-research-045,train,research,direct_literal,Return the literal answer R045.,R045,,,4.5
+train-research-046,train,research,research_fact,Look up the archive and report the code for project Orion-46.,CODE-146,use_tool,,4.5
+train-research-047,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-47?,Lima,decompose|use_tool,,4.5
+train-research-048,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-48.,completed,use_tool|verify,,4.5
+train-research-049,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-49's code.,SP-349,delegate,use_tool,4.5
+train-research-050,train,research,direct_literal,Return the literal answer R050.,R050,,,4.5
+train-research-051,train,research,research_fact,Look up the archive and report the code for project Orion-51.,CODE-151,use_tool,,4.5
+train-research-052,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-52?,Montreal,decompose|use_tool,,4.5
+train-research-053,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-53.,active,use_tool|verify,,4.5
+train-research-054,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-54's code.,SP-354,delegate,use_tool,4.5
+train-research-055,train,research,direct_literal,Return the literal answer R055.,R055,,,4.5
+train-research-056,train,research,research_fact,Look up the archive and report the code for project Orion-56.,CODE-156,use_tool,,4.5
+train-research-057,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-57?,Nairobi,decompose|use_tool,,4.5
+train-research-058,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-58.,completed,use_tool|verify,,4.5
+train-research-059,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-59's code.,SP-359,delegate,use_tool,4.5
+train-research-060,train,research,direct_literal,Return the literal answer R060.,R060,,,4.5
+train-research-061,train,research,research_fact,Look up the archive and report the code for project Orion-61.,CODE-161,use_tool,,4.5
+train-research-062,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-62?,Oslo,decompose|use_tool,,4.5
+train-research-063,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-63.,active,use_tool|verify,,4.5
+train-research-064,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-64's code.,SP-364,delegate,use_tool,4.5
+train-research-065,train,research,direct_literal,Return the literal answer R065.,R065,,,4.5
+train-research-066,train,research,research_fact,Look up the archive and report the code for project Orion-66.,CODE-166,use_tool,,4.5
+train-research-067,train,research,research_multihop,Decompose and trace the two-step evidence chain in the archive: which city hosts the lab led by Lead-67?,Lima,decompose|use_tool,,4.5
+train-research-068,train,research,research_conflict,Retrieve conflicting archive records and verify the newest status for Program-68.,completed,use_tool|verify,,4.5
+train-research-069,train,research,research_outage,The retrieval tool is unavailable; delegate to the archive specialist for Atlas-69's code.,SP-369,delegate,use_tool,4.5
+train-research-070,train,research,direct_literal,Return the literal answer R070.,R070,,,4.5
+train-research-071,train,research,research_fact,Look up the archive and report the code for project Orion-71.,CODE-171,use_tool,,4.5
+train-document_processing-000,train,document_processing,direct_literal,Return the literal answer R000.,R000,,,4.5
+train-document_processing-001,train,document_processing,document_extract,Use document extraction to return the Region from: Record ID: D-001; Region: V-001; Status: valid,V-001,use_tool,,4.5
+train-document_processing-002,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-002; Items: 13,35,30,9; Stated total: 85",87,use_tool|execute_code|verify,,4.5
+train-document_processing-003,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this EU record: Case C-003; Date: 13/04/2024; Locale: EU,2024-04-13,use_tool|delegate,,4.5
+train-document_processing-004,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=SW; Serial=8004; Owner=Team-4",SW-8004,decompose|use_tool|verify,,4.5
+train-document_processing-005,train,document_processing,direct_literal,Return the literal answer R005.,R005,,,4.5
+train-document_processing-006,train,document_processing,document_extract,Use document extraction to return the Account from: Record ID: D-006; Account: V-006; Status: valid,V-006,use_tool,,4.5
+train-document_processing-007,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-007; Items: 26,14,29,16; Stated total: 88",85,use_tool|execute_code|verify,,4.5
+train-document_processing-008,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this US record: Case C-008; Date: 09/18/2026; Locale: US,2026-09-18,use_tool|delegate,,4.5
+train-document_processing-009,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=NE; Serial=8009; Owner=Team-4",NE-8009,decompose|use_tool|verify,,4.5
+train-document_processing-010,train,document_processing,direct_literal,Return the literal answer R010.,R010,,,4.5
+train-document_processing-011,train,document_processing,document_extract,Use document extraction to return the Owner from: Record ID: D-011; Owner: V-011; Status: valid,V-011,use_tool,,4.5
+train-document_processing-012,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-012; Items: 33,10,35,4; Stated total: 80",82,use_tool|execute_code|verify,,4.5
+train-document_processing-013,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this EU record: Case C-013; Date: 23/05/2025; Locale: EU,2025-05-23,use_tool|delegate,,4.5
+train-document_processing-014,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=CE; Serial=8014; Owner=Team-4",CE-8014,decompose|use_tool|verify,,4.5
+train-document_processing-015,train,document_processing,direct_literal,Return the literal answer R015.,R015,,,4.5
+train-document_processing-016,train,document_processing,document_extract,Use document extraction to return the Region from: Record ID: D-016; Region: V-016; Status: valid,V-016,use_tool,,4.5
+train-document_processing-017,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-017; Items: 5,30,22,4; Stated total: 64",61,use_tool|execute_code|verify,,4.5
+train-document_processing-018,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this US record: Case C-018; Date: 01/13/2024; Locale: US,2024-01-13,use_tool|delegate,,4.5
+train-document_processing-019,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=SW; Serial=8019; Owner=Team-4",SW-8019,decompose|use_tool|verify,,4.5
+train-document_processing-020,train,document_processing,direct_literal,Return the literal answer R020.,R020,,,4.5
+train-document_processing-021,train,document_processing,document_extract,Use document extraction to return the Account from: Record ID: D-021; Account: V-021; Status: valid,V-021,use_tool,,4.5
+train-document_processing-022,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-022; Items: 15,27,20,5; Stated total: 65",67,use_tool|execute_code|verify,,4.5
+train-document_processing-023,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this EU record: Case C-023; Date: 18/06/2026; Locale: EU,2026-06-18,use_tool|delegate,,4.5
+train-document_processing-024,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=NE; Serial=8024; Owner=Team-4",NE-8024,decompose|use_tool|verify,,4.5
+train-document_processing-025,train,document_processing,direct_literal,Return the literal answer R025.,R025,,,4.5
+train-document_processing-026,train,document_processing,document_extract,Use document extraction to return the Owner from: Record ID: D-026; Owner: V-026; Status: valid,V-026,use_tool,,4.5
+train-document_processing-027,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-027; Items: 22,26,16,33; Stated total: 100",97,use_tool|execute_code|verify,,4.5
+train-document_processing-028,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this US record: Case C-028; Date: 02/23/2025; Locale: US,2025-02-23,use_tool|delegate,,4.5
+train-document_processing-029,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=CE; Serial=8029; Owner=Team-4",CE-8029,decompose|use_tool|verify,,4.5
+train-document_processing-030,train,document_processing,direct_literal,Return the literal answer R030.,R030,,,4.5
+train-document_processing-031,train,document_processing,document_extract,Use document extraction to return the Region from: Record ID: D-031; Region: V-031; Status: valid,V-031,use_tool,,4.5
+train-document_processing-032,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-032; Items: 33,34,26,11; Stated total: 102",104,use_tool|execute_code|verify,,4.5
+train-document_processing-033,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this EU record: Case C-033; Date: 13/07/2024; Locale: EU,2024-07-13,use_tool|delegate,,4.5
+train-document_processing-034,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=SW; Serial=8034; Owner=Team-4",SW-8034,decompose|use_tool|verify,,4.5
+train-document_processing-035,train,document_processing,direct_literal,Return the literal answer R035.,R035,,,4.5
+train-document_processing-036,train,document_processing,document_extract,Use document extraction to return the Account from: Record ID: D-036; Account: V-036; Status: valid,V-036,use_tool,,4.5
+train-document_processing-037,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-037; Items: 7,14,5,19; Stated total: 48",45,use_tool|execute_code|verify,,4.5
+train-document_processing-038,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this US record: Case C-038; Date: 03/18/2026; Locale: US,2026-03-18,use_tool|delegate,,4.5
+train-document_processing-039,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=NE; Serial=8039; Owner=Team-4",NE-8039,decompose|use_tool|verify,,4.5
+train-document_processing-040,train,document_processing,direct_literal,Return the literal answer R040.,R040,,,4.5
+train-document_processing-041,train,document_processing,document_extract,Use document extraction to return the Owner from: Record ID: D-041; Owner: V-041; Status: valid,V-041,use_tool,,4.5
+train-document_processing-042,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-042; Items: 27,22,13,9; Stated total: 69",71,use_tool|execute_code|verify,,4.5
+train-document_processing-043,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this EU record: Case C-043; Date: 23/08/2025; Locale: EU,2025-08-23,use_tool|delegate,,4.5
+train-document_processing-044,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=CE; Serial=8044; Owner=Team-4",CE-8044,decompose|use_tool|verify,,4.5
+train-document_processing-045,train,document_processing,direct_literal,Return the literal answer R045.,R045,,,4.5
+train-document_processing-046,train,document_processing,document_extract,Use document extraction to return the Region from: Record ID: D-046; Region: V-046; Status: valid,V-046,use_tool,,4.5
+train-document_processing-047,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-047; Items: 34,10,33,19; Stated total: 99",96,use_tool|execute_code|verify,,4.5
+train-document_processing-048,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this US record: Case C-048; Date: 04/13/2024; Locale: US,2024-04-13,use_tool|delegate,,4.5
+train-document_processing-049,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=SW; Serial=8049; Owner=Team-4",SW-8049,decompose|use_tool|verify,,4.5
+train-document_processing-050,train,document_processing,direct_literal,Return the literal answer R050.,R050,,,4.5
+train-document_processing-051,train,document_processing,document_extract,Use document extraction to return the Account from: Record ID: D-051; Account: V-051; Status: valid,V-051,use_tool,,4.5
+train-document_processing-052,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-052; Items: 20,14,22,23; Stated total: 77",79,use_tool|execute_code|verify,,4.5
+train-document_processing-053,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this EU record: Case C-053; Date: 18/09/2026; Locale: EU,2026-09-18,use_tool|delegate,,4.5
+train-document_processing-054,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=NE; Serial=8054; Owner=Team-4",NE-8054,decompose|use_tool|verify,,4.5
+train-document_processing-055,train,document_processing,direct_literal,Return the literal answer R055.,R055,,,4.5
+train-document_processing-056,train,document_processing,document_extract,Use document extraction to return the Owner from: Record ID: D-056; Owner: V-056; Status: valid,V-056,use_tool,,4.5
+train-document_processing-057,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-057; Items: 11,12,8,24; Stated total: 58",55,use_tool|execute_code|verify,,4.5
+train-document_processing-058,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this US record: Case C-058; Date: 05/23/2025; Locale: US,2025-05-23,use_tool|delegate,,4.5
+train-document_processing-059,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=CE; Serial=8059; Owner=Team-4",CE-8059,decompose|use_tool|verify,,4.5
+train-document_processing-060,train,document_processing,direct_literal,Return the literal answer R060.,R060,,,4.5
+train-document_processing-061,train,document_processing,document_extract,Use document extraction to return the Region from: Record ID: D-061; Region: V-061; Status: valid,V-061,use_tool,,4.5
+train-document_processing-062,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-062; Items: 16,15,10,18; Stated total: 57",59,use_tool|execute_code|verify,,4.5
+train-document_processing-063,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this EU record: Case C-063; Date: 13/01/2024; Locale: EU,2024-01-13,use_tool|delegate,,4.5
+train-document_processing-064,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=SW; Serial=8064; Owner=Team-4",SW-8064,decompose|use_tool|verify,,4.5
+train-document_processing-065,train,document_processing,direct_literal,Return the literal answer R065.,R065,,,4.5
+train-document_processing-066,train,document_processing,document_extract,Use document extraction to return the Account from: Record ID: D-066; Account: V-066; Status: valid,V-066,use_tool,,4.5
+train-document_processing-067,train,document_processing,invoice_reconcile,"Extract, compute, and verify this invoice because the stated total may be wrong: Invoice I-067; Items: 16,9,22,4; Stated total: 54",51,use_tool|execute_code|verify,,4.5
+train-document_processing-068,train,document_processing,date_normalize,Extract the date and delegate locale interpretation for this US record: Case C-068; Date: 06/18/2026; Locale: US,2026-06-18,use_tool|delegate,,4.5
+train-document_processing-069,train,document_processing,crossfield_check,"Decompose the requested fields, extract them, and verify the identifier from: Asset record; Region=NE; Serial=8069; Owner=Team-4",NE-8069,decompose|use_tool|verify,,4.5
+train-document_processing-070,train,document_processing,direct_literal,Return the literal answer R070.,R070,,,4.5
+train-document_processing-071,train,document_processing,document_extract,Use document extraction to return the Owner from: Record ID: D-071; Owner: V-071; Status: valid,V-071,use_tool,,4.5
