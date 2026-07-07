@@ -4,9 +4,6 @@
   \providecommand\BibTeX{{%
     Bib\TeX}}}
 
-\usepackage{graphicx}
-\usepackage{booktabs}
-\citestyle{acmauthoryear}
 
 % Draft manuscript. Submission venue is not yet finalized (candidates: DAI 2026,
 % AAAI 2027 -- see repository README). Replace rights, DOI, ISBN, conference
@@ -124,6 +121,7 @@ Blue win rate (wargame) & .900 & .811 & .911 \\
   \centering
   \includegraphics[width=\linewidth]{figures/policy_comparison.pdf}
   \caption{GBC score, Nash gap, and RED doctrinal alignment for single-sample, sampled ($n{=}8$), and LLM (Claude) RED policies across 90 scenarios. Error bars are 95\% bootstrap CIs.}
+  \Description{Three bar charts side by side. Left: GBC score (blue advantage), where sampled best-of-8 has the lowest value and LLM has the highest. Center: Nash gap, where LLM has the smallest gap and sampled best-of-8 the largest. Right: RED doctrinal alignment, where LLM is substantially higher than both sampling policies.}
   \label{fig:policy}
 \end{figure*}
 
@@ -145,6 +143,7 @@ Applying \texttt{compare\_coas} to the 8 sampled RED candidates per scenario giv
   \centering
   \includegraphics[width=0.85\linewidth]{figures/pareto_scatter.pdf}
   \caption{MEF score vs.\ doctrinal alignment for $8 \times 10$ sampled RED candidates (first 10 scenarios). Each point is one candidate COA; there is no single dominant corner, motivating human review of the Pareto-optimal subset.}
+  \Description{Scatter plot of MEF score on the x-axis versus doctrinal alignment on the y-axis for 80 candidate COAs across 10 scenarios. Points are spread across the space with no single dominant corner, indicating trade-offs between effectiveness and doctrinal coherence.}
   \label{fig:pareto}
 \end{figure}
 
@@ -167,24 +166,17 @@ We report the zero-width confidence interval as-is rather than disguising it: th
 
 \textbf{Single LLM and single prompt evaluated.} The LLM comparison uses one model (\texttt{claude-haiku-4-5-20251001}) and one fixed system prompt. Different models, prompt phrasings, or chain-of-thought scaffolding would likely produce different doctrinal alignment and MEF profiles. The finding that LLM RED scores high on the rubric but low on MEF (Section~4.3) is specific to this model--prompt combination and this simulator's MEF function; it should not be generalized to claim that LLMs cannot find effective COAs under different evaluation setups. Comparing multiple LLMs and prompts, and aligning the MEF function with LLM-legible reward signals, is important future work.
 
-\textbf{Simulated, not operational.} All outcomes in this paper come from the offline \texttt{coageneration} simulator. No live planner, real intelligence data, or operational system was used or affected. This benchmark performs no real-world action and contains no personal, classified, or proprietary data; all scenarios are synthetic.
+\textbf{Simulated, not operational.} All outcomes come from the offline \texttt{coageneration} simulator. No live planner, real intelligence data, or operational system was used or affected. This benchmark performs no real-world action and contains no personal, classified, or proprietary data; all scenarios are synthetic.
 
-\section*{Broader Impact and Ethics}
-\label{sec:ethics}
-
-COA-Bench operates in a domain -- military operations planning -- where automated systems carry heightened accountability requirements. We state our design constraints explicitly.
-
-\textbf{No operational use.} Every result in this paper comes from the offline \texttt{coageneration} simulator over synthetic scenarios. No real intelligence data, operational plans, or military systems were involved. The scenarios are fictional constructs and do not describe any real operation, location, or force.
-
-\textbf{Not a planning assistant.} COA-Bench is an evaluation harness for benchmarking AI-generated plans against an unvalidated heuristic rubric. It is not connected to any command system and not intended to support real operational decision-making. The framework's \texttt{compare\_coas} and wargame outputs are designed to present options to a human reviewer, not to auto-select a COA.
-
-\textbf{Dual-use awareness.} Methods for automated adversarial reasoning can, in principle, be adapted for misuse. The action model and scenario space are deliberately kept at an abstracted, synthetic level that does not encode operational specifics or intelligence about real targets. The rubric is a feature extractor for reproducible benchmarking, not a targeting or planning aid.
-
-\textbf{Transparency over optimism.} The paper explicitly documents a measurement gap that was present in the benchmark before this work (framing had no effect on generated content), rather than omitting it. We describe the fix and its current limitations honestly. This norm -- reporting what does not work and why -- is especially important in military AI research, where overstating evaluation quality can have real consequences if methods are prematurely deployed.
+\textbf{Broader impact and ethics.} COA-Bench operates in a domain -- military operations planning -- where automated systems carry heightened accountability requirements. The scenarios are fictional constructs that do not describe any real operation, location, or force. COA-Bench is an evaluation harness, not a planning assistant: it is not connected to any command system and is not intended to support real operational decision-making. Methods for automated adversarial reasoning can, in principle, be adapted for misuse; the action model and scenario space are deliberately kept at an abstracted, synthetic level that encodes no operational specifics or intelligence about real targets. Finally, this paper explicitly documents the measurement gap we found (framing had no effect on generated content) rather than omitting it -- an especially important norm in military AI research, where overstating evaluation quality can have real consequences if methods are prematurely deployed.
 
 \section{Conclusion}
 
 Using the \texttt{coageneration} library, we ran a 90-scenario self-play experiment comparing three RED policies: single random sampling, best-of-8 sampling, and an LLM policy (Claude Haiku). Sampled best-response is the strongest RED policy by MEF and wargame win rate; LLM RED produces the highest doctrinal alignment (.804) but lower strategic effectiveness than even the single random baseline, revealing a decoupling between the FM 3-0 rubric and the MEF function that is itself informative about what each metric captures. We also found and fixed a methodological gap in which the scenario-framing parameter had no effect on generated COA content. We view this as a working harness for COA policy evaluation -- a reproducible starting point for the next studies: richer scenario corpora, multiple LLM models and prompts, and MEF functions legible to LLM-style optimization.
+
+\begin{acks}
+This work was conducted with organizational support from Anote AI. We thank the Anote AI research and engineering team for research infrastructure, technical feedback, and support in developing the reproducible evaluation artifact. No human participants or proprietary data were used in the reported offline benchmark.
+\end{acks}
 
 \section*{Generative AI Disclosure}
 Claude (Anthropic) materially assisted with software implementation, experiment scripting, and manuscript drafting, including diagnosing the scenario-framing no-op described in Section~4.4. The authors are responsible for reviewing the code, verifying the generated results against the released artifacts, checking all citations, and approving the final claims and text.
