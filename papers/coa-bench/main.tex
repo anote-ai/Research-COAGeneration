@@ -61,7 +61,7 @@ This paper does not introduce a new benchmark from scratch. The \texttt{coagener
 
 Concretely, we ask three questions: (1)~\emph{does sampling several candidate best-responses and keeping the best one change the responding force's GBC score, doctrinal alignment, and wargame win rate relative to generating a single response?} (2)~\emph{Does an LLM-backed COA policy (Claude) produce stronger RED responses than random sampling by any of these metrics?} And (3)~\emph{does the benchmark's scenario-framing parameter actually change generated COA content, and if so, by how much?} We report measured answers to all three questions over 90 scenarios (30 seeds $\times$ 3 operational templates), with bootstrap 95\% confidence intervals throughout.
 
-The implementation, experiment script, and raw results are available in this repository at \texttt{experiments/coa\_bench\_experiment.py} and \texttt{results/coa-bench/main/}.
+The implementation, experiment script, and raw results are available in this repository at \path{experiments/coa_bench_experiment.py} and \path{results/coa-bench/main/}.
 
 \section{Related Work}
 
@@ -200,7 +200,7 @@ python -m pytest tests/ -q
 python experiments/coa_bench_experiment.py
 \end{verbatim}
 
-The experiment script writes three output files to \texttt{results/coa-bench/main/}: \texttt{rows.csv} (one row per scenario with all per-scenario metrics), \texttt{summary.csv} (the bootstrap-CI summary reported in Table~\ref{tab:main} and Sections~4.3--4.5), and \texttt{details.json} (run configuration including the model identifier and whether LLM policy was active). The random stream is keyed by base seed; all reported numbers are reproducible bit-for-bit given the same library version.
+The experiment script writes three output files to \path{results/coa-bench/main/}: \texttt{rows.csv} (one row per scenario with all per-scenario metrics), \texttt{summary.csv} (the bootstrap-CI summary reported in Table~\ref{tab:main} and Sections~4.3--4.5), and \texttt{details.json} (run configuration including the model identifier and whether LLM policy was active). The random stream is keyed by base seed; all reported numbers are reproducible bit-for-bit given the same library version.
 
 To activate the LLM RED policy, set the \texttt{ANTHROPIC\_API\_KEY} environment variable before running the experiment:
 
