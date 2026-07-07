@@ -6,6 +6,7 @@
 
 \usepackage{graphicx}
 \usepackage{booktabs}
+\citestyle{acmauthoryear}
 
 % Draft manuscript. Submission venue is not yet finalized (candidates: DAI 2026,
 % AAAI 2027 -- see repository README). Replace rights, DOI, ISBN, conference
@@ -40,7 +41,7 @@
 \begin{document}
 
 \begin{abstract}
-Military course-of-action (COA) generation is a recurring planning task in which a force must propose, compare, and select among candidate plans under an adversarial response. We present COA-Bench, a small, fully offline, reproducible framework for studying COA generation policies under self-play. The framework represents a COA as a typed, chainable sequence of actions with an associated Mission Effectiveness Function (MEF) score, evaluates pairs of opposing COAs with a game-based comparison (GBC) score and Nash-gap distance, and scores doctrinal coherence with a heuristic FM 3-0-inspired rubric. We compare three RED response policies across 90 synthetic scenarios spanning three operational templates (urban stability, maritime interdiction, multi-domain combat): single random response, sampled best-of-8, and an LLM-backed policy using Claude (\texttt{claude-haiku-4-5-20251001}). Sampled best-response produces measurably stronger RED COAs by MEF score, lowering BLUE's wargame win rate from 0.900 to 0.811. The LLM policy produces the highest doctrinal alignment of any RED policy (0.804, approaching BLUE's 0.847) but the lowest MEF effectiveness -- BLUE wins \emph{more} against LLM RED (0.911) than against random single-sample RED (0.900). This decoupling -- high rubric score, low strategic effectiveness -- reveals that the FM 3-0 doctrinal rubric and the MEF function measure partially distinct properties, which is itself a benchmark diagnostic. We further show that the benchmark's scenario-framing parameter (blue / neutral / adversary), originally stored as scenario metadata only, previously had no effect on generated COA content; we trace this to specific generator and rubric interactions, wire framing into the generated objective text and action mix, and report a measured framing-sensitivity effect, the construction of which we describe explicitly because it is currently deterministic rather than sampled from a richer model. All metrics, scenarios, and policies used here are reused without modification from the existing \texttt{coageneration} library; this paper's only new artifact is the experiment script, the framing wiring, and this writeup. Given the small scenario count (N=30) and an unvalidated heuristic doctrinal rubric, we present these as a methods contribution and a set of preliminary, falsifiable findings rather than evidence about real-world COA quality.
+Military course-of-action (COA) generation is a recurring planning task in which a force must propose, compare, and select among candidate plans under an adversarial response. We present COA-Bench, a small, fully offline, reproducible framework for studying COA generation policies under self-play. The framework represents a COA as a typed, chainable sequence of actions with an associated Mission Effectiveness Function (MEF) score, evaluates pairs of opposing COAs with a game-based comparison (GBC) score and Nash-gap distance, and scores doctrinal coherence with a heuristic FM 3-0-inspired rubric. We compare three RED response policies across 90 synthetic scenarios spanning three operational templates (urban stability, maritime interdiction, multi-domain combat): single random response, sampled best-of-8, and an LLM-backed policy using Claude (\texttt{claude-haiku-4-5-20251001}). Sampled best-response produces measurably stronger RED COAs by MEF score, lowering BLUE's wargame win rate from 0.900 to 0.811. The LLM policy produces the highest doctrinal alignment of any RED policy (0.804, approaching BLUE's 0.847) but the lowest MEF effectiveness -- BLUE wins \emph{more} against LLM RED (0.911) than against random single-sample RED (0.900). This decoupling -- high rubric score, low strategic effectiveness -- reveals that the FM 3-0 doctrinal rubric and the MEF function measure partially distinct properties, which is itself a benchmark diagnostic. We further show that the benchmark's scenario-framing parameter (blue / neutral / adversary), originally stored as scenario metadata only, previously had no effect on generated COA content; we trace this to specific generator and rubric interactions, wire framing into the generated objective text and action mix, and report a measured framing-sensitivity effect, the construction of which we describe explicitly because it is currently deterministic rather than sampled from a richer model. All metrics, scenarios, and policies used here are reused without modification from the existing \texttt{coageneration} library; this paper's only new artifact is the experiment script, the framing wiring, and this writeup. Given the moderate scenario count (N=90) and an unvalidated heuristic doctrinal rubric, we present these as a methods contribution and a set of preliminary, falsifiable findings rather than evidence about real-world COA quality.
 \end{abstract}
 
 \ccsdesc[500]{Computing methodologies~Multi-agent systems}
@@ -69,7 +70,7 @@ The implementation, experiment script, and raw results are available in this rep
 
 \textbf{Strategic and military decision modeling.} Lanchester's combat-attrition equations~\cite{lanchester1916} and Schelling's game-theoretic treatment of strategic conflict~\cite{schelling1960} are foundational, non-learned models of adversarial military interaction; COA-Bench's wargame check is a deliberately simplified, score-linked variant of a Lanchester model, used as a secondary outcome measure rather than a validated combat model. U.S. Army doctrine publication FM 3-0~\cite{fm30} specifies qualitative planning criteria (objective clarity, combined-arms balance, sustainment, risk mitigation, tempo) that COA-Bench's rubric operationalizes heuristically; the rubric is a benchmark feature extractor, not a substitute for doctrine-expert validation.
 
-\textbf{LLM agent and planning evaluation.} ReAct interleaves reasoning and acting in language-model agents~\cite{yao2023react}, and AgentBench evaluates LLM agents end to end across interactive environments rather than on isolated completions~\cite{liu2024agentbench}. COA-Bench's typed action/chain representation, including conditional branches and tool calls, is designed so that the same evaluation pipeline can score both a programmatic sampling policy (used in this paper) and an LLM-backed policy (already implemented in this repository as \texttt{LLMPolicy} but not evaluated here due to API connectivity constraints in the offline evaluation environment).
+\textbf{LLM agent and planning evaluation.} ReAct interleaves reasoning and acting in language-model agents~\cite{yao2023react}, and AgentBench evaluates LLM agents end to end across interactive environments rather than on isolated completions~\cite{liu2024agentbench}. COA-Bench's typed action/chain representation, including conditional branches and tool calls, is designed so that the same evaluation pipeline can score both a programmatic sampling policy and an LLM-backed policy; this paper evaluates all three, comparing a random sampler, a best-of-$N$ sampler, and \texttt{LLMPolicy} (Claude) under the same protocol.
 
 \textbf{COA generation and computational military planning.} Automated course-of-action generation has been studied using knowledge-based planners, simulation-driven evaluation, and agent-based modeling~\cite{sokolowski2010military}. The U.S.\ Military Decision Making Process (MDMP), codified in JP 5-0~\cite{jp50}, defines a seven-step planning cycle in which COA development, wargaming, and comparison are sequential staff functions; COA-Bench operationalizes the comparison and wargaming steps in a lightweight, reproducible form. Cummings~\cite{cummings2017artificial} surveys the longer-term implications of AI for military decision-making, highlighting the challenge of integrating automated systems into human staff processes without eroding human accountability. COA-Bench's design is explicitly non-operational -- all scenarios are synthetic and evaluated offline -- but its evaluation structure is informed by how doctrine describes the COA wargaming and comparison tasks. The companion framework from the same repository, MetaRoute-Bench~\cite{vidra2026metaroute}, applies a similar benchmark-design philosophy to LLM routing policy evaluation; design lessons common to both are discussed in that work's practical-lessons section.
 
@@ -103,7 +104,7 @@ We generate 90 scenarios: 30 base seeds $\times$ 3 operational templates (urban,
 
 \subsection{Sampling Policies: Single-Sample vs.\ Best-of-$N$}
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{RED policy comparison over 90 scenarios. CI is the 95\% bootstrap interval. LLM policy uses Claude (\texttt{claude-haiku-4-5-20251001}).}
 \label{tab:main}
 \small
@@ -117,14 +118,14 @@ Red doctrinal align. & .667 [.640, .695] & .678 [.658, .700] & .804 [.780, .831]
 Blue win rate (wargame) & .900 & .811 & .911 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
-\begin{figure}[t]
+\begin{figure*}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/policy_comparison.pdf}
-  \caption{GBC score, Nash gap, and RED doctrinal alignment for single-sample and sampled ($n{=}8$) RED policies across 90 scenarios. Error bars are 95\% bootstrap CIs.}
+  \caption{GBC score, Nash gap, and RED doctrinal alignment for single-sample, sampled ($n{=}8$), and LLM (Claude) RED policies across 90 scenarios. Error bars are 95\% bootstrap CIs.}
   \label{fig:policy}
-\end{figure}
+\end{figure*}
 
 Table~\ref{tab:main} and Figure~\ref{fig:policy} report all three RED policies. Comparing the two sampling policies: letting RED sample 8 candidate responses and keep its best-MEF one makes RED a measurably tougher opponent. GBC falls from .524 to .490 because RED's MEF score rises under best-of-8 selection. The Nash-gap distance from equilibrium grows (.199 to .267) because RED's payoff increases without a corresponding adjustment to BLUE's fixed COA. BLUE's wargame win rate falls from .900 to .811 -- an independent confirmation via a different mechanism (attrition simulation rather than MEF scores directly). Notably, RED's doctrinal alignment is \emph{higher} under best-of-8 selection (.678 vs.\ .667): selecting for MEF did not cost doctrinal coherence in this synthetic action space.
 
