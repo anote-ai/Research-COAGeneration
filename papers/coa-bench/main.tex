@@ -4,6 +4,8 @@
   \providecommand\BibTeX{{%
     Bib\TeX}}}
 
+\setlength{\emergencystretch}{3em}
+
 
 % Draft manuscript. Submission venue is not yet finalized (candidates: DAI 2026,
 % AAAI 2027 -- see repository README). Replace rights, DOI, ISBN, conference
@@ -162,7 +164,7 @@ We report the zero-width confidence interval as-is rather than disguising it: th
 
 \textbf{Heuristic, unvalidated rubric.} \texttt{fm30\_rubric\_scores} is a keyword- and category-based feature extractor inspired by FM 3-0 planning criteria, not a substitute for scoring by doctrine experts. Several of the saturation effects documented in Section~4.5 (e.g., a single fixed action unconditionally satisfying the risk-mitigation term) show that the rubric can be insensitive to genuinely important plan content. Any claim about "doctrinal alignment" in this paper should be read as "score under this heuristic rubric," not as a validated doctrinal judgment.
 
-\textbf{Framing wiring is a proof of concept, not a validated manipulation.} The framing fix described in Section~4.4 demonstrates that framing \emph{can} be made to matter, using the smallest change that produces a measurable, non-zero, honestly-reported effect. It is not a claim that real scenario framing in military planning has this specific structure or magnitude of effect on plan quality. A follow-up should replace the fixed one-action injection with a richer, sampled, scenario-template-aware framing model.
+\textbf{Framing wiring is a proof of concept, not a validated manipulation.} The framing fix described in Section~4.5 demonstrates that framing \emph{can} be made to matter, using the smallest change that produces a measurable, non-zero, honestly-reported effect. It is not a claim that real scenario framing in military planning has this specific structure or magnitude of effect on plan quality. A follow-up should replace the fixed one-action injection with a richer, sampled, scenario-template-aware framing model.
 
 \textbf{Single LLM and single prompt evaluated.} The LLM comparison uses one model (\texttt{claude-haiku-4-5-20251001}) and one fixed system prompt. Different models, prompt phrasings, or chain-of-thought scaffolding would likely produce different doctrinal alignment and MEF profiles. The finding that LLM RED scores high on the rubric but low on MEF (Section~4.3) is specific to this model--prompt combination and this simulator's MEF function; it should not be generalized to claim that LLMs cannot find effective COAs under different evaluation setups. Comparing multiple LLMs and prompts, and aligning the MEF function with LLM-legible reward signals, is important future work.
 
@@ -179,7 +181,7 @@ This work was conducted with organizational support from Anote AI. We thank the 
 \end{acks}
 
 \section*{Generative AI Disclosure}
-Claude (Anthropic) materially assisted with software implementation, experiment scripting, and manuscript drafting, including diagnosing the scenario-framing no-op described in Section~4.4. The authors are responsible for reviewing the code, verifying the generated results against the released artifacts, checking all citations, and approving the final claims and text.
+Claude (Anthropic) materially assisted with software implementation, experiment scripting, and manuscript drafting, including diagnosing the scenario-framing no-op described in Section~4.5. The authors are responsible for reviewing the code, verifying the generated results against the released artifacts, checking all citations, and approving the final claims and text.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
