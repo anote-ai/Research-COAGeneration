@@ -2,9 +2,240 @@
 
 from __future__ import annotations
 
-from typing import Dict, List
+import random
+from dataclasses import dataclass
+from typing import Callable, Dict, List, Tuple, TypeVar
 
 from .core import ActionCategory, CourseOfAction, GameState
+
+T = TypeVar("T")
+
+
+@dataclass
+class BootstrapResult:
+    """Percentile-bootstrap confidence interval around a scalar metric.
+
+    Attributes:
+        mean: Mean of the bootstrap distribution (not the observed statistic).
+        lower: Lower bound of the confidence interval.
+        upper: Upper bound of the confidence interval.
+        n_boot: Number of bootstrap resamples used.
+        confidence: Confidence level (e.g. 0.95 for a 95% CI).
+    """
+
+    mean: float
+    lower: float
+    upper: float
+    n_boot: int
+    confidence: float
+
+    def __str__(self) -> str:
+        pct = int(self.confidence * 100)
+        return f"{self.mean:.4f} [{pct}% CI: {self.lower:.4f}–{self.upper:.4f}]"
+
+
+def bootstrap_ci(
+    fn: Callable[[List[T]], float],
+    data: List[T],
+    n_boot: int = 1000,
+    confidence: float = 0.95,
+    seed: int = 0,
+) -> BootstrapResult:
+    """Percentile-bootstrap confidence interval for any scalar metric.
+
+    Resamples ``data`` with replacement ``n_boot`` times, applies ``fn`` to
+    each resample, and returns percentile-based CI bounds.
+
+    Args:
+        fn: A function that takes a list (resample of ``data``) and returns a
+            float. Must handle lists of the same element type as ``data``.
+        data: The dataset to resample. Must have at least 1 element.
+        n_boot: Number of bootstrap iterations. 1000 is standard for 95% CIs;
+            use 2000+ for 99% CIs or publication-quality results.
+        confidence: Desired confidence level in (0, 1). Default 0.95.
+        seed: Random seed for reproducibility.
+
+    Returns:
+        A ``BootstrapResult`` with mean, lower, upper, n_boot, confidence.
+
+    Example::
+
+        result = bootstrap_ci(coa_diversity, coas, n_boot=1000)
+        print(result)  # "0.6234 [95% CI: 0.5812–0.6641]"
+    """
+    if not data:
+        raise ValueError("data must not be empty")
+    if not (0 < confidence < 1):
+        raise ValueError("confidence must be in (0, 1)")
+    if n_boot < 1:
+        raise ValueError("n_boot must be >= 1")
+
+    rng = random.Random(seed)
+    n = len(data)
+    stats: List[float] = []
+    for _ in range(n_boot):
+        resample = [data[rng.randint(0, n - 1)] for _ in range(n)]
+        stats.append(fn(resample))
+    stats.sort()
+
+    alpha = 1.0 - confidence
+    lower_idx = max(0, int(alpha / 2 * n_boot))
+    upper_idx = min(n_boot - 1, int((1.0 - alpha / 2) * n_boot))
+    return BootstrapResult(
+        mean=sum(stats) / n_boot,
+        lower=stats[lower_idx],
+        upper=stats[upper_idx],
+        n_boot=n_boot,
+        confidence=confidence,
+    )
+
+
+def bootstrap_ci_doctrinal_alignment(
+    coas: List[CourseOfAction],
+    n_boot: int = 1000,
+    confidence: float = 0.95,
+    seed: int = 0,
+) -> BootstrapResult:
+    """Bootstrap CI for the mean doctrinal alignment score across a COA set."""
+
+    def _mean_da(sample: List[CourseOfAction]) -> float:
+        return sum(doctrinal_alignment_score(c) for c in sample) / len(sample)
+
+    return bootstrap_ci(_mean_da, coas, n_boot=n_boot, confidence=confidence, seed=seed)
+
+
+def bootstrap_ci_gbc(
+    pairs: List[Tuple[CourseOfAction, CourseOfAction]],
+    n_boot: int = 1000,
+    confidence: float = 0.95,
+    seed: int = 0,
+) -> BootstrapResult:
+    """Bootstrap CI for the mean GBC score across (blue, red) COA pairs."""
+
+    def _mean_gbc(sample: List[Tuple[CourseOfAction, CourseOfAction]]) -> float:
+        return sum(gbc_score(b, r) for b, r in sample) / len(sample)
+
+    return bootstrap_ci(_mean_gbc, pairs, n_boot=n_boot, confidence=confidence, seed=seed)
+
+
+def bootstrap_ci_coa_diversity(
+    coas: List[CourseOfAction],
+    n_boot: int = 1000,
+    confidence: float = 0.95,
+    seed: int = 0,
+) -> BootstrapResult:
+    """Bootstrap CI for COA diversity (mean pairwise Jaccard distance)."""
+    return bootstrap_ci(coa_diversity, coas, n_boot=n_boot, confidence=confidence, seed=seed)
+
+
+def bootstrap_ci_nash_gap(
+    payoff_pairs: List[Tuple[float, float]],
+    n_boot: int = 1000,
+    confidence: float = 0.95,
+    seed: int = 0,
+) -> BootstrapResult:
+    """Bootstrap CI for the mean Nash gap across (blue_payoff, red_payoff) pairs."""
+
+    def _mean_gap(sample: List[Tuple[float, float]]) -> float:
+        return sum(nash_gap(b, r) for b, r in sample) / len(sample)
+
+    return bootstrap_ci(_mean_gap, payoff_pairs, n_boot=n_boot, confidence=confidence, seed=seed)
+
+
+@dataclass
+class CandidateScore:
+    """Per-candidate scores within a multi-COA comparison."""
+
+    coa_id: str
+    mef_score: float
+    doctrinal_alignment: float
+    rank: int
+
+
+@dataclass
+class CoaComparison:
+    """Comparative analysis across a set of candidate COAs for one scenario.
+
+    Attributes:
+        candidates: The COAs that were compared, in input order.
+        scores: Per-candidate ``CandidateScore`` entries, ``rank`` 1 = best MEF.
+        best: The candidate with the highest MEF score.
+        diversity: Mean pairwise Jaccard distance of action types (0 = identical).
+        mef_spread: max(mef_score) - min(mef_score) across candidates.
+        pareto_optimal_ids: ``coa_id`` of candidates not dominated by any other
+            on both (mef_score, doctrinal_alignment) simultaneously.
+    """
+
+    candidates: List[CourseOfAction]
+    scores: List[CandidateScore]
+    best: CourseOfAction
+    diversity: float
+    mef_spread: float
+    pareto_optimal_ids: List[str]
+
+
+def compare_coas(candidates: List[CourseOfAction]) -> CoaComparison:
+    """Compare a set of candidate COAs for the same scenario.
+
+    Ranks candidates by MEF score, computes doctrinal alignment for each,
+    measures action-type diversity across the set, and identifies the
+    Pareto-optimal subset on (mef_score, doctrinal_alignment) — candidates
+    not strictly dominated by any other candidate on both dimensions.
+
+    Args:
+        candidates: At least one candidate COA. Typically 3+ for a
+            meaningful comparison (e.g. from
+            ``SampledBestResponsePolicy.generate_candidates``).
+
+    Returns:
+        A ``CoaComparison`` summarising the set.
+    """
+    if not candidates:
+        raise ValueError("candidates must not be empty")
+
+    alignments = [doctrinal_alignment_score(c) for c in candidates]
+    order = sorted(
+        range(len(candidates)), key=lambda i: candidates[i].mef_score, reverse=True
+    )
+    ranks = [0] * len(candidates)
+    for rank, idx in enumerate(order, start=1):
+        ranks[idx] = rank
+
+    scores = [
+        CandidateScore(
+            coa_id=candidates[i].coa_id,
+            mef_score=candidates[i].mef_score,
+            doctrinal_alignment=alignments[i],
+            rank=ranks[i],
+        )
+        for i in range(len(candidates))
+    ]
+
+    pareto_optimal_ids = []
+    for i in range(len(candidates)):
+        dominated = False
+        for j in range(len(candidates)):
+            if i == j:
+                continue
+            mef_ge = candidates[j].mef_score >= candidates[i].mef_score
+            da_ge = alignments[j] >= alignments[i]
+            mef_gt = candidates[j].mef_score > candidates[i].mef_score
+            da_gt = alignments[j] > alignments[i]
+            if mef_ge and da_ge and (mef_gt or da_gt):
+                dominated = True
+                break
+        if not dominated:
+            pareto_optimal_ids.append(candidates[i].coa_id)
+
+    mef_values = [c.mef_score for c in candidates]
+    return CoaComparison(
+        candidates=candidates,
+        scores=scores,
+        best=candidates[order[0]],
+        diversity=coa_diversity(candidates),
+        mef_spread=max(mef_values) - min(mef_values),
+        pareto_optimal_ids=pareto_optimal_ids,
+    )
 
 
 FM30_RUBRIC_WEIGHTS: Dict[str, float] = {

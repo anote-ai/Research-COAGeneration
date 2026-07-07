@@ -10,9 +10,18 @@ from coageneration.data import (
     make_logistics_coa,
 )
 from coageneration.evaluate import (
+    BootstrapResult,
+    CandidateScore,
+    CoaComparison,
     action_diversity_score,
+    bootstrap_ci,
+    bootstrap_ci_coa_diversity,
+    bootstrap_ci_doctrinal_alignment,
+    bootstrap_ci_gbc,
+    bootstrap_ci_nash_gap,
     chain_coverage_score,
     coa_diversity,
+    compare_coas,
     doctrinal_alignment_score,
     episode_summary,
     fm30_rubric_scores,
@@ -24,7 +33,7 @@ from coageneration.evaluate import (
     rubric_inter_rater_agreement,
     tool_utilisation_rate,
 )
-from coageneration.core import Force, SelfPlayEngine
+from coageneration.core import Force, SampledBestResponsePolicy, SelfPlayEngine
 
 
 def test_gbc_score_range() -> None:
@@ -124,6 +133,18 @@ def test_framing_sensitivity_delta() -> None:
     assert delta == pytest.approx(0.25)
 
 
+def test_framing_sensitivity_delta_nonzero_for_urban_case() -> None:
+    from coageneration.data import make_urban_operations_case
+
+    scores = {
+        framing: doctrinal_alignment_score(
+            make_urban_operations_case(seed=10, framing=framing).seed_coas[0]
+        )
+        for framing in ("blue", "neutral", "adversary")
+    }
+    assert framing_sensitivity_delta(scores) > 0.0
+
+
 def test_lanchester_wargame_outcome_shape() -> None:
     state = make_game_state()
     blue = make_logistics_coa(force=Force.BLUE)
@@ -144,3 +165,164 @@ def test_episode_summary_winner() -> None:
 
 
 import pytest  # noqa: E402  (kept at bottom to avoid circular import concerns)
+
+
+# ---------------------------------------------------------------------------
+# bootstrap_ci — core function
+# ---------------------------------------------------------------------------
+
+
+def test_bootstrap_ci_returns_bootstrap_result() -> None:
+    coas = [make_coa(seed=i) for i in range(10)]
+    result = bootstrap_ci(coa_diversity, coas, n_boot=200, seed=0)
+    assert isinstance(result, BootstrapResult)
+
+
+def test_bootstrap_ci_bounds_ordered() -> None:
+    coas = [make_coa(seed=i) for i in range(10)]
+    result = bootstrap_ci(coa_diversity, coas, n_boot=500, seed=1)
+    assert result.lower <= result.mean <= result.upper
+
+
+def test_bootstrap_ci_in_valid_range() -> None:
+    coas = [make_coa(seed=i) for i in range(8)]
+    result = bootstrap_ci(coa_diversity, coas, n_boot=300, seed=2)
+    assert 0.0 <= result.lower
+    assert result.upper <= 1.0
+
+
+def test_bootstrap_ci_reproducible() -> None:
+    coas = [make_coa(seed=i) for i in range(6)]
+    r1 = bootstrap_ci(coa_diversity, coas, n_boot=200, seed=42)
+    r2 = bootstrap_ci(coa_diversity, coas, n_boot=200, seed=42)
+    assert r1.mean == r2.mean
+    assert r1.lower == r2.lower
+    assert r1.upper == r2.upper
+
+
+def test_bootstrap_ci_wider_at_higher_confidence() -> None:
+    coas = [make_coa(seed=i) for i in range(12)]
+    r95 = bootstrap_ci(coa_diversity, coas, n_boot=500, confidence=0.95, seed=5)
+    r80 = bootstrap_ci(coa_diversity, coas, n_boot=500, confidence=0.80, seed=5)
+    assert (r95.upper - r95.lower) >= (r80.upper - r80.lower)
+
+
+def test_bootstrap_ci_empty_data_raises() -> None:
+    with pytest.raises(ValueError, match="empty"):
+        bootstrap_ci(coa_diversity, [], n_boot=100)
+
+
+def test_bootstrap_ci_bad_confidence_raises() -> None:
+    coas = [make_coa(seed=0)]
+    with pytest.raises(ValueError):
+        bootstrap_ci(coa_diversity, coas, confidence=1.5)
+
+
+def test_bootstrap_ci_str_representation() -> None:
+    coas = [make_coa(seed=i) for i in range(6)]
+    result = bootstrap_ci(coa_diversity, coas, n_boot=100, seed=0)
+    s = str(result)
+    assert "95% CI" in s
+    assert "–" in s
+
+
+# ---------------------------------------------------------------------------
+# Convenience wrappers
+# ---------------------------------------------------------------------------
+
+
+def test_bootstrap_ci_doctrinal_alignment_range() -> None:
+    coas = [make_coa(seed=i) for i in range(10)]
+    result = bootstrap_ci_doctrinal_alignment(coas, n_boot=300, seed=0)
+    assert 0.0 <= result.lower <= result.upper <= 1.0
+
+
+def test_bootstrap_ci_gbc_range() -> None:
+    pairs = [(make_coa(force=Force.BLUE, seed=i), make_coa(force=Force.RED, seed=i + 50))
+             for i in range(8)]
+    result = bootstrap_ci_gbc(pairs, n_boot=300, seed=0)
+    assert 0.0 <= result.lower <= result.upper <= 1.0
+
+
+def test_bootstrap_ci_coa_diversity_single_element() -> None:
+    coas = [make_coa(seed=0)]
+    result = bootstrap_ci_coa_diversity(coas, n_boot=100, seed=0)
+    assert result.lower == result.upper == result.mean == 0.0
+
+
+def test_bootstrap_ci_nash_gap_at_equilibrium() -> None:
+    pairs = [(0.6, 0.4)] * 20
+    result = bootstrap_ci_nash_gap(pairs, n_boot=200, seed=0)
+    assert result.mean == pytest.approx(0.0, abs=1e-9)
+    assert result.lower == pytest.approx(0.0, abs=1e-9)
+
+
+# ---------------------------------------------------------------------------
+# compare_coas
+# ---------------------------------------------------------------------------
+
+
+def test_compare_coas_returns_comparison() -> None:
+    coas = [make_coa(seed=i) for i in range(4)]
+    result = compare_coas(coas)
+    assert isinstance(result, CoaComparison)
+    assert len(result.scores) == 4
+    assert all(isinstance(s, CandidateScore) for s in result.scores)
+
+
+def test_compare_coas_empty_raises() -> None:
+    with pytest.raises(ValueError, match="empty"):
+        compare_coas([])
+
+
+def test_compare_coas_single_candidate() -> None:
+    coa = make_coa(seed=0)
+    result = compare_coas([coa])
+    assert result.best.coa_id == coa.coa_id
+    assert result.diversity == 0.0
+    assert result.mef_spread == 0.0
+    assert result.pareto_optimal_ids == [coa.coa_id]
+
+
+def test_compare_coas_best_has_rank_one() -> None:
+    coas = [make_coa(seed=i) for i in range(5)]
+    result = compare_coas(coas)
+    best_score = next(s for s in result.scores if s.coa_id == result.best.coa_id)
+    assert best_score.rank == 1
+    assert result.best.mef_score == max(c.mef_score for c in coas)
+
+
+def test_compare_coas_ranks_are_a_permutation() -> None:
+    coas = [make_coa(seed=i) for i in range(6)]
+    result = compare_coas(coas)
+    ranks = sorted(s.rank for s in result.scores)
+    assert ranks == list(range(1, 7))
+
+
+def test_compare_coas_mef_spread_matches_range() -> None:
+    coas = [make_coa(seed=i) for i in range(5)]
+    result = compare_coas(coas)
+    mef_values = [c.mef_score for c in coas]
+    assert result.mef_spread == pytest.approx(max(mef_values) - min(mef_values))
+
+
+def test_compare_coas_pareto_optimal_includes_best() -> None:
+    coas = [make_coa(seed=i) for i in range(5)]
+    result = compare_coas(coas)
+    assert result.best.coa_id in result.pareto_optimal_ids
+
+
+def test_compare_coas_pareto_optimal_nonempty() -> None:
+    coas = [make_coa(seed=i) for i in range(8)]
+    result = compare_coas(coas)
+    assert 1 <= len(result.pareto_optimal_ids) <= len(coas)
+
+
+def test_compare_coas_from_sampled_policy_candidates() -> None:
+    state = make_game_state(n_blue=3, n_red=3, seed=1)
+    blue_coa = make_coa(force=Force.BLUE, seed=1)
+    policy = SampledBestResponsePolicy(n_samples=5, seed=2)
+    candidates = policy.generate_candidates(state, blue_coa)
+    result = compare_coas(candidates)
+    assert len(result.candidates) == 5
+    assert result.best.force == Force.RED

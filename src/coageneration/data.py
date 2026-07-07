@@ -153,6 +153,60 @@ def make_coa_with_branch(
     )
 
 
+def _framing_objective_suffix(framing: str) -> str:
+    """Framing-specific qualifying language appended to a primary COA objective.
+
+    ``ScenarioProfile.framing`` previously had no effect on generated COA
+    content, so framing-sensitivity ablations were measuring a no-op. This
+    ties framing to the actual objective text (and therefore to the FM 3-0
+    rubric's ``risk_mitigation``/``objective_clarity`` terms) so that "blue"
+    (restraint-emphasizing), "adversary" (force-emphasizing), and "neutral"
+    framings produce genuinely different doctrinal alignment scores.
+    """
+    if framing == "blue":
+        return " while protecting civilians and applying minimum necessary force"
+    if framing == "adversary":
+        return " through decisive and overwhelming force against hostile elements"
+    return " under standing peacetime rules of engagement"
+
+
+_FRAMING_CATEGORY_ORDER = [
+    ActionCategory.INFORMATION,
+    ActionCategory.CYBER,
+    ActionCategory.LOGISTICS,
+    ActionCategory.INTELLIGENCE,
+    ActionCategory.KINETIC,
+]
+
+
+def _apply_framing(coa: CourseOfAction, framing: str) -> CourseOfAction:
+    """Make scenario framing materially change the primary blue COA.
+
+    Beyond the objective-text change above, "blue" (restraint-emphasizing)
+    framing appends an explicit civilian-protection/liaison action in a
+    category the COA doesn't already use, which broadens the FM 3-0
+    ``combined_arms_balance`` rubric term — the one dimension that isn't
+    already saturated at 1.0 by the fixed scenario content. "neutral" and
+    "adversary" framings leave the action set unchanged.
+    """
+    coa.objective = coa.objective + _framing_objective_suffix(framing)
+    if framing == "blue":
+        existing = {action.category for action in coa.actions}
+        for category in _FRAMING_CATEGORY_ORDER:
+            if category not in existing:
+                coa.actions = coa.actions + [
+                    Action(
+                        action_type="civilian_protection_liaison",
+                        category=category,
+                        asset_id="framing-blue-liaison-001",
+                        priority=1,
+                        preconditions=["area_assessed"],
+                    )
+                ]
+                break
+    return coa
+
+
 # ---------------------------------------------------------------------------
 # Domain-specific COA templates
 # ---------------------------------------------------------------------------
@@ -344,12 +398,13 @@ def make_urban_operations_case(seed: int = 10, framing: str = "neutral") -> Scen
     coas = [
         make_coa_with_branch(
             force=Force.BLUE,
-            objective="isolate hostile element while protecting civilians",
+            objective="isolate hostile element",
             seed=seed,
         ),
         make_info_ops_coa(force=Force.BLUE, seed=seed + 1),
         make_logistics_coa(force=Force.BLUE, seed=seed + 2),
     ]
+    coas[0] = _apply_framing(coas[0], framing)
     return ScenarioCase(profile=profile, game_state=state, seed_coas=coas)
 
 
@@ -402,10 +457,11 @@ def make_maritime_operations_case(seed: int = 20, framing: str = "neutral") -> S
         force=Force.BLUE,
         actions=actions,
         chain=build_chain(actions),
-        objective="interdict suspected smuggling vessel with minimum escalation",
+        objective="interdict suspected smuggling vessel",
         mef_score=compute_mef_score(0.72, 0.28, 0.22),
         domain="maritime",
     )
+    coa = _apply_framing(coa, framing)
     profile = ScenarioProfile(
         scenario_id=f"maritime-{seed}",
         terrain_type="maritime",
@@ -438,16 +494,14 @@ def make_multi_domain_operations_case(
         loac_ambiguity="medium",
         historical_reference="synthetic large-scale combat operation",
     )
-    return ScenarioCase(
-        profile=profile,
-        game_state=state,
-        seed_coas=[
-            make_cyber_ops_coa(force=Force.BLUE, seed=seed),
-            make_info_ops_coa(force=Force.BLUE, seed=seed + 1),
-            make_logistics_coa(force=Force.BLUE, seed=seed + 2),
-            make_coa(force=Force.BLUE, n_actions=5, seed=seed + 3),
-        ],
-    )
+    coas = [
+        make_cyber_ops_coa(force=Force.BLUE, seed=seed),
+        make_info_ops_coa(force=Force.BLUE, seed=seed + 1),
+        make_logistics_coa(force=Force.BLUE, seed=seed + 2),
+        make_coa(force=Force.BLUE, n_actions=5, seed=seed + 3),
+    ]
+    coas[0] = _apply_framing(coas[0], framing)
+    return ScenarioCase(profile=profile, game_state=state, seed_coas=coas)
 
 
 def make_scenario_corpus(seed: int = 100) -> List[ScenarioCase]:

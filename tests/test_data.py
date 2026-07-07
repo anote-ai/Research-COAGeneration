@@ -97,3 +97,32 @@ def test_maritime_case_has_maritime_domain() -> None:
 def test_multi_domain_case_has_multiple_seed_coas() -> None:
     case = make_multi_domain_operations_case()
     assert len(case.seed_coas) >= 4
+
+
+# ---------------------------------------------------------------------------
+# Framing must actually perturb the generated primary COA, not just metadata
+# ---------------------------------------------------------------------------
+
+
+def test_urban_case_framing_changes_objective() -> None:
+    objectives = {
+        framing: make_urban_operations_case(seed=10, framing=framing).seed_coas[0].objective
+        for framing in ("blue", "neutral", "adversary")
+    }
+    assert len(set(objectives.values())) == 3
+
+
+def test_maritime_case_framing_changes_objective() -> None:
+    objectives = {
+        framing: make_maritime_operations_case(seed=20, framing=framing).seed_coas[0].objective
+        for framing in ("blue", "neutral", "adversary")
+    }
+    assert len(set(objectives.values())) == 3
+
+
+def test_multi_domain_case_framing_changes_objective() -> None:
+    objectives = {
+        framing: make_multi_domain_operations_case(seed=30, framing=framing).seed_coas[0].objective
+        for framing in ("blue", "neutral", "adversary")
+    }
+    assert len(set(objectives.values())) == 3

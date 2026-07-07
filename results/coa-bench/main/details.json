@@ -1,0 +1,8 @@
+{
+  "n_scenarios": 30,
+  "n_seeds": 10,
+  "n_samples": 8,
+  "blue_win_rate_single": 0.9666666666666667,
+  "blue_win_rate_sampled": 0.8333333333333334,
+  "source": "experiments/coa_bench_experiment.py \u2014 outcomes from the coageneration self-play simulator, not a production deployment or live LLM."
+}
