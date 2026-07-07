@@ -7,6 +7,9 @@
 - `plot_executable.py`: generate the paper tradeoff figure from exported CSVs.
 - `run_sensitivity.py`: evaluate training-set size and route-threshold sensitivity
   on standard and locked challenge splits.
+- `prepare_submission.py`: compile with PDFLaTeX, clear PDF metadata, scan for
+  identity strings, verify page size/count and font embedding, and write the
+  two OpenReview PDFs.
 
 Run from the repository root after `pip install -e ".[dev]"`. These experiments
 use machine-checked executable outcomes. The earlier DAI seeded simulator is not

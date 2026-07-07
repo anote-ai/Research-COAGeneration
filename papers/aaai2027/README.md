@@ -7,18 +7,16 @@ unmodified official examples remain under `author-kit/`.
 
 ## Intended Contribution
 
-A learned, budget-aware meta-routing policy that selects reasoning,
-decomposition, tools, code execution, delegation, and verification from task
-inputs and execution history.
+A learned, budget-aware meta-routing policy that composes decomposition,
+retrieval, code execution, delegation, and verification from raw task text.
 
-## Required Evidence
+## Evidence Included
 
-- Real natural-language tasks with executable outcomes
-- Learned routing without generated operation-need annotations
-- Held-out task templates, tools, and workload families
-- Strong learned, static, direct, ReAct-style, and oracle baselines
-- Actual token cost and wall-clock latency
-- Calibration, statistical tests, generalization, and ablations
+- 504 generated natural-language tasks with executable, machine-checked outcomes
+- Train, development, held-out test, and locked lexical-shift challenge splits
+- Direct, random, keyword, static, fixed-agent, learned one-shot, and oracle baselines
+- Local wall-clock latency and preregistered normalized operation costs
+- Calibration, paired bootstrap intervals, exact sign tests, ablations, and sensitivity sweeps
 - Completed AAAI reproducibility checklist
 
 `author-kit/` contains the official AAAI-27 anonymous and camera-ready templates.
@@ -30,25 +28,28 @@ a cosmetically reformatted archival submission.
 From this directory:
 
 ```bash
-pdflatex main
-bibtex main
-pdflatex main
-pdflatex main
+latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=build main.tex
 ```
 
 The checklist can be compiled separately with:
 
 ```bash
-pdflatex ReproducibilityChecklist
+latexmk -pdf -interaction=nonstopmode -halt-on-error \
+  -outdir=build ReproducibilityChecklist.tex
 ```
+
+Run `python experiments/aaai2027/prepare_submission.py` from the repository root
+to compile, remove PDF metadata, scan for identifying strings, verify page size
+and embedded fonts, and write the OpenReview PDFs.
 
 ## Submission Readiness
 
-The manuscript follows the AAAI-27 anonymous format and reports only measured
-offline results. It is not yet a strong AAAI submission: the present controller
-uses generated operation-need annotations, and evaluation uses a seeded
-simulator rather than executable natural-language tasks. It must not be submitted
-concurrently with a substantially similar archival DAI paper. Before submission,
-add a research-use license, an anonymized code archive, documented parameter
-selection, stronger statistical testing, and preferably learned routing with
-live executable evaluation.
+The submission directory contains:
+
+- `AAAI27_Anonymous.pdf`: seven-page anonymous main paper
+- `AAAI27_ReproducibilityChecklist.pdf`: separate completed checklist
+- `code_data_supplement.zip`: identity-scanned reproducibility package
+
+The manuscript uses executable local components, not live LLM or network tools;
+normalized cost is not API pricing. This is stated throughout the paper. It must
+not be submitted concurrently with a substantially similar archival DAI paper.
