@@ -1,0 +1,130 @@
+{
+  "action_counts": {
+    "full": {
+      "answer": 108,
+      "decompose": 26,
+      "delegate": 14,
+      "execute_code": 31,
+      "use_tool": 77,
+      "verify": 21
+    },
+    "learned_one_shot": {
+      "answer": 108,
+      "delegate": 7,
+      "execute_code": 24,
+      "use_tool": 77
+    },
+    "no_budget": {
+      "answer": 108,
+      "decompose": 26,
+      "delegate": 14,
+      "execute_code": 31,
+      "use_tool": 77,
+      "verify": 21
+    },
+    "no_calibration": {
+      "answer": 108,
+      "decompose": 26,
+      "delegate": 14,
+      "execute_code": 31,
+      "use_tool": 77,
+      "verify": 21
+    },
+    "word_only": {
+      "answer": 108,
+      "decompose": 26,
+      "delegate": 7,
+      "execute_code": 31,
+      "use_tool": 49,
+      "verify": 14
+    }
+  },
+  "calibration": {
+    "decompose": {
+      "brier": 0.08829649763026406,
+      "positive_rate": 0.2361111111111111,
+      "temperature": 0.5
+    },
+    "delegate": {
+      "brier": 4.195260434463358e-05,
+      "positive_rate": 0.125,
+      "temperature": 0.5
+    },
+    "execute_code": {
+      "brier": 0.03437364684130185,
+      "positive_rate": 0.2916666666666667,
+      "temperature": 0.5
+    },
+    "use_tool": {
+      "brier": 0.10239293778671268,
+      "positive_rate": 0.4722222222222222,
+      "temperature": 0.5
+    },
+    "verify": {
+      "brier": 0.022573669727836206,
+      "positive_rate": 0.19444444444444445,
+      "temperature": 0.5
+    }
+  },
+  "configuration": {
+    "cost": "pre-registered normalized operation units, not API dollars",
+    "latency": "local CPU wall-clock milliseconds",
+    "learned_threshold": 0.4,
+    "outcome": "machine-checked executable answer",
+    "policies": [
+      "full",
+      "learned_one_shot",
+      "no_budget",
+      "no_calibration",
+      "word_only"
+    ],
+    "test_tasks": 108
+  },
+  "failure_modes": {
+    "full": {
+      "none": 108
+    },
+    "learned_one_shot": {
+      "incorrect_answer": 47,
+      "none": 61
+    },
+    "no_budget": {
+      "none": 108
+    },
+    "no_calibration": {
+      "none": 108
+    },
+    "word_only": {
+      "incorrect_answer": 7,
+      "no_answer": 7,
+      "none": 94
+    }
+  },
+  "workload_success": {
+    "full": {
+      "data_analysis": 1.0,
+      "document_processing": 1.0,
+      "research": 1.0
+    },
+    "learned_one_shot": {
+      "data_analysis": 0.6666666666666666,
+      "document_processing": 0.4166666666666667,
+      "research": 0.6111111111111112
+    },
+    "no_budget": {
+      "data_analysis": 1.0,
+      "document_processing": 1.0,
+      "research": 1.0
+    },
+    "no_calibration": {
+      "data_analysis": 1.0,
+      "document_processing": 1.0,
+      "research": 1.0
+    },
+    "word_only": {
+      "data_analysis": 1.0,
+      "document_processing": 1.0,
+      "research": 0.6111111111111112
+    }
+  }
+}

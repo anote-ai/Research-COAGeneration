@@ -1,0 +1,182 @@
+{
+  "action_counts": {
+    "direct": {
+      "answer": 108
+    },
+    "fixed_agent": {
+      "answer": 108,
+      "decompose": 108,
+      "delegate": 108,
+      "execute_code": 108,
+      "use_tool": 108,
+      "verify": 108
+    },
+    "keyword": {
+      "answer": 108,
+      "decompose": 14,
+      "delegate": 14,
+      "execute_code": 19,
+      "use_tool": 28,
+      "verify": 21
+    },
+    "learned_budget": {
+      "answer": 108,
+      "decompose": 26,
+      "delegate": 14,
+      "execute_code": 31,
+      "use_tool": 77,
+      "verify": 21
+    },
+    "learned_one_shot": {
+      "answer": 108,
+      "delegate": 7,
+      "execute_code": 24,
+      "use_tool": 77
+    },
+    "oracle": {
+      "answer": 108,
+      "decompose": 26,
+      "delegate": 14,
+      "execute_code": 31,
+      "use_tool": 49,
+      "verify": 21
+    },
+    "random": {
+      "answer": 108,
+      "decompose": 29,
+      "delegate": 36,
+      "execute_code": 29,
+      "use_tool": 34,
+      "verify": 28
+    },
+    "static_workload": {
+      "answer": 108,
+      "decompose": 108,
+      "delegate": 36,
+      "execute_code": 72,
+      "use_tool": 72,
+      "verify": 72
+    }
+  },
+  "calibration": {
+    "decompose": {
+      "brier": 0.08829649763026408,
+      "positive_rate": 0.2361111111111111,
+      "temperature": 0.5
+    },
+    "delegate": {
+      "brier": 4.1952604344633454e-05,
+      "positive_rate": 0.125,
+      "temperature": 0.5
+    },
+    "execute_code": {
+      "brier": 0.03437364684130183,
+      "positive_rate": 0.2916666666666667,
+      "temperature": 0.5
+    },
+    "use_tool": {
+      "brier": 0.10239293778671267,
+      "positive_rate": 0.4722222222222222,
+      "temperature": 0.5
+    },
+    "verify": {
+      "brier": 0.022573669727836202,
+      "positive_rate": 0.19444444444444445,
+      "temperature": 0.5
+    }
+  },
+  "configuration": {
+    "cost": "pre-registered normalized operation units, not API dollars",
+    "latency": "local CPU wall-clock milliseconds",
+    "learned_threshold": 0.4,
+    "outcome": "machine-checked executable answer",
+    "policies": [
+      "direct",
+      "fixed_agent",
+      "keyword",
+      "learned_budget",
+      "learned_one_shot",
+      "oracle",
+      "random",
+      "static_workload"
+    ],
+    "test_tasks": 108
+  },
+  "failure_modes": {
+    "direct": {
+      "no_answer": 80,
+      "none": 28
+    },
+    "fixed_agent": {
+      "none": 101,
+      "use_tool_unavailable": 7
+    },
+    "keyword": {
+      "incorrect_answer": 12,
+      "no_answer": 33,
+      "none": 63
+    },
+    "learned_budget": {
+      "none": 108
+    },
+    "learned_one_shot": {
+      "incorrect_answer": 47,
+      "none": 61
+    },
+    "oracle": {
+      "none": 108
+    },
+    "random": {
+      "incorrect_answer": 10,
+      "no_answer": 53,
+      "none": 44,
+      "use_tool_unavailable": 1
+    },
+    "static_workload": {
+      "none": 101,
+      "use_tool_unavailable": 7
+    }
+  },
+  "workload_success": {
+    "direct": {
+      "data_analysis": 0.3333333333333333,
+      "document_processing": 0.2222222222222222,
+      "research": 0.2222222222222222
+    },
+    "fixed_agent": {
+      "data_analysis": 1.0,
+      "document_processing": 1.0,
+      "research": 0.8055555555555556
+    },
+    "keyword": {
+      "data_analysis": 0.3333333333333333,
+      "document_processing": 1.0,
+      "research": 0.4166666666666667
+    },
+    "learned_budget": {
+      "data_analysis": 1.0,
+      "document_processing": 1.0,
+      "research": 1.0
+    },
+    "learned_one_shot": {
+      "data_analysis": 0.6666666666666666,
+      "document_processing": 0.4166666666666667,
+      "research": 0.6111111111111112
+    },
+    "oracle": {
+      "data_analysis": 1.0,
+      "document_processing": 1.0,
+      "research": 1.0
+    },
+    "random": {
+      "data_analysis": 0.4722222222222222,
+      "document_processing": 0.3888888888888889,
+      "research": 0.3611111111111111
+    },
+    "static_workload": {
+      "data_analysis": 1.0,
+      "document_processing": 1.0,
+      "research": 0.8055555555555556
+    }
+  }
+}
