@@ -1,0 +1,173 @@
+\documentclass[sigconf]{acmart}
+
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+\setcopyright{none}
+\copyrightyear{2026}
+\acmYear{2026}
+\acmConference[DAI '26]{8th International Conference on Distributed Artificial Intelligence}{November 29--December 2, 2026}{Hong Kong}
+\acmBooktitle{8th International Conference on Distributed Artificial Intelligence (DAI '26), November 29--December 2, 2026, Hong Kong}
+% \acmDOI{XX.XXXX/XXXXXXX.XXXXXXX}
+% \acmISBN{978-X-XXXX-XXXX-X/26/11}
+% \acmSubmissionID{DAI26-XXXX}
+
+\title{COA-Bench: An Offline Self-Play Benchmark for Course-of-Action Generation}
+
+% DAI Industry Track is single blind. Replace placeholders before submission.
+\author{Author Names Required}
+\affiliation{%
+  \institution{Organization Required}
+  \city{City Required}
+  \country{Country Required}}
+\email{contact@example.com}
+\renewcommand{\shortauthors}{Author et al.}
+
+\begin{document}
+
+\begin{abstract}
+Course-of-action (COA) generation is a distributed planning problem: a system must propose structured candidate actions, evaluate them against an adversarial response, and surface options that remain tactically coherent under changing conditions. We present COA-Bench, a small offline benchmark and reproducibility artifact for comparing COA generation policies through self-play. Following the BattleCOA terminology, we reserve MEF for Match Effectors and GBC for Generate BattleCOA; the present artifact does not implement either DecisionFunction directly. Instead, it represents COAs as typed action chains with conditional branches, assigns a synthetic COA quality score, compares opposing COAs with a BLUE-vs-RED advantage score and Nash-gap distance, and scores doctrinal coherence with an FM 3-0-inspired heuristic rubric. Across 30 synthetic scenarios spanning urban stability, maritime interdiction, and multi-domain combat templates, a sampled best-response policy that draws eight RED candidates produces a measurably tougher opponent than a single-sample response: BLUE advantage falls from .521 to .488, BLUE wargame win rate falls from .967 to .833, and RED doctrinal-alignment score rises from .651 to .671. We also identify and fix a benchmark-design issue in which scenario framing was stored as metadata but had no effect on generated COA content. COA-Bench is not an operational battle-management system and uses no real, classified, proprietary, or human-subject data. The contribution is an inspectable evaluation harness, preliminary benchmark evidence, and lessons for building auditable agentic planning artifacts.
+\end{abstract}
+
+\ccsdesc[500]{Computing methodologies~Multi-agent systems}
+\ccsdesc[300]{Computing methodologies~Planning and scheduling}
+\ccsdesc[300]{General and reference~Evaluation}
+
+\keywords{course-of-action generation, self-play, benchmark, distributed AI, planning, reproducibility}
+
+\maketitle
+
+\section{Introduction}
+
+Course-of-action development asks a planning system to propose and compare possible actions under adversarial response. In practical settings, the quality of a COA is not a property of the plan alone. It depends on the available force package, the opponent's response, timing and resource constraints, and qualitative planning criteria such as combined-arms balance, sustainment, risk mitigation, and tempo.
+
+This paper presents COA-Bench as an industry-track benchmark report. The artifact is intentionally modest: it is offline, synthetic, deterministic where possible, and designed to expose assumptions rather than hide them behind a large model. It supports the evaluation of COA generation policies as reusable software components, records structured metrics, and makes failures inspectable.
+
+The contribution is not an operational planner. Instead, COA-Bench provides:
+
+\begin{itemize}
+  \item a typed representation of synthetic COAs as action chains, conditional branches, objectives, force assignments, and optional tool calls;
+  \item a self-play protocol comparing single-sample and sampled best-response policies;
+  \item a multi-metric evaluation suite including synthetic quality, BLUE-vs-RED advantage, Nash-gap distance, heuristic doctrinal alignment, candidate diversity, Pareto-frontier analysis, and a stylized wargame check;
+  \item a documented terminology correction separating BattleCOA MEF/GBC DecisionFunctions from legacy internal metric names; and
+  \item a reproducibility package that regenerates the reported results without API keys, live systems, or sensitive data.
+\end{itemize}
+
+The implementation, experiment script, and result artifacts are available at \url{https://github.com/anote-ai/research-coageneration}.
+
+\section{BattleCOA Terminology and Scope}
+
+The BattleCOA Boot Camp material uses MEF to mean Match Effectors: a DecisionFunction that searches for BattleAssets capable of achieving a requested BattleEffect and returns ranked EffectEffectorMatches. It uses GBC to mean Generate BattleCOA: a DecisionFunction that uses those matches as seeds for constructing BattleCOA hypergraphs.
+
+Earlier internal drafts used MEF and GBC as names for scalar metrics. We corrected that terminology. In this paper, the scalar assigned to a generated COA is a \emph{synthetic COA quality score}. The pairwise score comparing BLUE and RED is a \emph{BLUE-vs-RED advantage score}. The codebase preserves legacy fields such as \texttt{mef\_score} and \texttt{gbc\_score} for compatibility, but the manuscript does not present them as BattleCOA definitions.
+
+This distinction is important for an industry venue. COA-Bench is a research harness for reproducible evaluation, not a claim to implement the full Transformational Model for Decision Advantage or any operational battle-management workflow.
+
+\section{Related Work}
+
+\textbf{Self-play and adversarial evaluation.} AlphaZero~\cite{silver2018alphazero}, AlphaStar~\cite{vinyals2019alphastar}, and Pluribus~\cite{brown2019superhuman} show that self-play can discover strong policies in adversarial games. CICERO extends strategic reasoning into a natural-language negotiation setting~\cite{bakhtin2022cicero}. COA-Bench borrows the paired-response structure but does not train a policy; it evaluates simple generation policies in a small synthetic action space.
+
+\textbf{Military decision modeling.} Lanchester's attrition equations~\cite{lanchester1916} and Schelling's account of strategic conflict~\cite{schelling1960} are foundational abstractions for adversarial military interaction. COA-Bench uses a stylized Lanchester-style check only as a secondary diagnostic; it is not a validated combat model. The doctrinal-alignment rubric draws inspiration from FM 3-0 planning criteria~\cite{fm30}, but remains a heuristic feature extractor rather than a doctrine-expert judgment.
+
+\textbf{Agent and planning benchmarks.} ReAct~\cite{yao2023react} and AgentBench~\cite{liu2024agentbench} motivate evaluating agents as systems that interleave planning, action, and feedback. COA-Bench is narrower, but it contributes a structured, reproducible harness for comparing COA generation policies rather than judging isolated text completions.
+
+\section{Benchmark Design}
+
+\subsection{COA Representation}
+
+A COA is represented as a typed object with an objective, force assignment, domain tag, ordered or chained actions, optional conditional branch, and optional tool calls. Actions include a category, target, priority, and supporting metadata. Conditional branches allow the benchmark to represent plan structures such as reconnaissance gating a strike-or-withdraw decision.
+
+Each COA receives a synthetic quality score in $[-1,1]$ combining effectiveness, cost, and risk:
+
+\begin{equation}
+q = w_e e - w_c c - w_r r,
+\end{equation}
+
+with default weights $w_e=.5$, $w_c=.3$, and $w_r=.2$. This score is an internal benchmark metric, not Match Effectors.
+
+\subsection{Pairwise Evaluation}
+
+For paired BLUE and RED COAs, we report a BLUE-vs-RED advantage score:
+
+\begin{equation}
+\mathrm{Advantage} = (q_{\mathrm{blue}} - q_{\mathrm{red}} + 2) / 4.
+\end{equation}
+
+We also report Nash-gap distance after rescaling quality scores to $[0,1]$ payoffs. The gap is a diagnostic for imbalance in the paired exchange, not evidence of convergence to equilibrium.
+
+\subsection{Doctrinal and Wargame Diagnostics}
+
+The heuristic doctrinal rubric scores objective clarity, intelligence preparation, combined-arms balance, sustainment, risk mitigation, and tempo or sequencing. A separate stylized Lanchester-style wargame check scales raw combat power by synthetic quality and doctrinal alignment. Both diagnostics are intentionally transparent and limited.
+
+\section{Evaluation}
+
+\subsection{Protocol}
+
+We generate 30 scenarios from 10 base seeds and three templates: urban stability operations, maritime interdiction, and multi-domain combat. For each scenario, we keep the first BLUE seed COA fixed and generate RED responses in two ways:
+
+\begin{enumerate}
+  \item a single random best response from \texttt{SelfPlayEngine}; and
+  \item a sampled best response that draws $n=8$ candidates and returns the highest-quality one.
+\end{enumerate}
+
+We compute BLUE advantage, Nash gap, doctrinal alignment, candidate diversity, quality-score spread, Pareto-optimal candidate count, and wargame outcome. Confidence intervals are 95\% percentile bootstrap intervals over the 30 scenarios.
+
+\begin{table}[t]
+\caption{Single-sample vs. sampled best-response RED over 30 scenarios.}
+\label{tab:main}
+\small
+\begin{tabular}{lrr}
+\toprule
+Metric & Single & Sampled ($n=8$) \\
+\midrule
+BLUE advantage & .521 [.512, .529] & .488 [.482, .494] \\
+Nash gap & .194 [.179, .210] & .259 [.248, .269] \\
+RED doctrinal alignment & .651 [.601, .699] & .671 [.638, .708] \\
+BLUE win rate & .967 & .833 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Results}
+
+Table~\ref{tab:main} shows that sampled best-response makes RED a tougher opponent. BLUE advantage falls from .521 to .488 because RED's quality score increases under best-of-eight selection. The stylized wargame check points in the same direction: BLUE win rate falls from .967 to .833. RED doctrinal alignment increases from .651 to .671, indicating that in this generator, selecting the highest-quality candidate did not reduce the heuristic doctrinal score.
+
+The sampled candidate set is also useful before selection. Mean candidate diversity is .734, mean quality-score spread is .242, and the mean number of Pareto-optimal candidates is 2.20 out of 8. This suggests that multi-COA comparison can surface meaningfully different options rather than merely redundant samples.
+
+\subsection{Benchmark-Design Finding}
+
+During development, we found that the scenario-framing parameter was a silent no-op. It was stored as metadata but did not change objective text or action content. A naive framing-sensitivity test therefore returned exactly zero change. We patched the generator so framing affects the objective and, under a BLUE-favorable framing, can add an action category that changes the combined-arms-balance term. The resulting framing-sensitivity delta is .045 with a zero-width interval because the current manipulation is deterministic. We report this directly as a benchmark-design finding rather than treating it as a realistic estimate of framing effects.
+
+\section{Industry Lessons}
+
+First, benchmark terminology must be controlled. Reusing MEF and GBC for internal metrics created a misleading connection to BattleCOA DecisionFunctions. The correction now distinguishes formal decision functions from synthetic evaluation scores.
+
+Second, adversarial sampling changes conclusions. A COA that looks strong against one response may look weaker when the opponent samples several plausible responses.
+
+Third, multi-COA output is more useful than a single auto-selected plan when the candidate set contains diverse, non-dominated options.
+
+Fourth, reproducibility artifacts help catch evaluation bugs. The framing no-op was visible because the pipeline exposed scenario metadata, generated content, and metric outputs separately.
+
+\section{Limitations and Ethics}
+
+COA-Bench is synthetic and offline. It uses no real planner, real intelligence data, classified data, proprietary data, or human-subject data. The doctrinal rubric is heuristic and unvalidated. The wargame check is stylized and should not be interpreted as operational evidence. The current evaluated policies are simple random-sampling policies; the repository contains an LLM-backed policy, but it is not evaluated in this paper.
+
+Because COA generation concerns high-impact defense contexts, any future live evaluation would require strict data governance, human review, security controls, expert validation, and clear limits on autonomous action. The current artifact performs no external action and is intended only for research on evaluation methodology.
+
+\section{Conclusion}
+
+COA-Bench provides a small, inspectable benchmark for evaluating course-of-action generation policies under adversarial self-play. It shows that sampled best-response produces a tougher synthetic opponent, that candidate sets contain meaningful diversity, and that transparent artifacts can expose benchmark-design failures such as no-op scenario framing. The result is a preliminary but useful foundation for stronger BattleCOA-oriented benchmarks.
+
+\begin{acks}
+Funding sources, organizational support, and individual acknowledgments should be added by the authors before submission. No human participants, proprietary data, classified data, or operational systems were used in the reported offline benchmark.
+\end{acks}
+
+\section*{Generative AI Disclosure}
+Generative AI tools materially assisted with software implementation, experiment scripting, terminology review, and manuscript drafting. The authors are responsible for reviewing the code, verifying the generated results against the released artifacts, checking all citations, and approving the final claims and text.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}
+
