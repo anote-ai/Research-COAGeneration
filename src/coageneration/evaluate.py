@@ -110,7 +110,7 @@ def bootstrap_ci_gbc(
     confidence: float = 0.95,
     seed: int = 0,
 ) -> BootstrapResult:
-    """Bootstrap CI for the mean GBC score across (blue, red) COA pairs."""
+    """Bootstrap CI for the legacy-named BLUE advantage score."""
 
     def _mean_gbc(sample: List[Tuple[CourseOfAction, CourseOfAction]]) -> float:
         return sum(gbc_score(b, r) for b, r in sample) / len(sample)
@@ -158,12 +158,13 @@ class CoaComparison:
 
     Attributes:
         candidates: The COAs that were compared, in input order.
-        scores: Per-candidate ``CandidateScore`` entries, ``rank`` 1 = best MEF.
-        best: The candidate with the highest MEF score.
+        scores: Per-candidate ``CandidateScore`` entries, ``rank`` 1 = best
+            synthetic quality score.
+        best: The candidate with the highest synthetic quality score.
         diversity: Mean pairwise Jaccard distance of action types (0 = identical).
-        mef_spread: max(mef_score) - min(mef_score) across candidates.
+        mef_spread: legacy field name for the synthetic quality-score spread.
         pareto_optimal_ids: ``coa_id`` of candidates not dominated by any other
-            on both (mef_score, doctrinal_alignment) simultaneously.
+            on both (synthetic quality score, doctrinal_alignment) simultaneously.
     """
 
     candidates: List[CourseOfAction]
@@ -177,10 +178,11 @@ class CoaComparison:
 def compare_coas(candidates: List[CourseOfAction]) -> CoaComparison:
     """Compare a set of candidate COAs for the same scenario.
 
-    Ranks candidates by MEF score, computes doctrinal alignment for each,
-    measures action-type diversity across the set, and identifies the
-    Pareto-optimal subset on (mef_score, doctrinal_alignment) — candidates
-    not strictly dominated by any other candidate on both dimensions.
+    Ranks candidates by the legacy-named ``mef_score`` synthetic quality score,
+    computes doctrinal alignment for each, measures action-type diversity across
+    the set, and identifies the Pareto-optimal subset on
+    (quality score, doctrinal alignment) -- candidates not strictly dominated
+    by any other candidate on both dimensions.
 
     Args:
         candidates: At least one candidate COA. Typically 3+ for a
@@ -248,10 +250,19 @@ FM30_RUBRIC_WEIGHTS: Dict[str, float] = {
 }
 
 
-def gbc_score(blue_coa: CourseOfAction, red_coa: CourseOfAction) -> float:
-    """Game-based comparison score in [0, 1]."""
+def advantage_score(blue_coa: CourseOfAction, red_coa: CourseOfAction) -> float:
+    """Internal BLUE-vs-RED advantage score in [0, 1].
+
+    This is not Generate BattleCOA (GBC) from the BattleCOA terminology; it is a
+    synthetic metric derived from the two legacy-named ``mef_score`` fields.
+    """
     raw = blue_coa.mef_score - red_coa.mef_score  # range [-2, 2]
     return (raw + 2.0) / 4.0  # normalise to [0, 1]
+
+
+def gbc_score(blue_coa: CourseOfAction, red_coa: CourseOfAction) -> float:
+    """Deprecated compatibility wrapper for :func:`advantage_score`."""
+    return advantage_score(blue_coa, red_coa)
 
 
 def nash_gap(blue_payoff: float, red_payoff: float) -> float:
@@ -262,7 +273,7 @@ def nash_gap(blue_payoff: float, red_payoff: float) -> float:
 def robustness_score(
     coa: CourseOfAction, adversarial_responses: List[CourseOfAction]
 ) -> float:
-    """Minimum MEF score across all adversarial responses."""
+    """Minimum legacy-named quality score across adversarial responses."""
     if not adversarial_responses:
         return coa.mef_score
     return min(r.mef_score for r in adversarial_responses)

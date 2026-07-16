@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Demo: 5-round self-play episode + GBC scores.
+"""Demo: 5-round self-play episode + internal advantage scores.
 
 Run with random policy (default):
     python scripts/run_demo.py
@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from coageneration.core import Force, SelfPlayEngine
 from coageneration.data import make_coa, make_game_state
-from coageneration.evaluate import episode_summary, gbc_score
+from coageneration.evaluate import advantage_score, episode_summary
 
 try:
     from rich.console import Console
@@ -69,21 +69,21 @@ def main() -> None:
 
     blue_coa = make_coa(force=Force.BLUE, n_actions=3, seed=42)
     red_coa = make_coa(force=Force.RED, n_actions=3, seed=99)
-    gbc = gbc_score(blue_coa, red_coa)
+    gbc = advantage_score(blue_coa, red_coa)
 
     if HAS_RICH:
         console = Console()
         console.print("\n[bold]Episode Summary[/bold]")
         for k, v in summary.items():
             console.print(f"  {k}: {v}")
-        console.print(f"\n[bold]GBC Score (BLUE vs RED):[/bold] {gbc:.4f}")
-        console.print(f"BLUE MEF: {blue_coa.mef_score:.4f}")
-        console.print(f"RED MEF:  {red_coa.mef_score:.4f}")
+        console.print(f"\n[bold]Advantage Score (BLUE vs RED):[/bold] {gbc:.4f}")
+        console.print(f"BLUE quality: {blue_coa.mef_score:.4f}")
+        console.print(f"RED quality:  {red_coa.mef_score:.4f}")
     else:
         print("\nEpisode Summary:", summary)
-        print(f"GBC Score: {gbc:.4f}")
-        print(f"BLUE MEF: {blue_coa.mef_score:.4f}")
-        print(f"RED MEF:  {red_coa.mef_score:.4f}")
+        print(f"Advantage Score: {gbc:.4f}")
+        print(f"BLUE quality: {blue_coa.mef_score:.4f}")
+        print(f"RED quality:  {red_coa.mef_score:.4f}")
 
 
 if __name__ == "__main__":

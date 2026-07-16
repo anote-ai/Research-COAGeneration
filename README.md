@@ -39,20 +39,37 @@ Venue-specific manuscripts are under `papers/`, experiments under `experiments/`
 benchmark definitions under `benchmarks/`, and generated artifacts under `results/`.
 The shared implementation remains under `src/metarouter/`.
 
-## MEF + GBC Problem Framing
+## BattleCOA Terminology
 
-A **Course of Action (COA)** is scored by the **Mission Effectiveness Function (MEF)**:
+The BattleCOA Boot Camp material uses:
+
+- **MEF** = **Match Effectors**, a DecisionFunction that matches desired
+  BattleEffects to candidate BattleAssets and returns ranked
+  EffectEffectorMatches.
+- **GBC** = **Generate BattleCOA**, a DecisionFunction that builds BattleCOAs
+  from one or more EffectEffectorMatches and supporting BattleEvents.
+
+This repository still contains legacy code fields named `mef_score` and
+`gbc_score`. In the current implementation these are not the Boot Camp MEF or
+GBC definitions. They are synthetic evaluation metrics:
+
+- `mef_score`: an internal scalar **COA quality score** combining effectiveness,
+  cost, and risk.
+- `gbc_score`: an internal **BLUE-vs-RED advantage score** derived from the
+  two COA quality scores.
+
+A **Course of Action (COA)** is assigned an internal quality score:
 
 ```
-MEF(e, c, r) = w_e * effectiveness - w_c * cost - w_r * risk
+quality(e, c, r) = w_e * effectiveness - w_c * cost - w_r * risk
 ```
 
 where `w_e=0.5, w_c=0.3, w_r=0.2` by default, clamped to `[-1, 1]`.
 
-The **Game-Based Comparison (GBC)** score compares BLUE and RED COAs:
+The internal BLUE-vs-RED advantage score is:
 
 ```
-GBC(blue, red) = (blue.mef - red.mef + 2) / 4  ∈ [0, 1]
+advantage(blue, red) = (blue.quality - red.quality + 2) / 4  ∈ [0, 1]
 ```
 
 ## Game-Theoretic Formulation
@@ -60,7 +77,7 @@ GBC(blue, red) = (blue.mef - red.mef + 2) / 4  ∈ [0, 1]
 The problem is modelled as a two-player zero-sum game:
 - **State**: `GameState` — lists of BLUE/RED assets with capability scores
 - **Action**: `CourseOfAction` — ordered list of tactical actions
-- **Payoff**: MEF score (BLUE maximises, RED minimises)
+- **Payoff**: internal COA quality score (BLUE maximises, RED minimises)
 - **Equilibrium**: Nash gap = `|blue_payoff + red_payoff - 1|` (0 at equilibrium)
 
 ## Self-Play Algorithm

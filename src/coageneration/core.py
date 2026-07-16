@@ -150,7 +150,12 @@ def compute_mef_score(
     w_c: float = 0.3,
     w_r: float = 0.2,
 ) -> float:
-    """Weighted MEF score clamped to [-1, 1]."""
+    """Legacy-named internal COA quality score clamped to [-1, 1].
+
+    In the BattleCOA source terminology, MEF means Match Effectors. This helper
+    predates that correction and should be interpreted as a synthetic quality
+    metric, not the MEF DecisionFunction.
+    """
     raw = w_e * effectiveness - w_c * cost - w_r * risk
     return max(-1.0, min(1.0, raw))
 
@@ -235,7 +240,7 @@ class Policy:
 
 
 class SampledBestResponsePolicy(Policy):
-    """Sample ``n_samples`` random COAs and return the one with the highest MEF.
+    """Sample ``n_samples`` random COAs and return the highest quality one.
 
     This is a substantial improvement over single-sample random play: by
     evaluating multiple candidates and selecting the best, the responding

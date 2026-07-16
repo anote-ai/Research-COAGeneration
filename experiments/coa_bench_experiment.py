@@ -19,11 +19,11 @@ from statistics import mean
 from coageneration import (
     SampledBestResponsePolicy,
     SelfPlayEngine,
+    advantage_score,
     bootstrap_ci,
     compare_coas,
     doctrinal_alignment_score,
     framing_sensitivity_delta,
-    gbc_score,
     lanchester_wargame_outcome,
     nash_gap,
 )
@@ -39,7 +39,7 @@ N_SAMPLES = 8  # candidates per SampledBestResponsePolicy call
 
 
 def to_payoff(mef_score: float) -> float:
-    """Rescale a [-1, 1] MEF score to a [0, 1] payoff for nash_gap."""
+    """Rescale a legacy-named [-1, 1] quality score to a [0, 1] payoff."""
     return (mef_score + 1.0) / 2.0
 
 
@@ -64,8 +64,8 @@ def main() -> None:
             rows.append(
                 {
                     "scenario_id": case.profile.scenario_id,
-                    "gbc_single": gbc_score(blue_coa, red_single),
-                    "gbc_sampled": gbc_score(blue_coa, red_sampled),
+                    "gbc_single": advantage_score(blue_coa, red_single),
+                    "gbc_sampled": advantage_score(blue_coa, red_sampled),
                     "nash_gap_single": nash_gap(
                         to_payoff(blue_coa.mef_score), to_payoff(red_single.mef_score)
                     ),
@@ -92,19 +92,19 @@ def main() -> None:
           f"({N_SEEDS} seeds x 3 templates), {N_SAMPLES} candidates/sample\n")
 
     print("== Best-response comparison: single random sample vs. sampled-best-response ==")
-    print(f"GBC (single):    {boot('gbc_single')}")
-    print(f"GBC (sampled):   {boot('gbc_sampled')}")
+    print(f"Advantage score (single):    {boot('gbc_single')}")
+    print(f"Advantage score (sampled):   {boot('gbc_sampled')}")
     print(f"Nash gap (single):  {boot('nash_gap_single')}")
     print(f"Nash gap (sampled): {boot('nash_gap_sampled')}")
 
-    print("\n== Doctrinal alignment: does MEF-greedy selection cost doctrinal coherence? ==")
+    print("\n== Doctrinal alignment: does quality-greedy selection cost doctrinal coherence? ==")
     print(f"Blue (fixed):              {boot('blue_doctrinal_alignment')}")
     print(f"Red, single-sample:        {boot('red_doctrinal_alignment_single')}")
     print(f"Red, sampled-best-response: {boot('red_doctrinal_alignment_sampled')}")
 
     print("\n== Multi-COA comparison (compare_coas over the 8 sampled candidates) ==")
     print(f"Candidate diversity:    {boot('candidate_diversity')}")
-    print(f"Candidate MEF spread:   {boot('candidate_mef_spread')}")
+    print(f"Candidate quality spread:   {boot('candidate_mef_spread')}")
     print(f"Pareto-optimal count:   {boot('n_pareto_optimal')}")
 
     blue_win_rate_single = mean(r["blue_wins_single"] for r in rows)
