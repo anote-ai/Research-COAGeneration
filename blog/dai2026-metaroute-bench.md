@@ -1,7 +1,7 @@
 ---
 title: "MetaRoute-Bench: Measuring the Decisions Around Agentic AI"
 venue: "DAI 2026 Industry Track"
-status: "Draft"
+status: "Completed"
 date: "2026-07-07"
 ---
 
