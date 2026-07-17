@@ -13,7 +13,13 @@ from coageneration.evaluate import (
     BootstrapResult,
     CandidateScore,
     CoaComparison,
+    CouncilDiagnostics,
+    SelectionTradeoff,
     action_diversity_score,
+    battlecoa_path_optionality_score,
+    battlecoa_validity_vector,
+    battlecoa_vertex_parsimony_score,
+    battlecoa_worldline_completion_score,
     bootstrap_ci,
     bootstrap_ci_coa_diversity,
     bootstrap_ci_doctrinal_alignment,
@@ -22,6 +28,8 @@ from coageneration.evaluate import (
     chain_coverage_score,
     coa_diversity,
     compare_coas,
+    compare_selection_tradeoff,
+    council_diagnostics,
     doctrinal_alignment_score,
     episode_summary,
     fm30_rubric_scores,
@@ -34,6 +42,7 @@ from coageneration.evaluate import (
     tool_utilisation_rate,
 )
 from coageneration.core import Force, SampledBestResponsePolicy, SelfPlayEngine
+from coageneration import MultiAgentCouncilPolicy
 
 
 def test_gbc_score_range() -> None:
@@ -105,6 +114,19 @@ def test_tool_utilisation_rate_no_tools() -> None:
     # Basic make_coa does not attach tool calls
     rate = tool_utilisation_rate(coas)
     assert rate == 0.0
+
+
+def test_battlecoa_proxy_scores_range() -> None:
+    coa = make_coa_with_branch(seed=7)
+    assert 0.0 <= battlecoa_path_optionality_score(coa) <= 1.0
+    assert 0.0 <= battlecoa_vertex_parsimony_score(coa) <= 1.0
+    assert 0.0 <= battlecoa_worldline_completion_score(coa) <= 1.0
+    vector = battlecoa_validity_vector(coa)
+    assert set(vector) == {
+        "path_optionality",
+        "vertex_parsimony",
+        "worldline_completion",
+    }
 
 
 def test_fm30_rubric_scores_range() -> None:
@@ -326,3 +348,56 @@ def test_compare_coas_from_sampled_policy_candidates() -> None:
     result = compare_coas(candidates)
     assert len(result.candidates) == 5
     assert result.best.force == Force.RED
+
+
+def test_compare_selection_tradeoff_returns_tradeoff() -> None:
+    coas = [make_coa(seed=i) for i in range(6)]
+    result = compare_selection_tradeoff(coas)
+    assert isinstance(result, SelectionTradeoff)
+    assert result.quality_regret >= 0.0
+
+
+def test_compare_selection_tradeoff_empty_raises() -> None:
+    with pytest.raises(ValueError, match="empty"):
+        compare_selection_tradeoff([])
+
+
+def test_compare_selection_tradeoff_detects_doctrinal_gain() -> None:
+    quality_best = make_coa(
+        force=Force.RED,
+        n_actions=1,
+        objective="attack",
+        seed=100,
+        with_chain=False,
+    )
+    quality_best.mef_score = 0.60
+    doctrine_best = make_logistics_coa(force=Force.RED, seed=101)
+    doctrine_best.objective = "protect civilians while restoring combat readiness"
+    doctrine_best.mef_score = 0.52
+
+    result = compare_selection_tradeoff(
+        [quality_best, doctrine_best],
+        quality_weight=0.2,
+        doctrine_weight=0.8,
+    )
+    assert result.quality_best_id == quality_best.coa_id
+    assert result.composite_best_id == doctrine_best.coa_id
+    assert result.quality_regret == pytest.approx(0.08)
+    assert result.doctrinal_gain > 0.0
+
+
+def test_council_diagnostics_shape() -> None:
+    state = make_game_state(n_blue=4, n_red=4, seed=30)
+    seed_coas = [make_coa(force=Force.BLUE, seed=i) for i in range(3)]
+    council = MultiAgentCouncilPolicy(red_team_samples=2, seed=31).run_council(
+        state, seed_coas
+    )
+    diagnostics = council_diagnostics(council)
+    assert isinstance(diagnostics, CouncilDiagnostics)
+    assert 0.0 <= diagnostics.selected_advantage <= 1.0
+    assert 0.0 <= diagnostics.council_diversity <= 1.0
+    assert 0.0 <= diagnostics.revised_diversity <= 1.0
+    assert diagnostics.consensus_gap >= 0.0
+    assert 0.0 <= diagnostics.adversarial_pressure <= 1.0
+    assert isinstance(diagnostics.robustness_margin, float)
+    assert isinstance(diagnostics.pressure_reduction, float)

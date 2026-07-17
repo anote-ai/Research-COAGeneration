@@ -6,7 +6,7 @@ import random
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Tuple, TypeVar
 
-from .core import ActionCategory, CourseOfAction, GameState
+from .core import ActionCategory, CourseOfAction, GameState, MultiAgentCouncilResult
 
 T = TypeVar("T")
 
@@ -175,6 +175,30 @@ class CoaComparison:
     pareto_optimal_ids: List[str]
 
 
+@dataclass
+class SelectionTradeoff:
+    """Tradeoff between quality-greedy and doctrine-aware candidate selection."""
+
+    quality_best_id: str
+    composite_best_id: str
+    quality_regret: float
+    doctrinal_gain: float
+    composite_score_delta: float
+
+
+@dataclass
+class CouncilDiagnostics:
+    """Diagnostics for a multi-agent council trace."""
+
+    selected_advantage: float
+    council_diversity: float
+    revised_diversity: float
+    consensus_gap: float
+    adversarial_pressure: float
+    robustness_margin: float
+    pressure_reduction: float
+
+
 def compare_coas(candidates: List[CourseOfAction]) -> CoaComparison:
     """Compare a set of candidate COAs for the same scenario.
 
@@ -237,6 +261,60 @@ def compare_coas(candidates: List[CourseOfAction]) -> CoaComparison:
         diversity=coa_diversity(candidates),
         mef_spread=max(mef_values) - min(mef_values),
         pareto_optimal_ids=pareto_optimal_ids,
+    )
+
+
+def council_diagnostics(result: MultiAgentCouncilResult) -> CouncilDiagnostics:
+    """Compute aggregate diagnostics for a multi-agent council run."""
+    return CouncilDiagnostics(
+        selected_advantage=advantage_score(result.selected_blue, result.selected_red),
+        council_diversity=coa_diversity(result.blue_candidates),
+        revised_diversity=coa_diversity(result.revised_candidates)
+        if result.revised_candidates
+        else 0.0,
+        consensus_gap=result.consensus_gap,
+        adversarial_pressure=result.adversarial_pressure,
+        robustness_margin=result.robustness_margin,
+        pressure_reduction=result.pressure_reduction,
+    )
+
+
+def compare_selection_tradeoff(
+    candidates: List[CourseOfAction],
+    quality_weight: float = 0.7,
+    doctrine_weight: float = 0.3,
+) -> SelectionTradeoff:
+    """Compare pure-quality selection with a quality/doctrine composite.
+
+    The returned ``quality_regret`` is the synthetic quality score lost by
+    selecting the composite-best candidate instead of the quality-best
+    candidate. ``doctrinal_gain`` is the corresponding increase in heuristic
+    doctrinal alignment. Positive doctrinal gain with small quality regret is
+    evidence that candidate sets contain useful alternatives, not only a single
+    obvious maximum.
+    """
+    if not candidates:
+        raise ValueError("candidates must not be empty")
+    if quality_weight < 0 or doctrine_weight < 0:
+        raise ValueError("weights must be non-negative")
+    if quality_weight + doctrine_weight <= 0:
+        raise ValueError("at least one weight must be positive")
+
+    def composite(coa: CourseOfAction) -> float:
+        quality = (coa.mef_score + 1.0) / 2.0
+        doctrine = doctrinal_alignment_score(coa)
+        total = quality_weight + doctrine_weight
+        return (quality_weight * quality + doctrine_weight * doctrine) / total
+
+    quality_best = max(candidates, key=lambda c: c.mef_score)
+    composite_best = max(candidates, key=composite)
+    return SelectionTradeoff(
+        quality_best_id=quality_best.coa_id,
+        composite_best_id=composite_best.coa_id,
+        quality_regret=quality_best.mef_score - composite_best.mef_score,
+        doctrinal_gain=doctrinal_alignment_score(composite_best)
+        - doctrinal_alignment_score(quality_best),
+        composite_score_delta=composite(composite_best) - composite(quality_best),
     )
 
 
@@ -349,6 +427,106 @@ def tool_utilisation_rate(coas: List[CourseOfAction]) -> float:
     if total_actions == 0:
         return 0.0
     return tool_actions / total_actions
+
+
+def battlecoa_path_optionality_score(coa: CourseOfAction) -> float:
+    """Proxy for BattleCOAPath optionality in a synthetic COA.
+
+    The BattleCOA Boot Camp material frames a BattleCOA as a hypergraph with
+    one or more BattleCOAPaths. This lightweight proxy rewards conditional
+    branches because they encode mutually exclusive implementation options in
+    the current typed COA representation.
+    """
+    if not coa.chain:
+        return 0.0
+    branch_count = sum(1 for step in coa.chain if step.branch is not None)
+    return min(1.0, branch_count / max(1, len(coa.chain)))
+
+
+def battlecoa_vertex_parsimony_score(coa: CourseOfAction) -> float:
+    """Proxy for avoiding redundant BattleEvent vertices.
+
+    Scores the fraction of unique (asset, action type, category) event
+    signatures. A value near 1 means the COA avoids repeating near-identical
+    vertices; lower values indicate duplicated event structure.
+    """
+    actions = list(coa.actions)
+    for step in coa.chain:
+        if step.action is not None:
+            actions.append(step.action)
+        if step.branch is not None:
+            actions.extend(step.branch.true_actions)
+            actions.extend(step.branch.false_actions)
+    if not actions:
+        return 0.0
+    signatures = {
+        (action.asset_id, action.action_type, action.category.value)
+        for action in actions
+    }
+    return len(signatures) / len(actions)
+
+
+def battlecoa_worldline_completion_score(coa: CourseOfAction) -> float:
+    """Proxy for complete participant worldlines.
+
+    BattleCOAPaths should account for participant states from initial
+    circumstances to final disposition. In this synthetic representation we
+    approximate that requirement by checking whether each asset has an early
+    positioning/initialization event and a final disposition or continuation
+    event.
+    """
+    actions = list(coa.actions)
+    if not actions:
+        return 0.0
+    by_asset: Dict[str, List[str]] = {}
+    for action in actions:
+        by_asset.setdefault(action.asset_id, []).append(action.action_type.lower())
+    start_terms = {
+        "transit",
+        "establish",
+        "deploy",
+        "advance",
+        "position",
+        "marshal",
+        "prepare",
+        "assess",
+        "scan",
+        "recon",
+    }
+    end_terms = {
+        "rtb",
+        "return",
+        "withdraw",
+        "recover",
+        "continue",
+        "hold",
+        "evade",
+        "relocate",
+        "handoff",
+        "support",
+        "mitigation",
+    }
+    complete = 0
+    for asset_actions in by_asset.values():
+        has_start = any(
+            any(term in action_type for term in start_terms)
+            for action_type in asset_actions
+        )
+        has_end = any(
+            any(term in action_type for term in end_terms)
+            for action_type in asset_actions
+        )
+        complete += 1 if has_start and has_end else 0
+    return complete / len(by_asset)
+
+
+def battlecoa_validity_vector(coa: CourseOfAction) -> Dict[str, float]:
+    """BattleCOA-inspired benchmark diagnostics for one synthetic COA."""
+    return {
+        "path_optionality": battlecoa_path_optionality_score(coa),
+        "vertex_parsimony": battlecoa_vertex_parsimony_score(coa),
+        "worldline_completion": battlecoa_worldline_completion_score(coa),
+    }
 
 
 def fm30_rubric_scores(coa: CourseOfAction) -> Dict[str, float]:

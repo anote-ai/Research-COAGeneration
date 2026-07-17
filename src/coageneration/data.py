@@ -504,12 +504,174 @@ def make_multi_domain_operations_case(
     return ScenarioCase(profile=profile, game_state=state, seed_coas=coas)
 
 
+def make_air_defense_operations_case(
+    seed: int = 40, framing: str = "neutral"
+) -> ScenarioCase:
+    """Suppression of enemy air defenses with cyber, ISR, and kinetic timing."""
+    rng = random.Random(seed)
+    blue_assets = [
+        Asset(
+            asset_id=f"blue-ad-{i:03d}",
+            asset_type=["ew_aircraft", "strike_package", "isr_uav", "cyber_cell"][i % 4],
+            force=Force.BLUE,
+            location=(rng.uniform(0, 45), rng.uniform(0, 100)),
+            capability_score=rng.uniform(0.55, 0.95),
+        )
+        for i in range(6)
+    ]
+    red_assets = [
+        Asset(
+            asset_id=f"red-ad-{i:03d}",
+            asset_type=["sam_battery", "early_warning_radar", "mobile_launcher"][i % 3],
+            force=Force.RED,
+            location=(rng.uniform(55, 100), rng.uniform(0, 100)),
+            capability_score=rng.uniform(0.5, 0.9),
+        )
+        for i in range(6)
+    ]
+    actions = [
+        make_action(
+            asset_id="blue-ad-002",
+            action_type="wide_area_isr",
+            category=ActionCategory.INTELLIGENCE,
+            priority=1,
+            tool_name="sensor_fusion",
+        ),
+        make_action(
+            asset_id="blue-ad-003",
+            action_type="radar_network_probe",
+            category=ActionCategory.CYBER,
+            priority=2,
+            tool_name="emissions_mapper",
+        ),
+        make_action(
+            asset_id="blue-ad-000",
+            action_type="stand_in_jamming",
+            category=ActionCategory.CYBER,
+            priority=3,
+            tool_name="spectrum_planner",
+        ),
+        make_action(
+            asset_id="blue-ad-001",
+            action_type="time_sensitive_strike",
+            category=ActionCategory.KINETIC,
+            priority=4,
+        ),
+    ]
+    coa = CourseOfAction(
+        force=Force.BLUE,
+        actions=actions,
+        chain=build_chain(actions),
+        objective="degrade integrated air-defense coverage before follow-on maneuver",
+        mef_score=compute_mef_score(0.78, 0.34, 0.33),
+        domain="air_defense",
+    )
+    coa = _apply_framing(coa, framing)
+    profile = ScenarioProfile(
+        scenario_id=f"air-defense-{seed}",
+        terrain_type="air_defense",
+        force_size="joint_task_force",
+        operational_phase="shaping",
+        domains=["air", "cyber", "electromagnetic", "land"],
+        framing=framing,
+        loac_ambiguity="medium",
+        historical_reference="synthetic suppression of enemy air defenses",
+    )
+    return ScenarioCase(
+        profile=profile,
+        game_state=GameState(blue_assets=blue_assets, red_assets=red_assets),
+        seed_coas=[coa],
+    )
+
+
+def make_humanitarian_evacuation_case(
+    seed: int = 50, framing: str = "neutral"
+) -> ScenarioCase:
+    """Noncombatant evacuation scenario with protection, logistics, and IO."""
+    rng = random.Random(seed)
+    blue_assets = [
+        Asset(
+            asset_id=f"blue-evac-{i:03d}",
+            asset_type=["security_team", "medical_team", "transport", "civil_affairs"][i % 4],
+            force=Force.BLUE,
+            location=(rng.uniform(0, 50), rng.uniform(0, 100)),
+            capability_score=rng.uniform(0.45, 0.85),
+        )
+        for i in range(7)
+    ]
+    red_assets = [
+        Asset(
+            asset_id=f"red-evac-{i:03d}",
+            asset_type=["checkpoint", "indirect_fire_cell", "disinformation_node"][i % 3],
+            force=Force.RED,
+            location=(rng.uniform(50, 100), rng.uniform(0, 100)),
+            capability_score=rng.uniform(0.35, 0.75),
+        )
+        for i in range(5)
+    ]
+    actions = [
+        make_action(
+            asset_id="blue-evac-003",
+            action_type="civilian_route_assessment",
+            category=ActionCategory.INTELLIGENCE,
+            priority=1,
+            tool_name="route_risk_model",
+        ),
+        make_action(
+            asset_id="blue-evac-000",
+            action_type="protect_evacuation_corridor",
+            category=ActionCategory.KINETIC,
+            priority=2,
+        ),
+        make_action(
+            asset_id="blue-evac-001",
+            action_type="medical_triage_staging",
+            category=ActionCategory.LOGISTICS,
+            priority=3,
+            tool_name="casualty_tracker",
+        ),
+        make_action(
+            asset_id="blue-evac-003",
+            action_type="public_information_notice",
+            category=ActionCategory.INFORMATION,
+            priority=4,
+            tool_name="broadcast",
+        ),
+    ]
+    coa = CourseOfAction(
+        force=Force.BLUE,
+        actions=actions,
+        chain=build_chain(actions),
+        objective="protect civilians and evacuate noncombatants through secured corridors",
+        mef_score=compute_mef_score(0.68, 0.31, 0.24),
+        domain="humanitarian_evacuation",
+    )
+    coa = _apply_framing(coa, framing)
+    profile = ScenarioProfile(
+        scenario_id=f"humanitarian-evacuation-{seed}",
+        terrain_type="urban_humanitarian",
+        force_size="joint_interagency_task_force",
+        operational_phase="evacuation",
+        domains=["land", "information", "logistics", "medical"],
+        framing=framing,
+        loac_ambiguity="high",
+        historical_reference="synthetic noncombatant evacuation operation",
+    )
+    return ScenarioCase(
+        profile=profile,
+        game_state=GameState(blue_assets=blue_assets, red_assets=red_assets),
+        seed_coas=[coa],
+    )
+
+
 def make_scenario_corpus(seed: int = 100) -> List[ScenarioCase]:
     """Return a small, diverse corpus for benchmark smoke tests."""
     return [
         make_urban_operations_case(seed=seed, framing="blue"),
         make_maritime_operations_case(seed=seed + 1, framing="neutral"),
         make_multi_domain_operations_case(seed=seed + 2, framing="adversary"),
+        make_air_defense_operations_case(seed=seed + 3, framing="adversary"),
+        make_humanitarian_evacuation_case(seed=seed + 4, framing="blue"),
     ]
 
 

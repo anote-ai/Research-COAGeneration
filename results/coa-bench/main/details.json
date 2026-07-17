@@ -1,8 +1,26 @@
 {
-  "n_scenarios": 30,
+  "n_scenarios": 50,
   "n_seeds": 10,
   "n_samples": 8,
-  "blue_win_rate_single": 0.9666666666666667,
-  "blue_win_rate_sampled": 0.8333333333333334,
+  "response_budgets": [
+    1,
+    2,
+    4,
+    8,
+    16
+  ],
+  "blue_win_rate_single": 0.92,
+  "blue_win_rate_sampled": 0.82,
+  "blue_win_rate_doctrine_aware": 0.8,
+  "blue_win_rate_council": 0.82,
+  "selection_changed_rate": 0.56,
+  "multi_agent_council": {
+    "blue_proposer_agents": 5,
+    "red_team_samples_per_candidate": 4,
+    "deliberation_width": 2,
+    "revision_bonus": 0.025,
+    "selected_revised_candidate_rate": 0.76,
+    "selection_objective": "0.45 quality + 0.25 doctrine + 0.10 diversity - 0.20 adversarial pressure"
+  },
   "source": "experiments/coa_bench_experiment.py \u2014 outcomes from the coageneration self-play simulator, not a production deployment or live LLM."
 }

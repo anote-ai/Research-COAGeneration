@@ -11,8 +11,11 @@ from coageneration.core import (
     ChainStep,
     ConditionalBranch,
     CourseOfAction,
+    DoctrineAwareBestResponsePolicy,
     Force,
     GameState,
+    MultiAgentCouncilPolicy,
+    MultiAgentCouncilResult,
     SampledBestResponsePolicy,
     SelfPlayEngine,
     ToolCall,
@@ -264,3 +267,65 @@ def test_generate_candidates_best_matches_generate_coa() -> None:
     policy2 = SampledBestResponsePolicy(n_samples=6, seed=3)
     result = policy2.generate_coa(state, blue_coa)
     assert result.mef_score == best.mef_score
+
+
+def test_doctrine_aware_policy_returns_correct_force() -> None:
+    state = make_game_state(n_blue=3, n_red=3, seed=10)
+    blue_coa = make_coa(force=Force.BLUE, seed=10)
+    policy = DoctrineAwareBestResponsePolicy(n_samples=5, seed=11)
+    result = policy.generate_coa(state, blue_coa)
+    assert result.force == Force.RED
+
+
+def test_doctrine_aware_policy_score_range() -> None:
+    state = make_game_state(n_blue=3, n_red=3, seed=12)
+    blue_coa = make_coa(force=Force.BLUE, seed=12)
+    policy = DoctrineAwareBestResponsePolicy(n_samples=5, seed=13)
+    candidate = policy.generate_candidates(state, blue_coa)[0]
+    score = policy.candidate_score(candidate)
+    assert 0.0 <= score <= 1.0
+
+
+def test_doctrine_aware_policy_weight_validation() -> None:
+    with pytest.raises(ValueError):
+        DoctrineAwareBestResponsePolicy(quality_weight=-1.0)
+    with pytest.raises(ValueError):
+        DoctrineAwareBestResponsePolicy(quality_weight=0.0, doctrine_weight=0.0)
+
+
+def test_multi_agent_council_generates_role_candidates() -> None:
+    seed_coas = [make_coa(force=Force.BLUE, seed=i) for i in range(2)]
+    policy = MultiAgentCouncilPolicy(seed=0)
+    candidates = policy.generate_blue_candidates(seed_coas)
+    assert len(candidates) == 5
+    assert all(candidate.force == Force.BLUE for candidate in candidates)
+    assert all("proposer refinement" in candidate.objective for candidate in candidates)
+
+
+def test_multi_agent_council_run_returns_trace() -> None:
+    state = make_game_state(n_blue=4, n_red=4, seed=20)
+    seed_coas = [make_coa(force=Force.BLUE, seed=i) for i in range(3)]
+    policy = MultiAgentCouncilPolicy(red_team_samples=3, seed=21)
+    result = policy.run_council(state, seed_coas)
+    assert isinstance(result, MultiAgentCouncilResult)
+    assert result.selected_blue.force == Force.BLUE
+    assert result.selected_red.force == Force.RED
+    assert len(result.revised_candidates) == policy.deliberation_width
+    assert len(result.candidate_scores) == (
+        len(result.blue_candidates) + len(result.revised_candidates)
+    )
+    assert len(result.candidate_pressures) == len(result.candidate_scores)
+    assert result.consensus_gap >= 0.0
+    assert result.selected_blue.coa_id in result.round_index
+
+
+def test_multi_agent_council_validates_inputs() -> None:
+    with pytest.raises(ValueError):
+        MultiAgentCouncilPolicy(red_team_samples=0)
+    with pytest.raises(ValueError):
+        MultiAgentCouncilPolicy(deliberation_width=0)
+    with pytest.raises(ValueError):
+        MultiAgentCouncilPolicy(proposer_roles=["unknown"])
+    policy = MultiAgentCouncilPolicy()
+    with pytest.raises(ValueError):
+        policy.generate_blue_candidates([])

@@ -14,11 +14,43 @@ python -m pytest tests/ -q
 python experiments/coa_bench_experiment.py
 ```
 
-This regenerates `results/coa-bench/main/rows.csv`, `summary.csv`, and
-`details.json`, which back every number in the manuscript.
+This regenerates:
+
+- `results/coa-bench/main/rows.csv`: per-scenario single, quality-greedy, and doctrine-aware response results.
+- `results/coa-bench/main/summary.csv`: bootstrap confidence intervals for the manuscript metrics.
+- `results/coa-bench/main/budget_curve.csv`: response-budget sweep for `k = 1, 2, 4, 8, 16`.
+- `results/coa-bench/main/council_rows.csv`: multi-agent council traces and diagnostics.
+- `results/coa-bench/main/terrain_summary.csv`: per-template averages for scenario-family inspection.
+- `results/coa-bench/main/details.json`: run metadata and headline rates.
+
+Together these files back every number in the manuscript.
+
+## Benchmark Additions
+
+The current COA-Bench artifact includes three RED response policies:
+
+- `SelfPlayEngine` single-sample response.
+- `SampledBestResponsePolicy`, a quality-greedy best-of-k response.
+- `DoctrineAwareBestResponsePolicy`, a best-of-k response that trades synthetic quality against a lightweight doctrine proxy.
+
+The experiment also reports candidate-set diagnostics beyond the selected COA:
+diversity, quality-score spread, Pareto-optimal candidate count, selection
+quality regret, selection doctrinal gain, response-budget sensitivity, and
+per-terrain summaries across the five scenario families.
+
+The multi-agent council algorithm adds five BLUE proposer agents
+(`maneuver`, `intelligence`, `cyber`, `sustainment`, `protection`), RED-team
+responses for each BLUE candidate, and an adjudicator objective that trades
+quality, doctrine, candidate diversity, and adversarial pressure. The current
+version is two-stage: the adjudicator shortlists the top two BLUE candidates,
+adds deterministic mitigation actions keyed to the strongest RED critique, and
+then reruns RED-team adjudication over the revised candidates. The trace file
+therefore includes initial diversity, revised diversity, consensus gap,
+adversarial pressure, robustness margin, pressure reduction, and the selected
+round.
 
 Important boundary: all results come from the offline `coageneration`
-self-play simulator over 30 synthetic scenarios. They are not measurements of
+self-play simulator over 50 synthetic scenarios. They are not measurements of
 real planner behavior, and the FM 3-0-inspired doctrinal rubric is an
 unvalidated heuristic feature extractor, not a substitute for scoring by
 doctrine experts. See the manuscript's Limitations section for the full list

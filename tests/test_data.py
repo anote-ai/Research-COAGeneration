@@ -5,11 +5,13 @@ from __future__ import annotations
 from coageneration.core import ActionCategory, Force
 from coageneration.data import (
     make_action,
+    make_air_defense_operations_case,
     make_asset,
     make_coa,
     make_coa_with_branch,
     make_cyber_ops_coa,
     make_game_state,
+    make_humanitarian_evacuation_case,
     make_info_ops_coa,
     make_logistics_coa,
     make_maritime_operations_case,
@@ -77,9 +79,10 @@ def test_scenario_corpus_is_diverse() -> None:
     corpus = make_scenario_corpus(seed=50)
     terrains = {case.profile.terrain_type for case in corpus}
     domains = {domain for case in corpus for domain in case.profile.domains}
-    assert {"urban", "maritime", "mixed"} <= terrains
-    assert {"land", "maritime", "cyber", "information"} <= domains
+    assert {"urban", "maritime", "mixed", "air_defense", "urban_humanitarian"} <= terrains
+    assert {"land", "maritime", "cyber", "information", "medical"} <= domains
     assert all(case.seed_coas for case in corpus)
+    assert len(corpus) == 5
 
 
 def test_urban_case_tracks_loac_ambiguity() -> None:
@@ -97,6 +100,20 @@ def test_maritime_case_has_maritime_domain() -> None:
 def test_multi_domain_case_has_multiple_seed_coas() -> None:
     case = make_multi_domain_operations_case()
     assert len(case.seed_coas) >= 4
+
+
+def test_air_defense_case_has_air_and_cyber_domains() -> None:
+    case = make_air_defense_operations_case()
+    assert case.profile.terrain_type == "air_defense"
+    assert {"air", "cyber"} <= set(case.profile.domains)
+    assert case.seed_coas[0].domain == "air_defense"
+
+
+def test_humanitarian_evacuation_case_has_protection_objective() -> None:
+    case = make_humanitarian_evacuation_case()
+    assert case.profile.terrain_type == "urban_humanitarian"
+    assert "protect" in case.seed_coas[0].objective
+    assert case.seed_coas[0].domain == "humanitarian_evacuation"
 
 
 # ---------------------------------------------------------------------------
@@ -123,6 +140,22 @@ def test_maritime_case_framing_changes_objective() -> None:
 def test_multi_domain_case_framing_changes_objective() -> None:
     objectives = {
         framing: make_multi_domain_operations_case(seed=30, framing=framing).seed_coas[0].objective
+        for framing in ("blue", "neutral", "adversary")
+    }
+    assert len(set(objectives.values())) == 3
+
+
+def test_air_defense_case_framing_changes_objective() -> None:
+    objectives = {
+        framing: make_air_defense_operations_case(seed=40, framing=framing).seed_coas[0].objective
+        for framing in ("blue", "neutral", "adversary")
+    }
+    assert len(set(objectives.values())) == 3
+
+
+def test_humanitarian_evacuation_case_framing_changes_objective() -> None:
+    objectives = {
+        framing: make_humanitarian_evacuation_case(seed=50, framing=framing).seed_coas[0].objective
         for framing in ("blue", "neutral", "adversary")
     }
     assert len(set(objectives.values())) == 3
