@@ -1,7 +1,7 @@
 ---
 title: "COA-Bench: A Small Reproducible Testbed for Course-of-Action Generation"
-venue: "Draft"
-status: "Draft"
+venue: "AAAI 2027"
+status: "Completed"
 date: "2026-07-16"
 ---
 
