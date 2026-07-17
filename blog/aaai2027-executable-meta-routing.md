@@ -1,7 +1,7 @@
 ---
 title: "Learning When an Agent Should Decompose, Retrieve, Code, Delegate, or Verify"
 venue: "AAAI 2027"
-status: "Draft"
+status: "Completed"
 date: "2026-07-07"
 ---
 
