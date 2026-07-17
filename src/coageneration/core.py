@@ -82,7 +82,7 @@ class CourseOfAction(BaseModel):
     actions: List[Action]
     chain: List[ChainStep] = Field(default_factory=list)
     objective: str
-    mef_score: float = 0.0
+    quality_score: float = 0.0
     domain: str = "military"
 
     def all_action_types(self) -> List[str]:
@@ -158,7 +158,7 @@ class MultiAgentCouncilResult(BaseModel):
     pressure_reduction: float = 0.0
 
 
-def compute_mef_score(
+def compute_quality_score(
     effectiveness: float,
     cost: float,
     risk: float,
@@ -166,12 +166,7 @@ def compute_mef_score(
     w_c: float = 0.3,
     w_r: float = 0.2,
 ) -> float:
-    """Legacy-named internal COA quality score clamped to [-1, 1].
-
-    In the BattleCOA source terminology, MEF means Match Effectors. This helper
-    predates that correction and should be interpreted as a synthetic quality
-    metric, not the MEF DecisionFunction.
-    """
+    """Internal synthetic COA quality score clamped to [-1, 1]."""
     raw = w_e * effectiveness - w_c * cost - w_r * risk
     return max(-1.0, min(1.0, raw))
 
@@ -232,7 +227,7 @@ def _random_response_coa(
             for _ in range(max(1, len(opponent_coa.actions)))
         ]
 
-    mef = compute_mef_score(
+    quality = compute_quality_score(
         rng.uniform(0.3, 0.9),
         rng.uniform(0.1, 0.5),
         rng.uniform(0.1, 0.4),
@@ -242,7 +237,7 @@ def _random_response_coa(
         actions=actions,
         chain=build_chain(actions),
         objective=f"counter: {opponent_coa.objective}",
-        mef_score=mef,
+        quality_score=quality,
     )
 
 
@@ -296,7 +291,7 @@ class SampledBestResponsePolicy(Policy):
         self, game_state: "GameState", opponent_coa: "CourseOfAction"
     ) -> "CourseOfAction":
         candidates = self.generate_candidates(game_state, opponent_coa)
-        return max(candidates, key=lambda c: c.mef_score)
+        return max(candidates, key=lambda c: c.quality_score)
 
 
 def _doctrine_proxy_score(coa: CourseOfAction) -> float:
@@ -362,7 +357,7 @@ class DoctrineAwareBestResponsePolicy(SampledBestResponsePolicy):
         self.doctrine_weight = doctrine_weight
 
     def candidate_score(self, coa: CourseOfAction) -> float:
-        quality = (coa.mef_score + 1.0) / 2.0
+        quality = (coa.quality_score + 1.0) / 2.0
         doctrine = _doctrine_proxy_score(coa)
         total = self.quality_weight + self.doctrine_weight
         return (
@@ -464,7 +459,7 @@ class MultiAgentCouncilPolicy:
             actions=actions,
             chain=build_chain(actions),
             objective=f"{seed_coa.objective}; {role} proposer refinement",
-            mef_score=max(-1.0, min(1.0, seed_coa.mef_score + quality_bonus + jitter)),
+            quality_score=max(-1.0, min(1.0, seed_coa.quality_score + quality_bonus + jitter)),
             domain=seed_coa.domain,
         )
 
@@ -491,9 +486,9 @@ class MultiAgentCouncilPolicy:
         own_types: set[str],
         other_types: set[str],
     ) -> Tuple[float, float]:
-        quality = (candidate.mef_score + 1.0) / 2.0
+        quality = (candidate.quality_score + 1.0) / 2.0
         doctrine = _doctrine_proxy_score(candidate)
-        pressure = (selected_red.mef_score + 1.0) / 2.0
+        pressure = (selected_red.quality_score + 1.0) / 2.0
         diversity = self._jaccard_distance(own_types, other_types)
         score = (
             self.quality_weight * quality
@@ -546,7 +541,7 @@ class MultiAgentCouncilPolicy:
             actions=actions,
             chain=build_chain(actions),
             objective=f"{candidate.objective}; revised against {selected_red.actions[0].action_type if selected_red.actions else 'red pressure'}",
-            mef_score=max(-1.0, min(1.0, candidate.mef_score + self.revision_bonus)),
+            quality_score=max(-1.0, min(1.0, candidate.quality_score + self.revision_bonus)),
             domain=candidate.domain,
         )
 
@@ -565,7 +560,7 @@ class MultiAgentCouncilPolicy:
 
         for i, candidate in enumerate(candidates):
             red_candidates = red_policy.generate_candidates(game_state, candidate)
-            selected_red = max(red_candidates, key=lambda c: c.mef_score)
+            selected_red = max(red_candidates, key=lambda c: c.quality_score)
             selected_red_by_blue[candidate.coa_id] = selected_red
             other_types = set().union(
                 *(types for j, types in enumerate(action_type_sets) if j != i)
@@ -708,7 +703,7 @@ class SelfPlayEngine:
             actions=[init_action],
             chain=build_chain([init_action]),
             objective="neutralize red",
-            mef_score=compute_mef_score(
+            quality_score=compute_quality_score(
                 self._rng.uniform(0.4, 0.9),
                 self._rng.uniform(0.1, 0.4),
                 self._rng.uniform(0.1, 0.3),

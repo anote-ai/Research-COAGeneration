@@ -20,7 +20,7 @@ from coageneration.core import (
     SelfPlayEngine,
     ToolCall,
     build_chain,
-    compute_mef_score,
+    compute_quality_score,
 )
 from coageneration.data import (
     make_asset,
@@ -32,20 +32,20 @@ from coageneration.data import (
 
 
 # ---------------------------------------------------------------------------
-# compute_mef_score
+# compute_quality_score
 # ---------------------------------------------------------------------------
 
 
-def test_mef_score_clamped() -> None:
-    score = compute_mef_score(effectiveness=1.0, cost=0.0, risk=0.0)
+def test_quality_score_clamped() -> None:
+    score = compute_quality_score(effectiveness=1.0, cost=0.0, risk=0.0)
     assert score <= 1.0
-    score = compute_mef_score(effectiveness=0.0, cost=1.0, risk=1.0)
+    score = compute_quality_score(effectiveness=0.0, cost=1.0, risk=1.0)
     assert score >= -1.0
 
 
-def test_mef_score_range() -> None:
+def test_quality_score_range() -> None:
     for e, c, r in [(0.5, 0.3, 0.2), (0.9, 0.1, 0.05), (0.2, 0.8, 0.5)]:
-        s = compute_mef_score(e, c, r)
+        s = compute_quality_score(e, c, r)
         assert -1.0 <= s <= 1.0
 
 
@@ -199,17 +199,17 @@ def test_sampled_policy_red_responds_as_blue() -> None:
     assert result.force == Force.BLUE
 
 
-def test_sampled_policy_picks_highest_mef() -> None:
+def test_sampled_policy_picks_highest_quality() -> None:
     # With enough samples, sampled policy should consistently beat single-sample.
     state = make_game_state(n_blue=5, n_red=5, seed=7)
     blue_coa = make_coa(force=Force.BLUE, seed=7)
 
     single_scores = [
-        SelfPlayEngine(seed=i).best_response(blue_coa, state).mef_score
+        SelfPlayEngine(seed=i).best_response(blue_coa, state).quality_score
         for i in range(20)
     ]
     policy = SampledBestResponsePolicy(n_samples=16, seed=99)
-    sampled_score = policy.generate_coa(state, blue_coa).mef_score
+    sampled_score = policy.generate_coa(state, blue_coa).quality_score
 
     # Sampled policy should beat the average of single-sample attempts.
     assert sampled_score >= sum(single_scores) / len(single_scores)
@@ -235,7 +235,7 @@ def test_sampled_policy_reproducible_with_same_seed() -> None:
     p2 = SampledBestResponsePolicy(n_samples=6, seed=42)
     r1 = p1.generate_coa(state, blue_coa)
     r2 = p2.generate_coa(state, blue_coa)
-    assert r1.mef_score == r2.mef_score
+    assert r1.quality_score == r2.quality_score
 
 
 def test_engine_with_sampled_policy_episode() -> None:
@@ -256,17 +256,17 @@ def test_generate_candidates_returns_n_samples() -> None:
 
 
 def test_generate_candidates_best_matches_generate_coa() -> None:
-    # generate_coa should pick the max-MEF candidate from the same stream
+    # generate_coa should pick the max-COA matching candidate from the same stream
     # generate_candidates would produce for a freshly-seeded policy.
     state = make_game_state(n_blue=3, n_red=3, seed=2)
     blue_coa = make_coa(force=Force.BLUE, seed=2)
     policy = SampledBestResponsePolicy(n_samples=6, seed=3)
     candidates = policy.generate_candidates(state, blue_coa)
-    best = max(candidates, key=lambda c: c.mef_score)
+    best = max(candidates, key=lambda c: c.quality_score)
 
     policy2 = SampledBestResponsePolicy(n_samples=6, seed=3)
     result = policy2.generate_coa(state, blue_coa)
-    assert result.mef_score == best.mef_score
+    assert result.quality_score == best.quality_score
 
 
 def test_doctrine_aware_policy_returns_correct_force() -> None:

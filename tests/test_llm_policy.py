@@ -45,7 +45,7 @@ _VALID_RESPONSE = {
             "expected_duration_s": 60.0,
         },
     ],
-    "mef_components": {"effectiveness": 0.7, "cost": 0.25, "risk": 0.15},
+    "quality_components": {"effectiveness": 0.7, "cost": 0.25, "risk": 0.15},
 }
 
 
@@ -70,7 +70,7 @@ def test_parse_valid_response() -> None:
     assert coa.force == Force.RED
     assert len(coa.actions) == 2
     assert coa.objective == "suppress enemy advance"
-    assert -1.0 <= coa.mef_score <= 1.0
+    assert -1.0 <= coa.quality_score <= 1.0
 
 
 def test_parse_invalid_json_returns_fallback() -> None:

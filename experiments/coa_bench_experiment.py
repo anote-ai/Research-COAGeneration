@@ -47,9 +47,9 @@ N_SAMPLES = 8  # candidates per SampledBestResponsePolicy call
 RESPONSE_BUDGETS = [1, 2, 4, 8, 16]
 
 
-def to_payoff(mef_score: float) -> float:
-    """Rescale a legacy-named [-1, 1] quality score to a [0, 1] payoff."""
-    return (mef_score + 1.0) / 2.0
+def to_payoff(quality_score: float) -> float:
+    """Rescale a [-1, 1] quality score to a [0, 1] payoff."""
+    return (quality_score + 1.0) / 2.0
 
 
 def main() -> None:
@@ -66,7 +66,7 @@ def main() -> None:
 
             policy = SampledBestResponsePolicy(n_samples=N_SAMPLES, seed=base_seed)
             candidates = policy.generate_candidates(state, blue_coa)
-            red_sampled = max(candidates, key=lambda c: c.mef_score)
+            red_sampled = max(candidates, key=lambda c: c.quality_score)
             comparison = compare_coas(candidates)
             tradeoff = compare_selection_tradeoff(candidates)
 
@@ -100,20 +100,20 @@ def main() -> None:
                     "scenario_id": case.profile.scenario_id,
                     "terrain_type": case.profile.terrain_type,
                     "framing": case.profile.framing,
-                    "gbc_single": advantage_score(blue_coa, red_single),
-                    "gbc_sampled": advantage_score(blue_coa, red_sampled),
-                    "gbc_doctrine_aware": advantage_score(
+                    "advantage_single": advantage_score(blue_coa, red_single),
+                    "advantage_sampled": advantage_score(blue_coa, red_sampled),
+                    "advantage_doctrine_aware": advantage_score(
                         blue_coa, red_doctrine_aware
                     ),
                     "nash_gap_single": nash_gap(
-                        to_payoff(blue_coa.mef_score), to_payoff(red_single.mef_score)
+                        to_payoff(blue_coa.quality_score), to_payoff(red_single.quality_score)
                     ),
                     "nash_gap_sampled": nash_gap(
-                        to_payoff(blue_coa.mef_score), to_payoff(red_sampled.mef_score)
+                        to_payoff(blue_coa.quality_score), to_payoff(red_sampled.quality_score)
                     ),
                     "nash_gap_doctrine_aware": nash_gap(
-                        to_payoff(blue_coa.mef_score),
-                        to_payoff(red_doctrine_aware.mef_score),
+                        to_payoff(blue_coa.quality_score),
+                        to_payoff(red_doctrine_aware.quality_score),
                     ),
                     "blue_doctrinal_alignment": doctrinal_alignment_score(blue_coa),
                     "blue_path_optionality": blue_battlecoa["path_optionality"],
@@ -127,7 +127,7 @@ def main() -> None:
                         red_doctrine_aware
                     ),
                     "candidate_diversity": comparison.diversity,
-                    "candidate_mef_spread": comparison.mef_spread,
+                    "candidate_quality_spread": comparison.quality_spread,
                     "n_pareto_optimal": len(comparison.pareto_optimal_ids),
                     "selection_quality_regret": tradeoff.quality_regret,
                     "selection_doctrinal_gain": tradeoff.doctrinal_gain,
@@ -136,7 +136,7 @@ def main() -> None:
                     "blue_wins_single": wargame_single["winner"] == "blue",
                     "blue_wins_sampled": wargame_sampled["winner"] == "blue",
                     "blue_wins_doctrine_aware": wargame_doctrine["winner"] == "blue",
-                    "gbc_council": council_stats.selected_advantage,
+                    "advantage_council": council_stats.selected_advantage,
                     "blue_wins_council": council_wargame["winner"] == "blue",
                     "council_diversity": council_stats.council_diversity,
                     "council_revised_diversity": council_stats.revised_diversity,
@@ -197,20 +197,20 @@ def main() -> None:
                     n_samples=budget, seed=base_seed
                 )
                 budget_candidates = budget_policy.generate_candidates(state, blue_coa)
-                budget_best = max(budget_candidates, key=lambda c: c.mef_score)
+                budget_best = max(budget_candidates, key=lambda c: c.quality_score)
                 budget_comparison = compare_coas(budget_candidates)
                 budget_rows.append(
                     {
                         "scenario_id": case.profile.scenario_id,
                         "terrain_type": case.profile.terrain_type,
                         "response_budget": budget,
-                        "gbc": advantage_score(blue_coa, budget_best),
-                        "red_quality": budget_best.mef_score,
+                        "advantage": advantage_score(blue_coa, budget_best),
+                        "red_quality": budget_best.quality_score,
                         "red_doctrinal_alignment": doctrinal_alignment_score(
                             budget_best
                         ),
                         "candidate_diversity": budget_comparison.diversity,
-                        "candidate_mef_spread": budget_comparison.mef_spread,
+                        "candidate_quality_spread": budget_comparison.quality_spread,
                         "n_pareto_optimal": len(
                             budget_comparison.pareto_optimal_ids
                         ),
@@ -226,11 +226,11 @@ def main() -> None:
           f"({N_SEEDS} seeds x 5 templates), {N_SAMPLES} candidates/sample\n")
 
     print("== Best-response comparison: single random sample vs. sampled-best-response ==")
-    print(f"Advantage score (single):    {boot('gbc_single')}")
-    print(f"Advantage score (sampled):   {boot('gbc_sampled')}")
+    print(f"Advantage score (single):    {boot('advantage_single')}")
+    print(f"Advantage score (sampled):   {boot('advantage_sampled')}")
     print(f"Nash gap (single):  {boot('nash_gap_single')}")
     print(f"Nash gap (sampled): {boot('nash_gap_sampled')}")
-    print(f"Advantage score (doctrine-aware): {boot('gbc_doctrine_aware')}")
+    print(f"Advantage score (doctrine-aware): {boot('advantage_doctrine_aware')}")
     print(f"Nash gap (doctrine-aware):        {boot('nash_gap_doctrine_aware')}")
 
     print("\n== Doctrinal alignment: does quality-greedy selection cost doctrinal coherence? ==")
@@ -252,7 +252,7 @@ def main() -> None:
 
     print("\n== Multi-COA comparison (compare_coas over the 8 sampled candidates) ==")
     print(f"Candidate diversity:    {boot('candidate_diversity')}")
-    print(f"Candidate quality spread:   {boot('candidate_mef_spread')}")
+    print(f"Candidate quality spread:   {boot('candidate_quality_spread')}")
     print(f"Pareto-optimal count:   {boot('n_pareto_optimal')}")
     print(f"Selection quality regret: {boot('selection_quality_regret')}")
     print(f"Selection doctrinal gain: {boot('selection_doctrinal_gain')}")
@@ -269,7 +269,7 @@ def main() -> None:
     print(f"multi-agent council BLUE:      {blue_win_rate_council:.3f}")
 
     print("\n== Multi-agent council algorithm ==")
-    print(f"Council advantage:          {boot('gbc_council')}")
+    print(f"Council advantage:          {boot('advantage_council')}")
     print(f"Council candidate diversity: {boot('council_diversity')}")
     print(f"Council revised diversity:   {boot('council_revised_diversity')}")
     print(f"Council consensus gap:       {boot('council_consensus_gap')}")
@@ -285,7 +285,7 @@ def main() -> None:
     for budget in RESPONSE_BUDGETS:
         subset = [r for r in budget_rows if r["response_budget"] == budget]
         result = bootstrap_ci(
-            lambda sample: mean(r["gbc"] for r in sample),
+            lambda sample: mean(r["advantage"] for r in sample),
             subset,
             n_boot=1000,
             seed=0,
@@ -342,10 +342,10 @@ def main() -> None:
             {
                 "terrain_type": terrain,
                 "n_scenarios": len(terrain_data),
-                "gbc_single": mean(r["gbc_single"] for r in terrain_data),
-                "gbc_sampled": mean(r["gbc_sampled"] for r in terrain_data),
-                "gbc_doctrine_aware": mean(
-                    r["gbc_doctrine_aware"] for r in terrain_data
+                "advantage_single": mean(r["advantage_single"] for r in terrain_data),
+                "advantage_sampled": mean(r["advantage_sampled"] for r in terrain_data),
+                "advantage_doctrine_aware": mean(
+                    r["advantage_doctrine_aware"] for r in terrain_data
                 ),
                 "blue_win_rate_single": mean(
                     r["blue_wins_single"] for r in terrain_data
@@ -379,9 +379,9 @@ def main() -> None:
         writer.writerows(terrain_rows)
 
     summary_metrics = {
-        "gbc_single": boot("gbc_single"),
-        "gbc_sampled": boot("gbc_sampled"),
-        "gbc_doctrine_aware": boot("gbc_doctrine_aware"),
+        "advantage_single": boot("advantage_single"),
+        "advantage_sampled": boot("advantage_sampled"),
+        "advantage_doctrine_aware": boot("advantage_doctrine_aware"),
         "nash_gap_single": boot("nash_gap_single"),
         "nash_gap_sampled": boot("nash_gap_sampled"),
         "nash_gap_doctrine_aware": boot("nash_gap_doctrine_aware"),
@@ -395,11 +395,11 @@ def main() -> None:
             "red_doctrinal_alignment_doctrine_aware"
         ),
         "candidate_diversity": boot("candidate_diversity"),
-        "candidate_mef_spread": boot("candidate_mef_spread"),
+        "candidate_quality_spread": boot("candidate_quality_spread"),
         "n_pareto_optimal": boot("n_pareto_optimal"),
         "selection_quality_regret": boot("selection_quality_regret"),
         "selection_doctrinal_gain": boot("selection_doctrinal_gain"),
-        "gbc_council": boot("gbc_council"),
+        "advantage_council": boot("advantage_council"),
         "council_diversity": boot("council_diversity"),
         "council_revised_diversity": boot("council_revised_diversity"),
         "council_consensus_gap": boot("council_consensus_gap"),

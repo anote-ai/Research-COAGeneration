@@ -13,7 +13,7 @@ from .core import (
     Force,
     GameState,
     build_chain,
-    compute_mef_score,
+    compute_quality_score,
 )
 
 _SYSTEM_PROMPT = """You are a strategic military planning AI. Given a game state and an opponent's Course of Action (COA), generate a tactically sound counter-COA.
@@ -31,7 +31,7 @@ Respond with ONLY a JSON object matching this schema (no markdown, no commentary
       "expected_duration_s": <float seconds>
     }
   ],
-  "mef_components": {
+  "quality_components": {
     "effectiveness": <float 0-1>,
     "cost": <float 0-1>,
     "risk": <float 0-1>
@@ -116,11 +116,11 @@ def _parse_llm_response(
                 )
             )
 
-        mef_c = data.get("mef_components", {})
-        mef = compute_mef_score(
-            effectiveness=float(mef_c.get("effectiveness", 0.5)),
-            cost=float(mef_c.get("cost", 0.3)),
-            risk=float(mef_c.get("risk", 0.2)),
+        quality_components = data.get("quality_components", {})
+        quality = compute_quality_score(
+            effectiveness=float(quality_components.get("effectiveness", 0.5)),
+            cost=float(quality_components.get("cost", 0.3)),
+            risk=float(quality_components.get("risk", 0.2)),
         )
 
         return CourseOfAction(
@@ -128,7 +128,7 @@ def _parse_llm_response(
             actions=actions if actions else _fallback_actions(available),
             chain=build_chain(actions if actions else _fallback_actions(available)),
             objective=str(data.get("objective", "counter opponent COA")),
-            mef_score=mef,
+            quality_score=quality,
         )
 
     except Exception:
@@ -138,7 +138,7 @@ def _parse_llm_response(
             actions=fallback_actions,
             chain=build_chain(fallback_actions),
             objective="counter opponent COA (fallback)",
-            mef_score=compute_mef_score(0.4, 0.3, 0.3),
+            quality_score=compute_quality_score(0.4, 0.3, 0.3),
         )
 
 

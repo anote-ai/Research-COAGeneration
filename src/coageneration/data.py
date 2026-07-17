@@ -18,7 +18,7 @@ from .core import (
     ScenarioProfile,
     ToolCall,
     build_chain,
-    compute_mef_score,
+    compute_quality_score,
 )
 
 
@@ -83,7 +83,7 @@ def make_coa(
         )
         for i in range(n_actions)
     ]
-    mef = compute_mef_score(
+    quality = compute_quality_score(
         effectiveness=rng.uniform(0.5, 1.0),
         cost=rng.uniform(0.1, 0.5),
         risk=rng.uniform(0.05, 0.3),
@@ -94,7 +94,7 @@ def make_coa(
         actions=actions,
         chain=chain,
         objective=objective,
-        mef_score=mef,
+        quality_score=quality,
         domain=domain,
     )
 
@@ -138,7 +138,7 @@ def make_coa_with_branch(
     )
     step0 = ChainStep(step_index=0, action=primary, depends_on=[])
     step1 = ChainStep(step_index=1, branch=branch, depends_on=[0])
-    mef = compute_mef_score(
+    quality = compute_quality_score(
         effectiveness=rng.uniform(0.5, 0.9),
         cost=rng.uniform(0.1, 0.4),
         risk=rng.uniform(0.05, 0.3),
@@ -148,7 +148,7 @@ def make_coa_with_branch(
         actions=[primary],
         chain=[step0, step1],
         objective=objective,
-        mef_score=mef,
+        quality_score=quality,
         domain="military",
     )
 
@@ -255,7 +255,7 @@ def make_cyber_ops_coa(force: Force = Force.BLUE, seed: int = 1) -> CourseOfActi
             expected_duration_s=90.0,
         ),
     ]
-    mef = compute_mef_score(
+    quality = compute_quality_score(
         effectiveness=rng.uniform(0.6, 0.95),
         cost=rng.uniform(0.05, 0.3),
         risk=rng.uniform(0.1, 0.5),
@@ -265,7 +265,7 @@ def make_cyber_ops_coa(force: Force = Force.BLUE, seed: int = 1) -> CourseOfActi
         actions=actions,
         chain=build_chain(actions),
         objective="achieve persistent access to adversary network",
-        mef_score=mef,
+        quality_score=quality,
         domain="cyber",
     )
 
@@ -309,7 +309,7 @@ def make_logistics_coa(force: Force = Force.BLUE, seed: int = 2) -> CourseOfActi
             expected_duration_s=1800.0,
         ),
     ]
-    mef = compute_mef_score(
+    quality = compute_quality_score(
         effectiveness=rng.uniform(0.5, 0.85),
         cost=rng.uniform(0.2, 0.5),
         risk=rng.uniform(0.05, 0.2),
@@ -319,7 +319,7 @@ def make_logistics_coa(force: Force = Force.BLUE, seed: int = 2) -> CourseOfActi
         actions=actions,
         chain=build_chain(actions),
         objective="restore combat readiness through resupply",
-        mef_score=mef,
+        quality_score=quality,
         domain="logistics",
     )
 
@@ -367,7 +367,7 @@ def make_info_ops_coa(force: Force = Force.BLUE, seed: int = 3) -> CourseOfActio
             expected_duration_s=60.0,
         ),
     ]
-    mef = compute_mef_score(
+    quality = compute_quality_score(
         effectiveness=rng.uniform(0.4, 0.8),
         cost=rng.uniform(0.05, 0.25),
         risk=rng.uniform(0.1, 0.4),
@@ -377,7 +377,7 @@ def make_info_ops_coa(force: Force = Force.BLUE, seed: int = 3) -> CourseOfActio
         actions=actions,
         chain=build_chain(actions),
         objective="shape adversary population perception",
-        mef_score=mef,
+        quality_score=quality,
         domain="information_ops",
     )
 
@@ -458,7 +458,7 @@ def make_maritime_operations_case(seed: int = 20, framing: str = "neutral") -> S
         actions=actions,
         chain=build_chain(actions),
         objective="interdict suspected smuggling vessel",
-        mef_score=compute_mef_score(0.72, 0.28, 0.22),
+        quality_score=compute_quality_score(0.72, 0.28, 0.22),
         domain="maritime",
     )
     coa = _apply_framing(coa, framing)
@@ -563,7 +563,7 @@ def make_air_defense_operations_case(
         actions=actions,
         chain=build_chain(actions),
         objective="degrade integrated air-defense coverage before follow-on maneuver",
-        mef_score=compute_mef_score(0.78, 0.34, 0.33),
+        quality_score=compute_quality_score(0.78, 0.34, 0.33),
         domain="air_defense",
     )
     coa = _apply_framing(coa, framing)
@@ -643,7 +643,7 @@ def make_humanitarian_evacuation_case(
         actions=actions,
         chain=build_chain(actions),
         objective="protect civilians and evacuate noncombatants through secured corridors",
-        mef_score=compute_mef_score(0.68, 0.31, 0.24),
+        quality_score=compute_quality_score(0.68, 0.31, 0.24),
         domain="humanitarian_evacuation",
     )
     coa = _apply_framing(coa, framing)

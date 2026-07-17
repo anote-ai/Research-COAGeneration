@@ -23,7 +23,7 @@ from coageneration.evaluate import (
     bootstrap_ci,
     bootstrap_ci_coa_diversity,
     bootstrap_ci_doctrinal_alignment,
-    bootstrap_ci_gbc,
+    bootstrap_ci_advantage,
     bootstrap_ci_nash_gap,
     chain_coverage_score,
     coa_diversity,
@@ -34,7 +34,7 @@ from coageneration.evaluate import (
     episode_summary,
     fm30_rubric_scores,
     framing_sensitivity_delta,
-    gbc_score,
+    advantage_score,
     lanchester_wargame_outcome,
     nash_gap,
     robustness_score,
@@ -45,10 +45,10 @@ from coageneration.core import Force, SampledBestResponsePolicy, SelfPlayEngine
 from coageneration import MultiAgentCouncilPolicy
 
 
-def test_gbc_score_range() -> None:
+def test_advantage_score_range() -> None:
     blue = make_coa(force=Force.BLUE, seed=1)
     red = make_coa(force=Force.RED, seed=2)
-    score = gbc_score(blue, red)
+    score = advantage_score(blue, red)
     assert 0.0 <= score <= 1.0
 
 
@@ -60,7 +60,7 @@ def test_nash_gap_zero_sum() -> None:
 def test_robustness_score_no_responses() -> None:
     coa = make_coa(seed=5)
     score = robustness_score(coa, [])
-    assert score == coa.mef_score
+    assert score == coa.quality_score
 
 
 def test_coa_diversity_identical_coas() -> None:
@@ -259,10 +259,10 @@ def test_bootstrap_ci_doctrinal_alignment_range() -> None:
     assert 0.0 <= result.lower <= result.upper <= 1.0
 
 
-def test_bootstrap_ci_gbc_range() -> None:
+def test_bootstrap_ci_advantage_range() -> None:
     pairs = [(make_coa(force=Force.BLUE, seed=i), make_coa(force=Force.RED, seed=i + 50))
              for i in range(8)]
-    result = bootstrap_ci_gbc(pairs, n_boot=300, seed=0)
+    result = bootstrap_ci_advantage(pairs, n_boot=300, seed=0)
     assert 0.0 <= result.lower <= result.upper <= 1.0
 
 
@@ -302,7 +302,7 @@ def test_compare_coas_single_candidate() -> None:
     result = compare_coas([coa])
     assert result.best.coa_id == coa.coa_id
     assert result.diversity == 0.0
-    assert result.mef_spread == 0.0
+    assert result.quality_spread == 0.0
     assert result.pareto_optimal_ids == [coa.coa_id]
 
 
@@ -311,7 +311,7 @@ def test_compare_coas_best_has_rank_one() -> None:
     result = compare_coas(coas)
     best_score = next(s for s in result.scores if s.coa_id == result.best.coa_id)
     assert best_score.rank == 1
-    assert result.best.mef_score == max(c.mef_score for c in coas)
+    assert result.best.quality_score == max(c.quality_score for c in coas)
 
 
 def test_compare_coas_ranks_are_a_permutation() -> None:
@@ -321,11 +321,11 @@ def test_compare_coas_ranks_are_a_permutation() -> None:
     assert ranks == list(range(1, 7))
 
 
-def test_compare_coas_mef_spread_matches_range() -> None:
+def test_compare_coas_quality_spread_matches_range() -> None:
     coas = [make_coa(seed=i) for i in range(5)]
     result = compare_coas(coas)
-    mef_values = [c.mef_score for c in coas]
-    assert result.mef_spread == pytest.approx(max(mef_values) - min(mef_values))
+    quality_values = [c.quality_score for c in coas]
+    assert result.quality_spread == pytest.approx(max(quality_values) - min(quality_values))
 
 
 def test_compare_coas_pareto_optimal_includes_best() -> None:
@@ -370,10 +370,10 @@ def test_compare_selection_tradeoff_detects_doctrinal_gain() -> None:
         seed=100,
         with_chain=False,
     )
-    quality_best.mef_score = 0.60
+    quality_best.quality_score = 0.60
     doctrine_best = make_logistics_coa(force=Force.RED, seed=101)
     doctrine_best.objective = "protect civilians while restoring combat readiness"
-    doctrine_best.mef_score = 0.52
+    doctrine_best.quality_score = 0.52
 
     result = compare_selection_tradeoff(
         [quality_best, doctrine_best],

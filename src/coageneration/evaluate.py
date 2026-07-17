@@ -104,18 +104,18 @@ def bootstrap_ci_doctrinal_alignment(
     return bootstrap_ci(_mean_da, coas, n_boot=n_boot, confidence=confidence, seed=seed)
 
 
-def bootstrap_ci_gbc(
+def bootstrap_ci_advantage(
     pairs: List[Tuple[CourseOfAction, CourseOfAction]],
     n_boot: int = 1000,
     confidence: float = 0.95,
     seed: int = 0,
 ) -> BootstrapResult:
-    """Bootstrap CI for the legacy-named BLUE advantage score."""
+    """Bootstrap CI for the BLUE advantage score."""
 
-    def _mean_gbc(sample: List[Tuple[CourseOfAction, CourseOfAction]]) -> float:
-        return sum(gbc_score(b, r) for b, r in sample) / len(sample)
+    def _mean_advantage(sample: List[Tuple[CourseOfAction, CourseOfAction]]) -> float:
+        return sum(advantage_score(b, r) for b, r in sample) / len(sample)
 
-    return bootstrap_ci(_mean_gbc, pairs, n_boot=n_boot, confidence=confidence, seed=seed)
+    return bootstrap_ci(_mean_advantage, pairs, n_boot=n_boot, confidence=confidence, seed=seed)
 
 
 def bootstrap_ci_coa_diversity(
@@ -147,7 +147,7 @@ class CandidateScore:
     """Per-candidate scores within a multi-COA comparison."""
 
     coa_id: str
-    mef_score: float
+    quality_score: float
     doctrinal_alignment: float
     rank: int
 
@@ -162,7 +162,7 @@ class CoaComparison:
             synthetic quality score.
         best: The candidate with the highest synthetic quality score.
         diversity: Mean pairwise Jaccard distance of action types (0 = identical).
-        mef_spread: legacy field name for the synthetic quality-score spread.
+        quality_spread: synthetic quality-score spread.
         pareto_optimal_ids: ``coa_id`` of candidates not dominated by any other
             on both (synthetic quality score, doctrinal_alignment) simultaneously.
     """
@@ -171,7 +171,7 @@ class CoaComparison:
     scores: List[CandidateScore]
     best: CourseOfAction
     diversity: float
-    mef_spread: float
+    quality_spread: float
     pareto_optimal_ids: List[str]
 
 
@@ -202,7 +202,7 @@ class CouncilDiagnostics:
 def compare_coas(candidates: List[CourseOfAction]) -> CoaComparison:
     """Compare a set of candidate COAs for the same scenario.
 
-    Ranks candidates by the legacy-named ``mef_score`` synthetic quality score,
+    Ranks candidates by the synthetic ``quality_score`` field,
     computes doctrinal alignment for each, measures action-type diversity across
     the set, and identifies the Pareto-optimal subset on
     (quality score, doctrinal alignment) -- candidates not strictly dominated
@@ -221,7 +221,7 @@ def compare_coas(candidates: List[CourseOfAction]) -> CoaComparison:
 
     alignments = [doctrinal_alignment_score(c) for c in candidates]
     order = sorted(
-        range(len(candidates)), key=lambda i: candidates[i].mef_score, reverse=True
+        range(len(candidates)), key=lambda i: candidates[i].quality_score, reverse=True
     )
     ranks = [0] * len(candidates)
     for rank, idx in enumerate(order, start=1):
@@ -230,7 +230,7 @@ def compare_coas(candidates: List[CourseOfAction]) -> CoaComparison:
     scores = [
         CandidateScore(
             coa_id=candidates[i].coa_id,
-            mef_score=candidates[i].mef_score,
+            quality_score=candidates[i].quality_score,
             doctrinal_alignment=alignments[i],
             rank=ranks[i],
         )
@@ -243,23 +243,23 @@ def compare_coas(candidates: List[CourseOfAction]) -> CoaComparison:
         for j in range(len(candidates)):
             if i == j:
                 continue
-            mef_ge = candidates[j].mef_score >= candidates[i].mef_score
+            quality_ge = candidates[j].quality_score >= candidates[i].quality_score
             da_ge = alignments[j] >= alignments[i]
-            mef_gt = candidates[j].mef_score > candidates[i].mef_score
+            quality_gt = candidates[j].quality_score > candidates[i].quality_score
             da_gt = alignments[j] > alignments[i]
-            if mef_ge and da_ge and (mef_gt or da_gt):
+            if quality_ge and da_ge and (quality_gt or da_gt):
                 dominated = True
                 break
         if not dominated:
             pareto_optimal_ids.append(candidates[i].coa_id)
 
-    mef_values = [c.mef_score for c in candidates]
+    quality_values = [c.quality_score for c in candidates]
     return CoaComparison(
         candidates=candidates,
         scores=scores,
         best=candidates[order[0]],
         diversity=coa_diversity(candidates),
-        mef_spread=max(mef_values) - min(mef_values),
+        quality_spread=max(quality_values) - min(quality_values),
         pareto_optimal_ids=pareto_optimal_ids,
     )
 
@@ -301,17 +301,17 @@ def compare_selection_tradeoff(
         raise ValueError("at least one weight must be positive")
 
     def composite(coa: CourseOfAction) -> float:
-        quality = (coa.mef_score + 1.0) / 2.0
+        quality = (coa.quality_score + 1.0) / 2.0
         doctrine = doctrinal_alignment_score(coa)
         total = quality_weight + doctrine_weight
         return (quality_weight * quality + doctrine_weight * doctrine) / total
 
-    quality_best = max(candidates, key=lambda c: c.mef_score)
+    quality_best = max(candidates, key=lambda c: c.quality_score)
     composite_best = max(candidates, key=composite)
     return SelectionTradeoff(
         quality_best_id=quality_best.coa_id,
         composite_best_id=composite_best.coa_id,
-        quality_regret=quality_best.mef_score - composite_best.mef_score,
+        quality_regret=quality_best.quality_score - composite_best.quality_score,
         doctrinal_gain=doctrinal_alignment_score(composite_best)
         - doctrinal_alignment_score(quality_best),
         composite_score_delta=composite(composite_best) - composite(quality_best),
@@ -331,16 +331,10 @@ FM30_RUBRIC_WEIGHTS: Dict[str, float] = {
 def advantage_score(blue_coa: CourseOfAction, red_coa: CourseOfAction) -> float:
     """Internal BLUE-vs-RED advantage score in [0, 1].
 
-    This is not Generate BattleCOA (GBC) from the BattleCOA terminology; it is a
-    synthetic metric derived from the two legacy-named ``mef_score`` fields.
+    This is a synthetic metric derived from the two COA quality scores.
     """
-    raw = blue_coa.mef_score - red_coa.mef_score  # range [-2, 2]
+    raw = blue_coa.quality_score - red_coa.quality_score  # range [-2, 2]
     return (raw + 2.0) / 4.0  # normalise to [0, 1]
-
-
-def gbc_score(blue_coa: CourseOfAction, red_coa: CourseOfAction) -> float:
-    """Deprecated compatibility wrapper for :func:`advantage_score`."""
-    return advantage_score(blue_coa, red_coa)
 
 
 def nash_gap(blue_payoff: float, red_payoff: float) -> float:
@@ -351,10 +345,10 @@ def nash_gap(blue_payoff: float, red_payoff: float) -> float:
 def robustness_score(
     coa: CourseOfAction, adversarial_responses: List[CourseOfAction]
 ) -> float:
-    """Minimum legacy-named quality score across adversarial responses."""
+    """Minimum quality score across adversarial responses."""
     if not adversarial_responses:
-        return coa.mef_score
-    return min(r.mef_score for r in adversarial_responses)
+        return coa.quality_score
+    return min(r.quality_score for r in adversarial_responses)
 
 
 def coa_diversity(coas: List[CourseOfAction]) -> float:
@@ -636,8 +630,8 @@ def lanchester_wargame_outcome(
     """Stylized Lanchester-style outcome linked to COA quality scores."""
     blue = state.blue_capability_total()
     red = state.red_capability_total()
-    blue_effect = max(0.05, 1.0 + blue_coa.mef_score + doctrinal_alignment_score(blue_coa))
-    red_effect = max(0.05, 1.0 + red_coa.mef_score + doctrinal_alignment_score(red_coa))
+    blue_effect = max(0.05, 1.0 + blue_coa.quality_score + doctrinal_alignment_score(blue_coa))
+    red_effect = max(0.05, 1.0 + red_coa.quality_score + doctrinal_alignment_score(red_coa))
 
     for _ in range(max(0, steps)):
         blue_loss = attrition_rate * red * red_effect

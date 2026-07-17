@@ -1,4 +1,4 @@
-scenario_id,terrain_type,response_budget,gbc,red_quality,red_doctrinal_alignment,candidate_diversity,candidate_mef_spread,n_pareto_optimal
+scenario_id,terrain_type,response_budget,advantage,red_quality,red_doctrinal_alignment,candidate_diversity,candidate_quality_spread,n_pareto_optimal
 urban-100,urban,1,0.5507364141130886,0.06111696560372475,0.77,0.0,0.0,1
 urban-100,urban,2,0.5507364141130886,0.06111696560372475,0.77,1.0,0.04592282545973197,1
 urban-100,urban,4,0.5145448180411528,0.20588334989146792,0.59,0.888888888888889,0.19068920974747514,2

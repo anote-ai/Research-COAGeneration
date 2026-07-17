@@ -13,18 +13,11 @@ Our COA-Bench paper draft studies that problem in a small, fully offline setting
 
 The current paper is titled **"COA-Bench: A Reproducible Self-Play Benchmark for Comparing Course-of-Action Generation Policies."**
 
-## First, a Terminology Correction
+## Scope Boundary
 
-The BattleCOA Boot Camp material uses two important acronyms:
+COA-Bench is a research benchmark, not an operational battle-management system. The scalar score assigned to a generated COA is called a **synthetic COA quality score**. The pairwise BLUE-vs-RED metric is called a **BLUE advantage score**. Both are internal benchmark signals used to compare policies in a synthetic setting.
 
-- **MEF** means **Match Effectors**.
-- **GBC** means **Generate BattleCOA**.
-
-That matters because earlier internal drafts used those acronyms incorrectly for scalar scores. We corrected the paper and repository language so the benchmark now reserves MEF and GBC for the BattleCOA meanings.
-
-In this draft, the scalar score assigned to a generated COA is called a **synthetic COA quality score**. The pairwise BLUE-vs-RED metric is called a **BLUE advantage score**. Some legacy code fields still use names like `mef_score` and `gbc_score` for compatibility, but the paper no longer presents those as BattleCOA definitions.
-
-This correction is more than cosmetic. In a defense or battle-management context, acronym drift can make a research artifact look like it implements a formal decision function when it only implements a simplified metric. The paper now draws that boundary clearly.
+That boundary is important. In a defense or battle-management context, a research artifact should not look like it implements a formal decision architecture when it only implements a simplified metric. The paper now draws that boundary clearly.
 
 ## What COA-Bench Is Testing
 
@@ -51,7 +44,7 @@ Each COA is represented as a typed action structure: actions, targets, prioritie
 
 COA-Bench reports several metrics rather than relying on a single score.
 
-The **synthetic quality score** combines effectiveness, cost, and risk into a scalar in `[-1, 1]`. This is a benchmark metric, not Match Effectors.
+The **synthetic quality score** combines effectiveness, cost, and risk into a scalar in `[-1, 1]`. This is a benchmark metric, not asset-effect matching.
 
 The **BLUE advantage score** compares a BLUE COA against a RED COA by measuring relative synthetic quality. A lower BLUE advantage score means RED has become a stronger opponent in that pairing.
 
@@ -111,7 +104,7 @@ It does not use real intelligence data, live planners, classified data, human-su
 
 The paper should be read as a methods contribution and an early falsifiable experiment, not as evidence that the system can generate real-world military plans.
 
-That boundary is especially important because BattleCOA terminology points toward a much richer decision architecture. Match Effectors and Generate BattleCOA are formal decision functions in that framing. COA-Bench currently implements a simplified research harness around typed COAs, self-play, and offline scoring.
+That boundary is especially important because BattleCOA-style planning points toward a much richer decision architecture. COA-Bench currently implements a simplified research harness around typed COAs, self-play, and offline scoring.
 
 ## Why It Matters
 
@@ -130,7 +123,6 @@ Those are the kinds of questions we need before claiming progress on more realis
 
 The next version should expand the scenario corpus, replace deterministic framing rules with richer sampled generation, validate the doctrinal rubric with experts, and evaluate the LLM-backed policy already present in the repository.
 
-Longer term, COA-Bench should connect more directly to the BattleCOA framing: Match Effectors should produce ranked EffectEffectorMatches, and Generate BattleCOA should build structured BattleCOA graphs from those matches. The current work is a smaller stepping stone: a reproducible self-play harness that makes policy comparison and benchmark failure modes visible.
+Longer term, COA-Bench should connect more directly to graph-structured BattleCOA-style planning. The current work is a smaller stepping stone: a reproducible self-play harness that makes policy comparison and benchmark failure modes visible.
 
 That is a humble but useful place to start.
-

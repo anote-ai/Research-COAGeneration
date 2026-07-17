@@ -39,23 +39,14 @@ Venue-specific manuscripts are under `papers/`, experiments under `experiments/`
 benchmark definitions under `benchmarks/`, and generated artifacts under `results/`.
 The shared implementation remains under `src/metarouter/`.
 
-## BattleCOA Terminology
+## COA-Bench Metrics
 
-The BattleCOA Boot Camp material uses:
+The COA-Bench implementation uses synthetic evaluation metrics for offline
+benchmarking:
 
-- **MEF** = **Match Effectors**, a DecisionFunction that matches desired
-  BattleEffects to candidate BattleAssets and returns ranked
-  EffectEffectorMatches.
-- **GBC** = **Generate BattleCOA**, a DecisionFunction that builds BattleCOAs
-  from one or more EffectEffectorMatches and supporting BattleEvents.
-
-This repository still contains legacy code fields named `mef_score` and
-`gbc_score`. In the current implementation these are not the Boot Camp MEF or
-GBC definitions. They are synthetic evaluation metrics:
-
-- `mef_score`: an internal scalar **COA quality score** combining effectiveness,
+- `quality_score`: an internal scalar **COA quality score** combining effectiveness,
   cost, and risk.
-- `gbc_score`: an internal **BLUE-vs-RED advantage score** derived from the
+- `advantage_score`: an internal **BLUE-vs-RED advantage score** derived from the
   two COA quality scores.
 
 A **Course of Action (COA)** is assigned an internal quality score:

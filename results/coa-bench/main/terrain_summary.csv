@@ -1,4 +1,4 @@
-terrain_type,n_scenarios,gbc_single,gbc_sampled,gbc_doctrine_aware,blue_win_rate_single,blue_win_rate_sampled,blue_win_rate_doctrine_aware,blue_win_rate_council,selection_changed_rate,candidate_diversity,council_diversity,council_revised_selection_rate
+terrain_type,n_scenarios,advantage_single,advantage_sampled,advantage_doctrine_aware,blue_win_rate_single,blue_win_rate_sampled,blue_win_rate_doctrine_aware,blue_win_rate_council,selection_changed_rate,candidate_diversity,council_diversity,council_revised_selection_rate
 air_defense,10,0.5234165961569871,0.48566188398870597,0.49019069610689336,0.7,0.6,0.5,0.6,0.6,0.6339880952380953,0.3333333333333334,0.8
 maritime,10,0.5143826103113605,0.4890911650366051,0.49041669233565316,1,1,1,1,0.5,0.7107142857142857,0.39999999999999997,0.9
 mixed,10,0.5217962950854884,0.49650484981073306,0.4978303771097811,0.9,0.5,0.5,0.5,0.5,0.7107142857142857,0.9400000000000001,1

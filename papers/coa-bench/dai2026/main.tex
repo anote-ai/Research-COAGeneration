@@ -13,7 +13,7 @@
 % \acmISBN{978-X-XXXX-XXXX-X/26/11}
 % \acmSubmissionID{DAI26-XXXX}
 
-\title{Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for MEF \& GBC}
+\title{Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for COA matching \& COA generation}
 
 % DAI Industry Track is single blind. Replace placeholders before submission.
 \author{Author Names Required}
@@ -27,7 +27,7 @@
 \begin{document}
 
 \begin{abstract}
-Course-of-action (COA) generation is a distributed planning problem: a system must propose structured candidate actions, evaluate them against an adversarial response, and surface options that remain tactically coherent under changing conditions. We present COA-Bench, a small offline benchmark and reproducibility artifact for comparing COA generation policies through self-play. Following the BattleCOA terminology, we reserve MEF for Match Effectors and GBC for Generate BattleCOA; the present artifact does not implement either DecisionFunction directly. Instead, it represents COAs as typed action chains with conditional branches, assigns a synthetic COA quality score, compares opposing COAs with a BLUE-vs-RED advantage score and Nash-gap distance, and scores doctrinal coherence with an FM 3-0-inspired heuristic rubric. Across 50 synthetic scenarios spanning five operational templates, a sampled best-response policy that draws eight RED candidates reduces BLUE advantage from .516 to .485 and BLUE wargame win rate from .920 to .820; a two-stage multi-agent council with five BLUE proposer agents, RED-team adjudication, and critique-driven revision obtains .509 BLUE advantage and .820 BLUE win rate. We also identify and fix a benchmark-design issue in which scenario framing was stored as metadata but had no effect on generated COA content. COA-Bench is not an operational battle-management system and uses no real, classified, proprietary, or human-subject data. The contribution is an inspectable evaluation harness, preliminary benchmark evidence, and lessons for building auditable agentic planning artifacts.
+Course-of-action (COA) generation is a distributed planning problem: a system must propose structured candidate actions, evaluate them against an adversarial response, and surface options that remain tactically coherent under changing conditions. We present COA-Bench, a small offline benchmark and reproducibility artifact for comparing COA generation policies through self-play. Following the BattleCOA terminology, we reserve COA matching for asset-effect matching and COA generation for course-of-action generation; the present artifact does not implement either DecisionFunction directly. Instead, it represents COAs as typed action chains with conditional branches, assigns a synthetic COA quality score, compares opposing COAs with a BLUE-vs-RED advantage score and Nash-gap distance, and scores doctrinal coherence with an FM 3-0-inspired heuristic rubric. Across 50 synthetic scenarios spanning five operational templates, a sampled best-response policy that draws eight RED candidates reduces BLUE advantage from .516 to .485 and BLUE wargame win rate from .920 to .820; a two-stage multi-agent council with five BLUE proposer agents, RED-team adjudication, and critique-driven revision obtains .509 BLUE advantage and .820 BLUE win rate. We also identify and fix a benchmark-design issue in which scenario framing was stored as metadata but had no effect on generated COA content. COA-Bench is not an operational battle-management system and uses no real, classified, proprietary, or human-subject data. The contribution is an inspectable evaluation harness, preliminary benchmark evidence, and lessons for building auditable agentic planning artifacts.
 \end{abstract}
 
 \ccsdesc[500]{Computing methodologies~Multi-agent systems}
@@ -44,7 +44,7 @@ Course-of-action development asks a planning system to propose and compare possi
 
 This paper presents COA-Bench as an industry-track benchmark report. The artifact is intentionally modest: it is offline, synthetic, deterministic where possible, and designed to expose assumptions rather than hide them behind a large model. It supports the evaluation of COA generation policies as reusable software components, records structured metrics, and makes failures inspectable.
 
-The contribution is not an operational planner. Instead, COA-Bench makes three industry-facing contributions: (1) a formal adversarial COA-generation setup connecting Match Effectors, Generate BattleCOA, and best-response evaluation without conflating those DecisionFunctions with benchmark metrics; (2) a reproducible offline harness with typed COA traces, BLUE/RED policy comparison, and doctrine-inspired diagnostics; and (3) empirical evidence that sampled adversarial response changes win-rate and plan-quality conclusions relative to single-response evaluation.
+The contribution is not an operational planner. Instead, COA-Bench makes three industry-facing contributions: (1) a formal adversarial COA-generation setup connecting asset-effect matching, course-of-action generation, and best-response evaluation without conflating those DecisionFunctions with benchmark metrics; (2) a reproducible offline harness with typed COA traces, BLUE/RED policy comparison, and doctrine-inspired diagnostics; and (3) empirical evidence that sampled adversarial response changes win-rate and plan-quality conclusions relative to single-response evaluation.
 
 Concretely, the artifact provides:
 
@@ -52,17 +52,15 @@ Concretely, the artifact provides:
   \item a typed representation of synthetic COAs as action chains, conditional branches, objectives, force assignments, and optional tool calls;
   \item a self-play protocol comparing single-sample, sampled best-response, doctrine-aware response, and multi-agent council policies;
   \item a multi-metric evaluation suite including synthetic quality, BLUE-vs-RED advantage, Nash-gap distance, heuristic doctrinal alignment, candidate diversity, Pareto-frontier analysis, and a stylized wargame check;
-  \item a documented terminology correction separating BattleCOA MEF/GBC DecisionFunctions from legacy internal metric names; and
+  \item a clear scope boundary for BattleCOA-inspired benchmark metrics; and
   \item a reproducibility package that regenerates the reported results without API keys, live systems, or sensitive data.
 \end{itemize}
 
 The implementation, experiment script, and result artifacts are available at \url{https://github.com/anote-ai/research-coageneration}.
 
-\section{BattleCOA Terminology and Scope}
+\section{BattleCOA Scope}
 
-The BattleCOA Boot Camp material uses MEF to mean Match Effectors: a DecisionFunction that searches for BattleAssets capable of achieving a requested BattleEffect and returns ranked EffectEffectorMatches. It uses GBC to mean Generate BattleCOA: a DecisionFunction that uses those matches as seeds for constructing BattleCOA hypergraphs.
-
-Earlier internal drafts used MEF and GBC as names for scalar metrics. We corrected that terminology. In this paper, the scalar assigned to a generated COA is a \emph{synthetic COA quality score}. The pairwise score comparing BLUE and RED is a \emph{BLUE-vs-RED advantage score}. The codebase preserves legacy fields such as \texttt{mef\_score} and \texttt{gbc\_score} for compatibility, but the manuscript does not present them as BattleCOA definitions.
+The BattleCOA Boot Camp material motivates a richer decision architecture in which candidate plans are represented as event structures with assets, effects, paths, and supporting relationships. COA-Bench uses that framing only as inspiration for a reproducible benchmark. In this paper, the scalar assigned to a generated COA is a \emph{synthetic COA quality score}. The pairwise score comparing BLUE and RED is a \emph{BLUE-vs-RED advantage score}. These are internal benchmark metrics, not claims about operational BattleCOA decision functions.
 
 This distinction is important for an industry venue. COA-Bench is a research harness for reproducible evaluation, not a claim to implement the full Transformational Model for Decision Advantage or any operational battle-management workflow.
 
@@ -106,7 +104,7 @@ Each COA receives a synthetic quality score in $[-1,1]$ combining effectiveness,
 q = w_e e - w_c c - w_r r,
 \end{equation}
 
-with default weights $w_e=.5$, $w_c=.3$, and $w_r=.2$. This score is an internal benchmark metric, not Match Effectors.
+with default weights $w_e=.5$, $w_c=.3$, and $w_r=.2$. This score is an internal benchmark metric, not asset-effect matching.
 
 \subsection{Pairwise Evaluation}
 
@@ -243,7 +241,7 @@ During development, we found that the scenario-framing parameter was a silent no
 
 \section{Industry Lessons}
 
-First, benchmark terminology must be controlled. Reusing MEF and GBC for internal metrics created a misleading connection to BattleCOA DecisionFunctions. The correction now distinguishes formal decision functions from synthetic evaluation scores.
+First, benchmark terminology must be controlled. Reusing COA matching and COA generation for internal metrics created a misleading connection to BattleCOA DecisionFunctions. The correction now distinguishes formal decision functions from synthetic evaluation scores.
 
 Second, adversarial sampling changes conclusions. A COA that looks strong against one response may look weaker when the opponent samples several plausible responses.
 
@@ -255,7 +253,7 @@ Fifth, industry-facing agentic planning benchmarks need explicit observability. 
 
 \section{Threats to Validity and Ethics}
 
-COA-Bench is synthetic and offline. It uses no real planner, real intelligence data, classified data, proprietary data, or human-subject data. Its main internal-validity risk is metric misspecification: the synthetic quality score, doctrinal rubric, and wargame check may reward artifacts that would not survive expert review. Its external-validity risk is scenario simplicity: 50 templated cases cannot represent the complexity of operational planning. Its construct-validity risk is that MEF and GBC are scoped as motivating DecisionFunctions, while the present benchmark evaluates typed COA artifacts rather than a full BattleCOA pipeline. The current evaluated policies are simple random-sampling policies; the repository contains an LLM-backed policy, but it is not evaluated in this paper.
+COA-Bench is synthetic and offline. It uses no real planner, real intelligence data, classified data, proprietary data, or human-subject data. Its main internal-validity risk is metric misspecification: the synthetic quality score, doctrinal rubric, and wargame check may reward artifacts that would not survive expert review. Its external-validity risk is scenario simplicity: 50 templated cases cannot represent the complexity of operational planning. Its construct-validity risk is that COA matching and COA generation are scoped as motivating DecisionFunctions, while the present benchmark evaluates typed COA artifacts rather than a full BattleCOA pipeline. The current evaluated policies are simple random-sampling policies; the repository contains an LLM-backed policy, but it is not evaluated in this paper.
 
 Because COA generation concerns high-impact defense contexts, any future live evaluation would require strict data governance, human review, security controls, expert validation, and clear limits on autonomous action. The current artifact performs no external action and is intended only for research on evaluation methodology.
 

@@ -69,21 +69,21 @@ def main() -> None:
 
     blue_coa = make_coa(force=Force.BLUE, n_actions=3, seed=42)
     red_coa = make_coa(force=Force.RED, n_actions=3, seed=99)
-    gbc = advantage_score(blue_coa, red_coa)
+    advantage = advantage_score(blue_coa, red_coa)
 
     if HAS_RICH:
         console = Console()
         console.print("\n[bold]Episode Summary[/bold]")
         for k, v in summary.items():
             console.print(f"  {k}: {v}")
-        console.print(f"\n[bold]Advantage Score (BLUE vs RED):[/bold] {gbc:.4f}")
-        console.print(f"BLUE quality: {blue_coa.mef_score:.4f}")
-        console.print(f"RED quality:  {red_coa.mef_score:.4f}")
+        console.print(f"\n[bold]Advantage Score (BLUE vs RED):[/bold] {advantage:.4f}")
+        console.print(f"BLUE quality: {blue_coa.quality_score:.4f}")
+        console.print(f"RED quality:  {red_coa.quality_score:.4f}")
     else:
         print("\nEpisode Summary:", summary)
-        print(f"Advantage Score: {gbc:.4f}")
-        print(f"BLUE quality: {blue_coa.mef_score:.4f}")
-        print(f"RED quality:  {red_coa.mef_score:.4f}")
+        print(f"Advantage Score: {advantage:.4f}")
+        print(f"BLUE quality: {blue_coa.quality_score:.4f}")
+        print(f"RED quality:  {red_coa.quality_score:.4f}")
 
 
 if __name__ == "__main__":
