@@ -1,0 +1,209 @@
+\begin{thebibliography}{26}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[{Bakhtin et~al.(2022)Bakhtin, Brown, Dinan, Farina, Flaherty, Fried,
+  Goff, Gray, Hu, Jacob et~al.}]{bakhtin2022cicero}
+Bakhtin, A.; Brown, N.; Dinan, E.; Farina, G.; Flaherty, C.; Fried, D.; Goff,
+  A.; Gray, J.; Hu, H.; Jacob, A.~P.; et~al. 2022.
+\newblock Human-level play in the game of Diplomacy by combining language
+  models with strategic reasoning.
+\newblock \emph{Science}, 378(6624): 1067--1074.
+
+\bibitem[{{BIG-bench authors}(2023)}]{srivastava2023beyond}
+{BIG-bench authors}. 2023.
+\newblock Beyond the Imitation Game: Quantifying and extrapolating the
+  capabilities of language models.
+\newblock \emph{Transactions on Machine Learning Research}.
+
+\bibitem[{Brown and Sandholm(2019)}]{brown2019superhuman}
+Brown, N.; and Sandholm, T. 2019.
+\newblock Superhuman AI for multiplayer poker.
+\newblock \emph{Science}, 365(6456): 885--890.
+
+\bibitem[{{Headquarters, Department of the Army}(2022)}]{fm30}
+{Headquarters, Department of the Army}. 2022.
+\newblock FM 3-0: Operations.
+\newblock Technical report, U.S. Army.
+
+\bibitem[{Jimenez et~al.(2024)Jimenez, Yang, Wettig, Yao, Pei, Press, and
+  Narasimhan}]{jimenez2024swebench}
+Jimenez, C.~E.; Yang, J.; Wettig, A.; Yao, S.; Pei, K.; Press, O.; and
+  Narasimhan, K. 2024.
+\newblock SWE-bench: Can Language Models Resolve Real-World GitHub Issues?
+\newblock In \emph{International Conference on Learning Representations}.
+
+\bibitem[{Kim et~al.(2024)Kim, Moon, Tabrizi, Lee, Mahoney, Keutzer, and
+  Gholami}]{kim2024llmcompiler}
+Kim, S.; Moon, S.; Tabrizi, R.; Lee, N.; Mahoney, M.~W.; Keutzer, K.; and
+  Gholami, A. 2024.
+\newblock An LLM Compiler for Parallel Function Calling.
+\newblock In \emph{Proceedings of the 41st International Conference on Machine
+  Learning}, volume 235 of \emph{Proceedings of Machine Learning Research},
+  24370--24391.
+
+\bibitem[{Kokel et~al.(2025)Kokel, Katz, Srinivas, and
+  Sohrabi}]{kokel2025acpbench}
+Kokel, H.; Katz, M.; Srinivas, K.; and Sohrabi, S. 2025.
+\newblock {ACPBench}: Reasoning About Action, Change, and Planning.
+\newblock \emph{Proceedings of the AAAI Conference on Artificial Intelligence},
+  39(25): 26559--26568.
+
+\bibitem[{Lanchester(1916)}]{lanchester1916}
+Lanchester, F.~W. 1916.
+\newblock Aircraft in Warfare: The Dawn of the Fourth Arm.
+
+\bibitem[{Liang et~al.(2023)Liang, Bommasani, Lee, Tsipras, Soylu, Yasunaga,
+  Zhang, Narayanan, Wu, Kumar, Newman, Yuan, Yan, Zhang, Cosgrove, Manning, Re,
+  Acosta-Navas, Hudson, Zelikman, Durmus, Ladhak, Rong, Ren, Yao, Wang,
+  Santhanam, Orr, Zheng, Yuksekgonul, Suzgun, Kim, Guha, Chatterji, Khattab,
+  Henderson, Huang, Chi, Xie, Santurkar, Ganguli, Hashimoto, Icard, Zhang,
+  Chaudhary, Wang, Li, Mai, Zhang, and Koreeda}]{liang2023holistic}
+Liang, P.; Bommasani, R.; Lee, T.; Tsipras, D.; Soylu, D.; Yasunaga, M.; Zhang,
+  Y.; Narayanan, D.; Wu, Y.; Kumar, A.; Newman, B.; Yuan, B.; Yan, B.; Zhang,
+  C.; Cosgrove, C.; Manning, C.~D.; Re, C.; Acosta-Navas, D.; Hudson, D.~A.;
+  Zelikman, E.; Durmus, E.; Ladhak, F.; Rong, F.; Ren, H.; Yao, H.; Wang, J.;
+  Santhanam, K.; Orr, L.; Zheng, L.; Yuksekgonul, M.; Suzgun, M.; Kim, N.;
+  Guha, N.; Chatterji, N.~S.; Khattab, O.; Henderson, P.; Huang, Q.; Chi,
+  R.~A.; Xie, S.~M.; Santurkar, S.; Ganguli, S.; Hashimoto, T.; Icard, T.;
+  Zhang, T.; Chaudhary, V.; Wang, W.; Li, X.; Mai, Y.; Zhang, Y.; and Koreeda,
+  Y. 2023.
+\newblock Holistic Evaluation of Language Models.
+\newblock \emph{Transactions on Machine Learning Research}.
+
+\bibitem[{Liu et~al.(2024)Liu, Yu, Zhang, Xu, Lei, Lai, Gu, Ding, Men, Yang
+  et~al.}]{liu2024agentbench}
+Liu, X.; Yu, H.; Zhang, H.; Xu, Y.; Lei, X.; Lai, H.; Gu, Y.; Ding, H.; Men,
+  K.; Yang, K.; et~al. 2024.
+\newblock AgentBench: Evaluating LLMs as Agents.
+\newblock In \emph{International Conference on Learning Representations}.
+
+\bibitem[{Lu et~al.(2025)Lu, Holleis, Zhang, Aumayer, Nan, Bai, Ma, Ma, Li,
+  Yin, Wang, and Pang}]{lu2025toolsandbox}
+Lu, J.; Holleis, T.; Zhang, Y.; Aumayer, B.; Nan, F.; Bai, H.; Ma, S.; Ma, S.;
+  Li, M.; Yin, G.; Wang, Z.; and Pang, R. 2025.
+\newblock {T}ool{S}andbox: A Stateful, Conversational, Interactive Evaluation
+  Benchmark for {LLM} Tool Use Capabilities.
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  NAACL 2025}, 1160--1183. Association for Computational Linguistics.
+
+\bibitem[{Madaan et~al.(2023)Madaan, Tandon, Gupta, Hallinan, Gao, Wiegreffe,
+  Alon, Dziri, Prabhumoye, Yang, Gupta, Majumder, Hermann, Welleck,
+  Yazdanbakhsh, and Clark}]{madaan2023selfrefine}
+Madaan, A.; Tandon, N.; Gupta, P.; Hallinan, S.; Gao, L.; Wiegreffe, S.; Alon,
+  U.; Dziri, N.; Prabhumoye, S.; Yang, Y.; Gupta, S.; Majumder, B.~P.; Hermann,
+  K.; Welleck, S.; Yazdanbakhsh, A.; and Clark, P. 2023.
+\newblock {Self-Refine}: Iterative Refinement with Self-Feedback.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~36.
+
+\bibitem[{Ou et~al.(2025)Ou, Guo, Gandhi, Neubig, and
+  Yue}]{ou2025agentdiagnose}
+Ou, T.; Guo, W.; Gandhi, A.; Neubig, G.; and Yue, X. 2025.
+\newblock {A}gent{D}iagnose: An Open Toolkit for Diagnosing {LLM} Agent
+  Trajectories.
+\newblock In \emph{Proceedings of the 2025 Conference on Empirical Methods in
+  Natural Language Processing: System Demonstrations}, 207--215. Association
+  for Computational Linguistics.
+
+\bibitem[{Qin et~al.(2024)Qin, Liang, Ye, Zhu, Yan, Lu, Lin, Cong, Tang, Qian
+  et~al.}]{qin2024toolllm}
+Qin, Y.; Liang, S.; Ye, Y.; Zhu, K.; Yan, L.; Lu, Y.; Lin, Y.; Cong, X.; Tang,
+  X.; Qian, B.; et~al. 2024.
+\newblock ToolLLM: Facilitating Large Language Models to Master 16000+
+  Real-world APIs.
+\newblock In \emph{International Conference on Learning Representations}.
+
+\bibitem[{Schelling(1960)}]{schelling1960}
+Schelling, T.~C. 1960.
+\newblock \emph{The Strategy of Conflict}.
+\newblock Cambridge, MA: Harvard University Press.
+
+\bibitem[{Schick et~al.(2023)Schick, Dwivedi-Yu, Dessi, Raileanu, Lomeli,
+  Hambro, Zettlemoyer, Cancedda, and Scialom}]{schick2023toolformer}
+Schick, T.; Dwivedi-Yu, J.; Dessi, R.; Raileanu, R.; Lomeli, M.; Hambro, E.;
+  Zettlemoyer, L.; Cancedda, N.; and Scialom, T. 2023.
+\newblock Toolformer: Language Models Can Teach Themselves to Use Tools.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~36.
+
+\bibitem[{Shinn et~al.(2023)Shinn, Cassano, Gopinath, Narasimhan, and
+  Yao}]{shinn2023reflexion}
+Shinn, N.; Cassano, F.; Gopinath, A.; Narasimhan, K.; and Yao, S. 2023.
+\newblock Reflexion: Language Agents with Verbal Reinforcement Learning.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~36.
+
+\bibitem[{Shridhar et~al.(2021)Shridhar, Yuan, C{\^o}t{\'e}, Bisk, Trischler,
+  and Hausknecht}]{shridhar2021alfworld}
+Shridhar, M.; Yuan, X.; C{\^o}t{\'e}, M.-A.; Bisk, Y.; Trischler, A.; and
+  Hausknecht, M. 2021.
+\newblock {ALFWorld}: Aligning Text and Embodied Environments for Interactive
+  Learning.
+\newblock In \emph{International Conference on Learning Representations}.
+
+\bibitem[{Silver et~al.(2018)Silver, Hubert, Schrittwieser, Antonoglou, Lai,
+  Guez, Lanctot, Sifre, Kumaran, Graepel, Lillicrap, Simonyan, and
+  Hassabis}]{silver2018alphazero}
+Silver, D.; Hubert, T.; Schrittwieser, J.; Antonoglou, I.; Lai, M.; Guez, A.;
+  Lanctot, M.; Sifre, L.; Kumaran, D.; Graepel, T.; Lillicrap, T.; Simonyan,
+  K.; and Hassabis, D. 2018.
+\newblock A general reinforcement learning algorithm that masters chess, shogi,
+  and Go through self-play.
+\newblock \emph{Science}, 362(6419): 1140--1144.
+
+\bibitem[{Vinyals et~al.(2019)Vinyals, Babuschkin, Czarnecki, Mathieu, Dudzik,
+  Chung, Choi, Powell, Ewalds, Georgiev et~al.}]{vinyals2019alphastar}
+Vinyals, O.; Babuschkin, I.; Czarnecki, W.~M.; Mathieu, M.; Dudzik, A.; Chung,
+  J.; Choi, D.~H.; Powell, R.; Ewalds, T.; Georgiev, P.; et~al. 2019.
+\newblock Grandmaster level in StarCraft II using multi-agent reinforcement
+  learning.
+\newblock \emph{Nature}, 575(7782): 350--354.
+
+\bibitem[{Yao et~al.(2024)Yao, Shinn, Razavi, and Narasimhan}]{yao2024taubench}
+Yao, S.; Shinn, N.; Razavi, P.; and Narasimhan, K. 2024.
+\newblock tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World
+  Domains.
+\newblock \emph{arXiv preprint arXiv:2406.12045}.
+
+\bibitem[{Yao et~al.(2023{\natexlab{a}})Yao, Yu, Zhao, Shafran, Griffiths, Cao,
+  and Narasimhan}]{yao2023tree}
+Yao, S.; Yu, D.; Zhao, J.; Shafran, I.; Griffiths, T.~L.; Cao, Y.; and
+  Narasimhan, K. 2023{\natexlab{a}}.
+\newblock {Tree of Thoughts}: Deliberate Problem Solving with Large Language
+  Models.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~36.
+
+\bibitem[{Yao et~al.(2023{\natexlab{b}})Yao, Zhao, Yu, Du, Shafran, Narasimhan,
+  and Cao}]{yao2023react}
+Yao, S.; Zhao, J.; Yu, D.; Du, N.; Shafran, I.; Narasimhan, K.; and Cao, Y.
+  2023{\natexlab{b}}.
+\newblock ReAct: Synergizing Reasoning and Acting in Language Models.
+\newblock In \emph{International Conference on Learning Representations}.
+
+\bibitem[{Zhang et~al.(2026)Zhang, Ganapavarapu, Jayaraman, Agrawal, Patel, and
+  Fokoue}]{zhang2026spiral}
+Zhang, Y.; Ganapavarapu, G.; Jayaraman, S.; Agrawal, B.; Patel, D.; and Fokoue,
+  A. 2026.
+\newblock {SPIRAL}: Symbolic {LLM} Planning via Grounded and Reflective Search.
+\newblock \emph{Proceedings of the AAAI Conference on Artificial Intelligence},
+  40(43): 36527--36535.
+
+\bibitem[{Zheng et~al.(2025)Zheng, Cui, Xie, Pan, Chen, and
+  He}]{zheng2025planningarena}
+Zheng, Z.; Cui, T.; Xie, C.; Pan, J.; Chen, Q.; and He, L. 2025.
+\newblock {P}lanning{A}rena: A Modular Benchmark for Multidimensional
+  Evaluation of Planning and Tool Learning.
+\newblock In \emph{Proceedings of the 63rd Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, 31047--31086.
+  Association for Computational Linguistics.
+
+\bibitem[{Zhou et~al.(2024)Zhou, Xu, Zhu, Zhou, Lo, Sridhar, Cheng, Ou, Bisk,
+  Fried, Alon, and Neubig}]{zhou2024webarena}
+Zhou, S.; Xu, F.~F.; Zhu, H.; Zhou, X.; Lo, R.; Sridhar, A.; Cheng, X.; Ou, T.;
+  Bisk, Y.; Fried, D.; Alon, U.; and Neubig, G. 2024.
+\newblock {WebArena}: A Realistic Web Environment for Building Autonomous
+  Agents.
+\newblock In \emph{International Conference on Learning Representations}.
+
+\end{thebibliography}
