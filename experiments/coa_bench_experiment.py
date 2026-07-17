@@ -29,11 +29,11 @@ from coageneration import (
     LLMPolicy,
     SampledBestResponsePolicy,
     SelfPlayEngine,
+    advantage_score,
     bootstrap_ci,
     compare_coas,
     doctrinal_alignment_score,
     framing_sensitivity_delta,
-    gbc_score,
     lanchester_wargame_outcome,
     nash_gap,
 )
@@ -49,6 +49,10 @@ N_SAMPLES = 8  # candidates per SampledBestResponsePolicy call
 
 
 def to_payoff(mef_score: float) -> float:
+<<<<<<< HEAD
+=======
+    """Rescale a legacy-named [-1, 1] quality score to a [0, 1] payoff."""
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
     return (mef_score + 1.0) / 2.0
 
 
@@ -166,6 +170,7 @@ def main() -> None:
             wargame_sampled = lanchester_wargame_outcome(state, blue_coa, red_sampled)
             wargame_llm = lanchester_wargame_outcome(state, blue_coa, red_llm) if red_llm else None
 
+<<<<<<< HEAD
             row_idx = len(rows)
             row = {
                 "scenario_id": case.profile.scenario_id,
@@ -200,32 +205,77 @@ def main() -> None:
             print(f"  [{len(rows):3d}/{ N_SEEDS * 3}] {case.profile.scenario_id}", end="\r")
 
     print()
+=======
+            rows.append(
+                {
+                    "scenario_id": case.profile.scenario_id,
+                    "gbc_single": advantage_score(blue_coa, red_single),
+                    "gbc_sampled": advantage_score(blue_coa, red_sampled),
+                    "nash_gap_single": nash_gap(
+                        to_payoff(blue_coa.mef_score), to_payoff(red_single.mef_score)
+                    ),
+                    "nash_gap_sampled": nash_gap(
+                        to_payoff(blue_coa.mef_score), to_payoff(red_sampled.mef_score)
+                    ),
+                    "blue_doctrinal_alignment": doctrinal_alignment_score(blue_coa),
+                    "red_doctrinal_alignment_single": doctrinal_alignment_score(red_single),
+                    "red_doctrinal_alignment_sampled": doctrinal_alignment_score(red_sampled),
+                    "candidate_diversity": comparison.diversity,
+                    "candidate_mef_spread": comparison.mef_spread,
+                    "n_pareto_optimal": len(comparison.pareto_optimal_ids),
+                    "blue_wins_single": wargame_single["winner"] == "blue",
+                    "blue_wins_sampled": wargame_sampled["winner"] == "blue",
+                }
+            )
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
 
     def boot(key: str):
         vals = [r[key] for r in rows if r.get(key) is not None]
         return bootstrap_ci(lambda s: mean(s), vals, n_boot=1000, seed=0)
 
+<<<<<<< HEAD
     print(f"\n== Best-response comparison ({len(rows)} scenarios) ==")
     print(f"GBC (single):    {boot('gbc_single')}")
     print(f"GBC (sampled):   {boot('gbc_sampled')}")
     if has_llm:
         print(f"GBC (LLM):       {boot('gbc_llm')}")
+=======
+    print(f"COA-Bench experiment: {len(rows)} scenarios "
+          f"({N_SEEDS} seeds x 3 templates), {N_SAMPLES} candidates/sample\n")
+
+    print("== Best-response comparison: single random sample vs. sampled-best-response ==")
+    print(f"Advantage score (single):    {boot('gbc_single')}")
+    print(f"Advantage score (sampled):   {boot('gbc_sampled')}")
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
     print(f"Nash gap (single):  {boot('nash_gap_single')}")
     print(f"Nash gap (sampled): {boot('nash_gap_sampled')}")
     if has_llm:
         print(f"Nash gap (LLM):    {boot('nash_gap_llm')}")
 
+<<<<<<< HEAD
     print("\n== Doctrinal alignment ==")
     print(f"Blue (fixed):               {boot('blue_doctrinal_alignment')}")
     print(f"Red, single-sample:         {boot('red_doctrinal_alignment_single')}")
+=======
+    print("\n== Doctrinal alignment: does quality-greedy selection cost doctrinal coherence? ==")
+    print(f"Blue (fixed):              {boot('blue_doctrinal_alignment')}")
+    print(f"Red, single-sample:        {boot('red_doctrinal_alignment_single')}")
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
     print(f"Red, sampled-best-response: {boot('red_doctrinal_alignment_sampled')}")
     if has_llm:
         print(f"Red, LLM:                   {boot('red_doctrinal_alignment_llm')}")
 
+<<<<<<< HEAD
     print("\n== Multi-COA comparison ==")
     print(f"Candidate diversity:   {boot('candidate_diversity')}")
     print(f"Candidate MEF spread:  {boot('candidate_mef_spread')}")
     print(f"Pareto-optimal count:  {boot('n_pareto_optimal')}")
+=======
+    print("\n== Multi-COA comparison (compare_coas over the 8 sampled candidates) ==")
+    print(f"Candidate diversity:    {boot('candidate_diversity')}")
+    print(f"Candidate quality spread:   {boot('candidate_mef_spread')}")
+    print(f"Pareto-optimal count:   {boot('n_pareto_optimal')}")
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
 
     bwr_single = mean(r["blue_wins_single"] for r in rows)
     bwr_sampled = mean(r["blue_wins_sampled"] for r in rows)

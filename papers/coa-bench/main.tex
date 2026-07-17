@@ -40,7 +40,11 @@
 \begin{document}
 
 \begin{abstract}
+<<<<<<< HEAD
 Military course-of-action (COA) generation is a recurring planning task in which a force must propose, compare, and select among candidate plans under an adversarial response. We present COA-Bench, a small, fully offline, reproducible framework for studying COA generation policies under self-play. The framework represents a COA as a typed, chainable sequence of actions with an associated Mission Effectiveness Function (MEF) score, evaluates pairs of opposing COAs with a game-based comparison (GBC) score and Nash-gap distance, and scores doctrinal coherence with a heuristic FM 3-0-inspired rubric. We compare three RED response policies across 90 synthetic scenarios spanning three operational templates (urban stability, maritime interdiction, multi-domain combat): single random response, sampled best-of-8, and an LLM-backed policy using Claude (\path{claude-haiku-4-5-20251001}). Sampled best-response produces measurably stronger RED COAs by MEF score, lowering BLUE's wargame win rate from 0.900 to 0.811. The LLM policy produces the highest doctrinal alignment of any RED policy (0.804, approaching BLUE's 0.847) but the lowest MEF effectiveness -- BLUE wins \emph{more} against LLM RED (0.911) than against random single-sample RED (0.900). This decoupling -- high rubric score, low strategic effectiveness -- reveals that the FM 3-0 doctrinal rubric and the MEF function measure partially distinct properties, which is itself a benchmark diagnostic. We further show that the benchmark's scenario-framing parameter (blue / neutral / adversary), originally stored as scenario metadata only, previously had no effect on generated COA content; we trace this to specific generator and rubric interactions, wire framing into the generated objective text and action mix, and report a measured framing-sensitivity effect, the construction of which we describe explicitly because it is currently deterministic rather than sampled from a richer model. All metrics, scenarios, and policies used here are reused without modification from the existing \texttt{coageneration} library; this paper's only new artifact is the experiment script, the framing wiring, and this writeup. Given the moderate scenario count (N=90) and an unvalidated heuristic doctrinal rubric, we present these as a methods contribution and a set of preliminary, falsifiable findings rather than evidence about real-world COA quality.
+=======
+Military course-of-action (COA) generation is a recurring planning task in which a force must propose, compare, and select among candidate plans under an adversarial response. We present COA-Bench, a small, fully offline, reproducible framework for studying COA generation policies under self-play. Following the BattleCOA terminology, we reserve MEF for Match Effectors and GBC for Generate BattleCOA. The framework represents a COA as a typed, chainable sequence of actions with an associated synthetic quality score, evaluates pairs of opposing COAs with a BLUE-vs-RED advantage score and Nash-gap distance, and scores doctrinal coherence with a heuristic FM 3-0-inspired rubric. We use it to ask three questions about a single policy design choice -- sampling several candidate responses and keeping the best one ("sampled best-response") instead of generating a single response -- across 30 synthetic scenarios spanning three operational templates (urban stability, maritime interdiction, multi-domain combat). Sampled best-response improves the responding force's doctrinal alignment (0.671 vs.\ 0.651) and its win rate in a stylized Lanchester-attrition wargame check (lowering the opposing force's win rate from 0.967 to 0.833), at the cost of a less favorable BLUE advantage score and a larger Nash-gap distance from equilibrium. We further show that the benchmark's scenario-framing parameter (blue / neutral / adversary), originally stored as scenario metadata only, previously had no effect on generated COA content; we trace this to specific generator and rubric interactions, wire framing into the generated objective text and action mix, and report a measured framing-sensitivity effect, the construction of which we describe explicitly because it is currently deterministic rather than sampled from a richer model. All metrics, scenarios, and policies used here are reused without modification from the existing \texttt{coageneration} library; this paper's only new artifact is the experiment script, the framing wiring, and this writeup. Given the small scenario count (N=30) and an unvalidated heuristic doctrinal rubric, we present these as a methods contribution and a set of preliminary, falsifiable findings rather than evidence about real-world COA quality.
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
 \end{abstract}
 
 \ccsdesc[500]{Computing methodologies~Multi-agent systems}
@@ -59,7 +63,11 @@ Prior agent-evaluation work has established the value of self-play for discoveri
 
 This paper does not introduce a new benchmark from scratch. The \texttt{coageneration} library already implements the typed COA representation, a self-play engine, a sampled best-response policy, bootstrap confidence intervals, a multi-COA comparison utility, an FM 3-0-inspired doctrinal rubric, and a stylized Lanchester-attrition wargame check. Our contribution in this paper is to (1) exercise that existing machinery as a single coherent experiment rather than as isolated unit tests, (2) report the resulting numbers honestly, including a methodological gap we found and fixed along the way, and (3) use the result as a first, small data point toward a larger COA-Bench study.
 
+<<<<<<< HEAD
 Concretely, we ask three questions: (1)~\emph{does sampling several candidate best-responses and keeping the best one change the responding force's GBC score, doctrinal alignment, and wargame win rate relative to generating a single response?} (2)~\emph{Does an LLM-backed COA policy (Claude) produce stronger RED responses than random sampling by any of these metrics?} And (3)~\emph{does the benchmark's scenario-framing parameter actually change generated COA content, and if so, by how much?} We report measured answers to all three questions over 90 scenarios (30 seeds $\times$ 3 operational templates), with bootstrap 95\% confidence intervals throughout.
+=======
+Concretely, we ask: \emph{does sampling several candidate best-responses and keeping the best one change the BLUE-vs-RED advantage score, responding force's doctrinal alignment, and wargame win rate relative to generating a single response?} And, separately: \emph{does the benchmark's scenario-framing parameter actually change generated COA content, and if so, by how much?} We report measured answers to both questions over 30 scenarios (10 seeds $\times$ 3 operational templates), with bootstrap 95\% confidence intervals throughout.
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
 
 The implementation, experiment script, and raw results are available in this repository at \texttt{experiments/coa\_bench\_experiment.py} and \path{results/coa-bench/main/}.
 
@@ -75,23 +83,31 @@ The implementation, experiment script, and raw results are available in this rep
 
 \section{Framework}
 
+\subsection{BattleCOA Terminology}
+
+The BattleCOA Boot Camp material describes two relevant DecisionFunctions: Match Effectors (MEF), which searches for BattleAssets that can achieve a requested BattleEffect and returns ranked EffectEffectorMatches, and Generate BattleCOA (GBC), which uses those matches as seeds for constructing BattleCOA hypergraphs. Our current implementation is a simplified research harness and does not implement either DecisionFunction directly. Earlier drafts used MEF and GBC as names for internal scalar metrics; this draft avoids that collision and calls them the synthetic COA quality score and BLUE-vs-RED advantage score.
+
 \subsection{Course-of-Action Representation}
 
+<<<<<<< HEAD
 A COA is a typed object: an ordered or chained set of \texttt{Action}s (each with a category, target, priority, and optional tool call), an optional conditional branch, an objective string, a force assignment (BLUE or RED), a domain tag, and a scalar MEF score in $[-1, 1]$ combining effectiveness, cost, and risk. Conditional branches and tool calls let a COA represent doctrinally meaningful structures -- e.g., a reconnaissance action gating a strike-or-withdraw branch -- rather than a flat action list.
 
 MEF and GBC (introduced below) are named after the Match Effectors and Generate BattleCOA DecisionFunctions in the Transformational Model for Decision Advantage (TM-DA)~\cite{tmda2025bootcamp}, an operational battle-management framework that independently uses these acronyms for a richer, graph-structured pair of processes. COA-Bench's MEF and GBC are coarse, single-scalar analogues -- reused without modification from the existing \texttt{coageneration} formulas -- not implementations of TM-DA's effector ranking or hypergraph plan assembly. See \path{papers/coa-bench-aaai2027/main.tex} in this repository for the full stated correspondence and its limits.
+=======
+A COA is a typed object: an ordered or chained set of \texttt{Action}s (each with a category, target, priority, and optional tool call), an optional conditional branch, an objective string, a force assignment (BLUE or RED), a domain tag, and a scalar synthetic quality score in $[-1, 1]$ combining effectiveness, cost, and risk. Conditional branches and tool calls let a COA represent doctrinally meaningful structures -- e.g., a reconnaissance action gating a strike-or-withdraw branch -- rather than a flat action list.
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
 
 \subsection{Self-Play and Sampled Best-Response}
 
-Given an opposing force's COA, a policy generates a response COA for the same scenario's \texttt{GameState}. The baseline policy (\texttt{SelfPlayEngine.best\_response}) draws one random response. The \texttt{SampledBestResponsePolicy} draws $n$ candidate responses and either returns the single highest-MEF candidate (\texttt{generate\_coa}) or exposes all $n$ candidates for downstream comparison (\texttt{generate\_candidates}). This paper compares these two response modes directly.
+Given an opposing force's COA, a policy generates a response COA for the same scenario's \texttt{GameState}. The baseline policy (\texttt{SelfPlayEngine.best\_response}) draws one random response. The \texttt{SampledBestResponsePolicy} draws $n$ candidate responses and either returns the single highest-quality candidate (\texttt{generate\_coa}) or exposes all $n$ candidates for downstream comparison (\texttt{generate\_candidates}). This paper compares these two response modes directly.
 
 \subsection{Pairwise and Multi-COA Evaluation}
 
-Two opposing COAs are scored with a game-based comparison (GBC) score, $\mathrm{GBC} = (\mathrm{MEF}_{\mathrm{blue}} - \mathrm{MEF}_{\mathrm{red}} + 2)/4 \in [0,1]$, and a Nash-gap distance, $|\,\mathrm{payoff}_{\mathrm{blue}} + \mathrm{payoff}_{\mathrm{red}} - 1\,|$, measuring deviation from a zero-sum equilibrium after MEF scores are rescaled to $[0,1]$ payoffs. A set of candidate COAs for one scenario (e.g., the $n$ samples from \texttt{SampledBestResponsePolicy}) can be compared with \texttt{compare\_coas}, which ranks candidates by MEF, computes each candidate's heuristic doctrinal alignment, measures action-type diversity (mean pairwise Jaccard distance), and identifies the Pareto-optimal subset on (MEF, doctrinal alignment).
+Two opposing COAs are scored with a BLUE-vs-RED advantage score, $\mathrm{Advantage} = (q_{\mathrm{blue}} - q_{\mathrm{red}} + 2)/4 \in [0,1]$, and a Nash-gap distance, $|\,\mathrm{payoff}_{\mathrm{blue}} + \mathrm{payoff}_{\mathrm{red}} - 1\,|$, measuring deviation from a zero-sum equilibrium after quality scores are rescaled to $[0,1]$ payoffs. A set of candidate COAs for one scenario (e.g., the $n$ samples from \texttt{SampledBestResponsePolicy}) can be compared with \texttt{compare\_coas}, which ranks candidates by quality score, computes each candidate's heuristic doctrinal alignment, measures action-type diversity (mean pairwise Jaccard distance), and identifies the Pareto-optimal subset on (quality, doctrinal alignment).
 
 \subsection{Doctrinal Rubric and Wargame Check}
 
-\texttt{fm30\_rubric\_scores} extracts six heuristic, doctrine-inspired terms from a COA -- objective clarity, intelligence preparation, combined-arms balance, sustainment, risk mitigation, and tempo/sequencing -- each in $[0,1]$, from the COA's objective text and action categories. \texttt{doctrinal\_alignment\_score} is their weighted aggregate. \texttt{lanchester\_wargame\_outcome} runs a stylized multi-step attrition simulation in which each side's effective combat power is its raw asset capability scaled by $1 + \mathrm{MEF} + \mathrm{doctrinal\_alignment}$, so a COA's quality directly affects the wargame outcome rather than only the COA-level metrics.
+\texttt{fm30\_rubric\_scores} extracts six heuristic, doctrine-inspired terms from a COA -- objective clarity, intelligence preparation, combined-arms balance, sustainment, risk mitigation, and tempo/sequencing -- each in $[0,1]$, from the COA's objective text and action categories. \texttt{doctrinal\_alignment\_score} is their weighted aggregate. \texttt{lanchester\_wargame\_outcome} runs a stylized multi-step attrition simulation in which each side's effective combat power is its raw asset capability scaled by $1 + q + \mathrm{doctrinal\_alignment}$, where $q$ is the synthetic quality score, so a COA's quality directly affects the wargame outcome rather than only the COA-level metrics.
 
 \subsection{Scenario Corpus}
 
@@ -101,7 +117,11 @@ Three factory functions generate operational templates -- urban stability operat
 
 \subsection{Protocol}
 
+<<<<<<< HEAD
 We generate 90 scenarios: 30 base seeds $\times$ 3 operational templates (urban, maritime, multi-domain), using \texttt{make\_scenario\_corpus}. For each scenario we take the first seed COA as the fixed BLUE COA and generate a RED response three ways: (a) a single random best-response (\texttt{SelfPlayEngine.best\_response}), (b) a sampled best-response over $n=8$ candidates (\texttt{SampledBestResponsePolicy}), and (c) an LLM-backed response (\texttt{LLMPolicy} using \path{claude-haiku-4-5-20251001} via the Anthropic API). We compute GBC and Nash-gap for all three RED variants against the same BLUE COA, doctrinal alignment for BLUE and all three RED variants, a multi-COA comparison (\texttt{compare\_coas}) over the 8 sampled candidates, and a Lanchester wargame outcome for BLUE against each RED variant. All confidence intervals are 95\% percentile-bootstrap intervals over the 90 scenarios, computed with \texttt{bootstrap\_ci} (1{,}000 resamples).
+=======
+We generate 30 scenarios: 10 base seeds $\times$ 3 operational templates (urban, maritime, multi-domain), using \texttt{make\_scenario\_corpus}. For each scenario we take the first seed COA as the fixed BLUE COA and generate a RED response two ways: (a) a single random best-response (\texttt{SelfPlayEngine.best\_response}), and (b) a sampled best-response over $n=8$ candidates (\texttt{SampledBestResponsePolicy}). We compute the BLUE-vs-RED advantage score and Nash-gap for both RED variants against the same BLUE COA, doctrinal alignment for BLUE and both RED variants, a multi-COA comparison (\texttt{compare\_coas}) over the 8 sampled candidates, and a Lanchester wargame outcome for BLUE against each RED variant. All confidence intervals are 95\% percentile-bootstrap intervals over the 30 scenarios, computed with \texttt{bootstrap\_ci} (1{,}000 resamples).
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
 
 \subsection{Sampling Policies: Single-Sample vs.\ Best-of-$N$}
 
@@ -113,14 +133,22 @@ We generate 90 scenarios: 30 base seeds $\times$ 3 operational templates (urban,
 \toprule
 Metric & Single-sample & Sampled ($n{=}8$) & LLM (Claude) \\
 \midrule
+<<<<<<< HEAD
 GBC (blue advantage) & .524 [.519, .530] & .490 [.487, .494] & .549 [.546, .552] \\
 Nash gap & .199 [.189, .209] & .267 [.261, .274] & .150 [.143, .157] \\
 Red doctrinal align. & .667 [.640, .695] & .678 [.658, .700] & .804 [.780, .831] \\
 Blue win rate (wargame) & .900 & .811 & .911 \\
+=======
+BLUE advantage score & .521 [.512, .529] & .488 [.482, .494] \\
+Nash gap & .194 [.179, .210] & .259 [.248, .269] \\
+Red doctrinal align. & .651 [.601, .699] & .671 [.638, .708] \\
+Blue win rate (wargame) & .967 & .833 \\
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
 \bottomrule
 \end{tabular}
 \end{table*}
 
+<<<<<<< HEAD
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/policy_comparison.pdf}
@@ -150,6 +178,13 @@ Applying \texttt{compare\_coas} to the 8 sampled RED candidates per scenario giv
   \Description{Scatter plot of MEF score on the x-axis versus doctrinal alignment on the y-axis for 80 candidate COAs across 10 scenarios. Points are spread across the space with no single dominant corner, indicating trade-offs between effectiveness and doctrinal coherence.}
   \label{fig:pareto}
 \end{figure}
+=======
+Table~\ref{tab:main} shows a consistent picture across four independent metrics: letting RED sample 8 candidate responses and keep its highest-quality one makes RED a measurably tougher opponent. The BLUE advantage score falls from .521 to .488 because RED's quality score rises under best-of-8 selection. The Nash-gap distance from equilibrium grows (.194 to .259) because RED's payoff increases without a corresponding adjustment to BLUE's fixed COA -- consistent with the gap measuring deviation from a balanced exchange rather than tracking a converged equilibrium. BLUE's win rate in the wargame check falls from .967 to .833, an independent confirmation using a different mechanism (attrition simulation rather than the quality scores directly). Notably, RED's doctrinal alignment is \emph{higher} under best-of-8 selection (.671 vs.\ .651) rather than lower: selecting purely for quality score in this generator did not come at the cost of doctrinal coherence, at least for this synthetic action space. We treat this as a narrow, generator-specific finding rather than a general claim that quality-greedy selection preserves doctrinal alignment.
+
+\subsection{Multi-COA Comparison}
+
+Applying \texttt{compare\_coas} to the 8 sampled RED candidates per scenario gives a mean candidate diversity (mean pairwise Jaccard distance of action types) of .734 [.714, .756], a mean quality-score spread of .242 [.226, .258], and a mean of 2.20 [1.87, 2.53] Pareto-optimal candidates out of 8 on the (quality, doctrinal alignment) frontier. These numbers indicate that the 8 sampled candidates are not redundant: roughly a quarter of them are simultaneously non-dominated on effectiveness and doctrinal alignment, which is the situation \texttt{compare\_coas} is designed to surface for a human planner choosing among several proposed COAs rather than a single auto-selected one.
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
 
 \subsection{Scenario Framing: A Methodological Finding}
 
@@ -176,11 +211,15 @@ We report the zero-width confidence interval as-is rather than disguising it: th
 
 \section{Conclusion}
 
+<<<<<<< HEAD
 Using the \texttt{coageneration} library, we ran a 90-scenario self-play experiment comparing three RED policies: single random sampling, best-of-8 sampling, and an LLM policy (Claude Haiku). Sampled best-response is the strongest RED policy by MEF and wargame win rate; LLM RED produces the highest doctrinal alignment (.804) but lower strategic effectiveness than even the single random baseline, revealing a decoupling between the FM 3-0 rubric and the MEF function that is itself informative about what each metric captures. We also found and fixed a methodological gap in which the scenario-framing parameter had no effect on generated COA content. We view this as a working harness for COA policy evaluation -- a reproducible starting point for the next studies: richer scenario corpora, multiple LLM models and prompts, and MEF functions legible to LLM-style optimization.
 
 \begin{acks}
 This work was conducted with organizational support from Anote AI. We thank the Anote AI research and engineering team for research infrastructure, technical feedback, and support in developing the reproducible evaluation artifact. No human participants or proprietary data were used in the reported offline benchmark.
 \end{acks}
+=======
+Using only existing \texttt{coageneration} library code, we ran a 30-scenario self-play experiment comparing single-sample and sampled best-response COA generation, and found consistent evidence across four metrics (BLUE advantage score, Nash gap, doctrinal alignment, and wargame win rate) that sampled best-response produces a measurably stronger and, in this generator, not-less-doctrinally-aligned opponent. We also found and fixed a methodological gap in which the benchmark's scenario-framing parameter had no effect on generated content, replacing a silent no-op with a small, honestly-described, currently-deterministic effect. We view this as a first data point and a working harness for a larger COA-Bench study, not as a finished evaluation of COA generation quality.
+>>>>>>> 36606dc99a5d4a505afe515467c39e2bb4686ff7
 
 \section*{Generative AI Disclosure}
 Claude (Anthropic) materially assisted with software implementation, experiment scripting, and manuscript drafting, including diagnosing the scenario-framing no-op described in Section~4.5. The authors are responsible for reviewing the code, verifying the generated results against the released artifacts, checking all citations, and approving the final claims and text.
