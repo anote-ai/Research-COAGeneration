@@ -5,7 +5,7 @@ status: "Completed"
 date: "2026-07-16"
 ---
 
-# COA-Bench: A Small Reproducible Testbed for Course-of-Action Generation
+# Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for COA matching & COA generation
 
 Course-of-action generation is a planning problem with a built-in adversary. A proposed plan is not good in isolation. It has to hold up against a response, fit the available force, preserve doctrinal coherence, and remain useful when the situation changes.
 
