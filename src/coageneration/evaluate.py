@@ -249,7 +249,14 @@ FM30_RUBRIC_WEIGHTS: Dict[str, float] = {
 
 
 def gbc_score(blue_coa: CourseOfAction, red_coa: CourseOfAction) -> float:
-    """Game-based comparison score in [0, 1]."""
+    """GBC (Generate BattleCOA) score in [0, 1]: BLUE's MEF advantage over RED.
+
+    Named after the Generate BattleCOA DecisionFunction in the Transformational
+    Model for Decision Advantage (TM-DA), which assembles matched effectors
+    into compared BattleCOAPaths. This is a coarse scalar analogue -- a
+    single pairwise advantage number -- not an implementation of TM-DA's
+    hypergraph plan assembly or worldline checking.
+    """
     raw = blue_coa.mef_score - red_coa.mef_score  # range [-2, 2]
     return (raw + 2.0) / 4.0  # normalise to [0, 1]
 

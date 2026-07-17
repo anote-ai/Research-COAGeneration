@@ -41,7 +41,7 @@ The shared implementation remains under `src/metarouter/`.
 
 ## MEF + GBC Problem Framing
 
-A **Course of Action (COA)** is scored by the **Mission Effectiveness Function (MEF)**:
+A **Course of Action (COA)** is scored by **MEF (Match Effectors)**:
 
 ```
 MEF(e, c, r) = w_e * effectiveness - w_c * cost - w_r * risk
@@ -49,11 +49,19 @@ MEF(e, c, r) = w_e * effectiveness - w_c * cost - w_r * risk
 
 where `w_e=0.5, w_c=0.3, w_r=0.2` by default, clamped to `[-1, 1]`.
 
-The **Game-Based Comparison (GBC)** score compares BLUE and RED COAs:
+The **GBC (Generate BattleCOA)** score compares BLUE and RED COAs:
 
 ```
 GBC(blue, red) = (blue.mef - red.mef + 2) / 4  ∈ [0, 1]
 ```
+
+MEF and GBC are named after the Match Effectors and Generate BattleCOA
+DecisionFunctions in the Transformational Model for Decision Advantage
+(TM-DA). The formulas above are coarse, single-scalar analogues of those
+DecisionFunctions -- not an implementation of TM-DA's effector ranking,
+hypergraph plan assembly, or worldline checking. See
+`papers/coa-bench-aaai2027/main.tex` for the full correspondence and its
+explicitly stated limits.
 
 ## Game-Theoretic Formulation
 

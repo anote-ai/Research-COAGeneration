@@ -150,7 +150,14 @@ def compute_mef_score(
     w_c: float = 0.3,
     w_r: float = 0.2,
 ) -> float:
-    """Weighted MEF score clamped to [-1, 1]."""
+    """Weighted MEF (Match Effectors) score clamped to [-1, 1].
+
+    Named after the Match Effectors DecisionFunction in the Transformational
+    Model for Decision Advantage (TM-DA), which ranks candidate effectors
+    against a needed effect. This is a coarse scalar analogue -- effectiveness
+    traded off against cost and risk -- not an implementation of TM-DA's
+    effector search/ranking process.
+    """
     raw = w_e * effectiveness - w_c * cost - w_r * risk
     return max(-1.0, min(1.0, raw))
 
