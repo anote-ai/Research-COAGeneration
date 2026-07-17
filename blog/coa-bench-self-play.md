@@ -1,5 +1,5 @@
 ---
-title: "COA-Bench: A Small Reproducible Testbed for Course-of-Action Generation"
+title: "Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for COA matching & COA generation"
 venue: "AAAI 2027"
 status: "Completed"
 date: "2026-07-16"
