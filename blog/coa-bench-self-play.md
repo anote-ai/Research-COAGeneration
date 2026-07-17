@@ -9,9 +9,7 @@ date: "2026-07-16"
 
 Course-of-action generation is a planning problem with a built-in adversary. A proposed plan is not good in isolation. It has to hold up against a response, fit the available force, preserve doctrinal coherence, and remain useful when the situation changes.
 
-Our COA-Bench paper draft studies that problem in a small, fully offline setting. The goal is not to claim operational realism. The goal is to build a reproducible harness where we can compare course-of-action generation policies, inspect their tradeoffs, and find methodological problems before moving to richer simulations or live tools.
-
-The current paper is titled **"COA-Bench: A Reproducible Self-Play Benchmark for Comparing Course-of-Action Generation Policies."**
+Our Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for COA matching & COA generation studies that problem in a small, fully offline setting. The goal is not to claim operational realism. The goal is to build a reproducible harness where we can compare course-of-action generation policies, inspect their tradeoffs, and find methodological problems before moving to richer simulations or live tools.
 
 ## Scope Boundary
 
