@@ -1,20 +1,56 @@
-# COAGeneration
+# Research COAGeneration
 
-> **Game-theoretic Course-of-Action Generation via Self-Play**
+This repository is organized around two independent research papers and their
+reproducible experiments:
 
-COAGeneration benchmarks AI systems on the military planning problem of generating
-robust Courses of Action (COAs) against adaptive adversaries using game-theoretic
-self-play.
+1. **COA paper:** adversarial course-of-action generation with game-theoretic
+   multi-agent evaluation.
+2. **Meta-routing paper:** meta-decision policies for agentic systems, including
+   when to decompose, retrieve, execute code, delegate, verify, or answer.
 
-**Disclaimer:** This repository is for academic research only. All scenarios,
+Shared implementation code lives under `src/`, while experiments, papers, and
+results are project-first:
+
+```text
+experiments/
+  coa/                    # COA-Bench experiment runner
+  meta-routing/           # DAI/AAAI meta-routing runners
+papers/
+  coa/                    # COA paper drafts by venue
+  meta-routing/           # Meta-routing paper drafts by venue
+results/
+  coa/                    # COA generated artifacts
+  meta-routing/           # Meta-routing generated artifacts
+```
+
+**Disclaimer:** This repository is for academic research only. COA scenarios,
 assets, and strategies are entirely synthetic and do not represent any real
 military doctrine, operations, or advice.
 
+## COA Paper
+
+The COA track studies adversarial course-of-action generation as a small
+multi-agent game. BLUE policies produce structured COAs, RED policies sample
+adversarial responses, and a council policy proposes, stress-tests, revises, and
+adjudicates candidate plans.
+
+```bash
+python experiments/coa/run_benchmark.py
+```
+
+Primary locations:
+
+- `src/coageneration/`: COA data structures, policies, metrics, and synthetic scenario generators
+- `experiments/coa/`: reproducible COA experiment runner
+- `papers/coa/coa-bench/dai2026/`: DAI Industry Track COA paper
+- `papers/coa/coa-bench/aaai2027/`: AAAI COA paper
+- `results/coa/coa-bench/main/`: COA benchmark outputs
+
 ## MetaRoute-Bench
 
-The repository also contains `metarouter`, an independent benchmark for the
-meta-decision layer of agentic systems. It compares when policies decompose,
-use tools, execute code, delegate, verify, and answer directly across synthetic
+The meta-routing track contains `metarouter`, an independent benchmark for the
+meta-decision layer of agentic systems. It compares when policies decompose, use
+tools, execute code, delegate, verify, and answer directly across synthetic
 data-analysis, research, and document-processing workload profiles.
 
 The AAAI study adds a raw-text, budget-aware router and an executable benchmark
@@ -25,19 +61,24 @@ offline execution model. Neither study claims production or live-LLM results.
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
-metarouter-benchmark --seeds 30 --output results/dai2026/main
-python experiments/dai2026/run_ablations.py
-python experiments/dai2026/plot_results.py
-python experiments/dai2026/check_paper_results.py
-python experiments/aaai2027/run_executable.py
-python experiments/aaai2027/run_ablations.py
-python experiments/aaai2027/plot_executable.py
+metarouter-benchmark --seeds 30 --output results/meta-routing/dai2026/main
+python experiments/meta-routing/dai2026/run_ablations.py
+python experiments/meta-routing/dai2026/plot_results.py
+python experiments/meta-routing/dai2026/check_paper_results.py
+python experiments/meta-routing/aaai2027/run_executable.py
+python experiments/meta-routing/aaai2027/run_ablations.py
+python experiments/meta-routing/aaai2027/plot_executable.py
 pytest -q
 ```
 
-Venue-specific manuscripts are under `papers/`, experiments under `experiments/`,
-benchmark definitions under `benchmarks/`, and generated artifacts under `results/`.
-The shared implementation remains under `src/metarouter/`.
+Primary locations:
+
+- `src/metarouter/`: meta-routing models, policies, simulator, and executable benchmark
+- `experiments/meta-routing/dai2026/`: DAI meta-routing benchmark runners
+- `experiments/meta-routing/aaai2027/`: AAAI executable benchmark runners
+- `papers/meta-routing/dai2026/`: DAI Industry Track meta-routing paper
+- `papers/meta-routing/aaai2027/`: AAAI meta-routing paper
+- `results/meta-routing/`: generated meta-routing artifacts
 
 ## COA-Bench Metrics
 
@@ -87,6 +128,7 @@ return episode_summary(states)
 ```bash
 pip install -e .
 python scripts/run_demo.py
+python experiments/coa/run_benchmark.py
 pytest tests/ -v
 ```
 

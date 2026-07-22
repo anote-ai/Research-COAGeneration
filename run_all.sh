@@ -21,17 +21,17 @@ echo "==> Running coageneration self-play demo"
 python scripts/run_demo.py
 
 echo "==> Running metarouter benchmark (30 seeds, 8 policies)"
-python -m metarouter.cli --seeds 30 --output results/dai2026/main
+python -m metarouter.cli --seeds 30 --output results/meta-routing/dai2026/main
 
 echo "==> Running metarouter adaptive-policy ablations"
-python experiments/dai2026/run_ablations.py
+python experiments/meta-routing/dai2026/run_ablations.py
 
 echo "==> Generating figures from benchmark results"
-python experiments/dai2026/plot_results.py
+python experiments/meta-routing/dai2026/plot_results.py
 
 echo "==> Verifying generated results match paper claims"
-python experiments/dai2026/check_paper_results.py
+python experiments/meta-routing/dai2026/check_paper_results.py
 
 echo ""
-echo "==> Done. Artifacts written to results/dai2026/{main,ablations}/"
-echo "    Figures written to papers/dai2026/figures/"
+echo "==> Done. Artifacts written to results/meta-routing/dai2026/{main,ablations}/"
+echo "    Figures written to papers/meta-routing/dai2026/figures/"

@@ -13,7 +13,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seeds", type=int, default=30)
     parser.add_argument(
-        "--output", type=Path, default=Path("results/dai2026/main")
+        "--output", type=Path, default=Path("results/meta-routing/dai2026/main")
     )
     args = parser.parse_args()
 

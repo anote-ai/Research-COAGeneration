@@ -14,9 +14,9 @@ and cross-field validation.
 Generate and evaluate the complete suite with:
 
 ```bash
-python experiments/aaai2027/run_executable.py
-python experiments/aaai2027/run_ablations.py
-python experiments/aaai2027/plot_executable.py
+python experiments/meta-routing/aaai2027/run_executable.py
+python experiments/meta-routing/aaai2027/run_ablations.py
+python experiments/meta-routing/aaai2027/plot_executable.py
 ```
 
 The task generator is `src/metarouter/executable_tasks.py`; operation semantics
