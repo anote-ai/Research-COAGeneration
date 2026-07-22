@@ -1,126 +1,139 @@
 ---
-title: "Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for COA matching & COA generation"
+title: "Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for COA Matching & COA Generation"
 venue: "AAAI 2027"
 status: "Completed"
 date: "2026-07-16"
 ---
 
-# Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for COA matching & COA generation
+# Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for COA Matching & COA Generation
 
-Course-of-action generation is a planning problem with a built-in adversary. A proposed plan is not good in isolation. It has to hold up against a response, fit the available force, preserve doctrinal coherence, and remain useful when the situation changes.
+Course-of-action generation is not a normal planning problem. A plan is not strong just because it looks coherent in isolation. It has to survive an opponent.
 
-Our Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for COA matching & COA generation studies that problem in a small, fully offline setting. The goal is not to claim operational realism. The goal is to build a reproducible harness where we can compare course-of-action generation policies, inspect their tradeoffs, and find methodological problems before moving to richer simulations or live tools.
+That is the central idea behind our COA paper: treat course-of-action generation as an adversarial, multi-agent evaluation problem. A BLUE-side policy proposes structured COAs. A RED-side policy searches for plausible responses. A council of role-specialized agents can propose, critique, revise, and select among alternatives. The result is a small but inspectable benchmark for studying how generated plans behave under adversarial pressure.
+
+The paper is titled **"Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for COA Matching & COA Generation."** The title is intentionally broader than a benchmark report: the work frames COA generation as a game-theoretic agent interaction, then implements a reproducible offline harness to test that framing.
+
+## The Core Question
+
+The paper asks a practical research question:
+
+When a course-of-action generator is evaluated against a stronger adversarial response policy, do its apparent quality and robustness conclusions change?
+
+To answer that, COA-Bench represents each COA as a typed structure rather than only prose. A COA includes an objective, ordered actions, targets, priorities, optional tool calls, conditional branches, force assignments, and domain tags. That structure lets the benchmark compare policies on more than one scalar score.
+
+The benchmark uses synthetic scenarios only. It is not an operational battle-management system, does not use real intelligence data, and does not claim real-world tactical validity. Its job is narrower: make adversarial COA evaluation reproducible, inspectable, and falsifiable.
+
+## Game-Theoretic Setup
+
+COA-Bench treats each scenario as a small game between BLUE and RED.
+
+BLUE proposes a course of action. RED responds. The benchmark scores the pair using a synthetic BLUE advantage signal, a Nash-gap-style distance from balance, a doctrine-inspired diagnostic score, candidate diversity, and a stylized wargame check.
+
+The key algorithmic comparison is between:
+
+1. A single-sample RED response
+2. A sampled best-response policy that draws multiple RED candidates and keeps the strongest
+3. A doctrine-aware RED selector that trades some synthetic quality for stronger doctrinal alignment
+4. A two-stage multi-agent BLUE council that proposes, stress-tests, revises, and adjudicates candidate COAs
+
+This makes adversarial response part of the evaluation object. A generated COA is not judged only against a fixed answer key; it is judged against a response distribution and an inspectable candidate frontier.
+
+## Multi-Agent Council
+
+The most title-aligned addition is the multi-agent council.
+
+Instead of asking one generator for one plan, the council uses five role-specialized BLUE proposer agents: maneuver, intelligence, cyber, sustainment, and protection. Each proposer creates a candidate COA with a different operational emphasis. RED-team agents then generate adversarial responses to each candidate. An adjudicator shortlists the strongest BLUE options, and a revision step adds mitigation actions keyed to the strongest RED critique.
+
+This gives the benchmark a richer technical object than simple self-play. It can measure:
+
+- proposal diversity
+- revised-candidate diversity
+- adversarial pressure
+- consensus gap
+- robustness margin
+- pressure reduction
+- whether the selected final COA came from the revised set
+
+That matters because useful COA generation is often about surfacing a set of viable options, not producing one polished paragraph.
+
+## What Changed in the Results
+
+The expanded experiment now runs across **50 synthetic scenarios** spanning five operational templates: urban stability, maritime interdiction, multi-domain combat, suppression of enemy air defenses, and humanitarian evacuation.
+
+The main result is that adversarial response search changes the evaluation.
+
+With a single RED response, BLUE advantage is **0.516** and BLUE wargame win rate is **0.920**. When RED samples eight candidates and keeps the strongest response, BLUE advantage falls to **0.485** and BLUE win rate falls to **0.820**.
+
+That is the point: a plan that looks strong against one response can look weaker once the opponent is allowed to search.
+
+The response-budget curve reinforces the same pattern. As RED samples more candidates, BLUE advantage declines from **0.516** at one candidate to **0.479** at sixteen candidates. More adversarial search produces a tougher evaluation.
+
+## Candidate Frontiers
+
+The sampled candidates are not redundant copies. Across RED candidate sets, mean action-type diversity is **0.682**, mean quality-score spread is **0.246**, and an average of **2.16 out of 8** candidates are Pareto-optimal on the quality and doctrinal-alignment frontier.
+
+That frontier is important. In real planning workflows, the useful output is often not "the answer" but a ranked set of alternatives with different tradeoffs. COA-Bench makes those tradeoffs visible.
+
+The doctrine-aware selector changes the chosen response in **56%** of scenarios. It gives up **0.041** synthetic quality on average while gaining **0.106** doctrinal alignment. That result is small but useful: it shows that the benchmark can distinguish adversarial strength from doctrinal coherence rather than collapsing everything into one number.
+
+## Council Results
+
+The multi-agent council changes BLUE generation itself. It does not merely make RED stronger.
+
+Across 50 scenarios, the council obtains **0.509** BLUE advantage and **0.820** BLUE win rate. It partially recovers performance lost under stronger RED response search. The selected final COA comes from the revised set in **76%** of scenarios, which suggests that critique-driven revision is doing real work in the current synthetic setup.
+
+The council also increases revised-candidate diversity to **0.644** and produces a positive robustness margin of **0.014**. Pressure reduction is small and uncertain, so the paper treats the council as a repair-and-selection baseline, not a finished robust-optimization algorithm.
+
+That distinction is healthy. The contribution is not "the system solved military planning." The contribution is an algorithmic scaffold for measuring how proposal, red-teaming, revision, and adjudication interact.
+
+## A Benchmark Bug Worth Reporting
+
+One of the paper's most useful findings was not a better score. It was a benchmark-design bug.
+
+The scenario generator had a `framing` parameter intended to mark whether a scenario was favorable to BLUE, neutral, or favorable to the adversary. But that parameter was only stored as metadata. It did not affect objective text or generated action content.
+
+So the first framing-sensitivity test returned exactly zero.
+
+The fix was deliberately small and inspectable: scenario framing now changes generated objective text and can modify action composition. After that change, framing sensitivity becomes **0.066** with a 95% bootstrap interval of **[0.049, 0.086]**.
+
+This is a good benchmark lesson. Evaluation variables must actually touch the generated artifact. Otherwise, a benchmark can look configurable while measuring the same thing every time.
+
+## Why the Work Is Novel
+
+COA-Bench builds on familiar ideas: self-play, best-response search, agent evaluation, planning benchmarks, and doctrine-inspired diagnostics. The novelty is in putting them together around a structured adversarial COA artifact.
+
+Compared with broad model benchmarks, COA-Bench is narrower but more traceable. Compared with tool-use benchmarks, it focuses less on whether an agent clicked the right tool and more on whether a structured plan survives adversarial response. Compared with self-refinement methods, it evaluates revision under explicit RED-team pressure rather than only final-answer polish.
+
+The paper's technical contribution is the combination of:
+
+- typed COA representation
+- sampled adversarial best response
+- doctrine-aware selection
+- multi-agent proposal and critique
+- candidate-frontier metrics
+- robustness and pressure diagnostics
+- reproducible trace artifacts
+
+That combination gives researchers a concrete object for studying adversarial plan generation without pretending the synthetic benchmark is an operational planner.
 
 ## Scope Boundary
 
-COA-Bench is a research benchmark, not an operational battle-management system. The scalar score assigned to a generated COA is called a **synthetic COA quality score**. The pairwise BLUE-vs-RED metric is called a **BLUE advantage score**. Both are internal benchmark signals used to compare policies in a synthetic setting.
+The paper is careful about what it does not claim.
 
-That boundary is important. In a defense or battle-management context, a research artifact should not look like it implements a formal decision architecture when it only implements a simplified metric. The paper now draws that boundary clearly.
+COA-Bench does not use classified data, proprietary data, human-subject data, live planners, or deployed decision systems. The wargame check is stylized. The doctrine rubric is heuristic. The scenarios are synthetic. The current policies are programmatic baselines, not validated military reasoning agents.
 
-## What COA-Bench Is Testing
-
-The benchmark asks a narrow question:
-
-Does sampling several candidate adversarial responses and keeping the strongest one change the evaluation of a generated course of action?
-
-The setup is intentionally simple. For each scenario, we generate a fixed BLUE COA and compare two RED response policies:
-
-1. A single-sample best response
-2. A sampled best response that draws eight candidate responses and keeps the highest-quality one
-
-The experiment runs on 30 synthetic scenarios:
-
-- 10 random seeds
-- 3 operational templates per seed
-- Urban stability operations
-- Maritime interdiction
-- Multi-domain combat
-
-Each COA is represented as a typed action structure: actions, targets, priorities, optional tool calls, conditional branches, force assignment, domain tags, and an objective string. This is not a natural-language-only benchmark. The representation is structured enough to support scoring, comparison, and future tool or LLM-backed generation.
-
-## The Metrics
-
-COA-Bench reports several metrics rather than relying on a single score.
-
-The **synthetic quality score** combines effectiveness, cost, and risk into a scalar in `[-1, 1]`. This is a benchmark metric, not asset-effect matching.
-
-The **BLUE advantage score** compares a BLUE COA against a RED COA by measuring relative synthetic quality. A lower BLUE advantage score means RED has become a stronger opponent in that pairing.
-
-The **Nash-gap distance** measures how far the pair is from a balanced zero-sum exchange after converting scores into payoffs.
-
-The **doctrinal alignment score** is a heuristic rubric inspired by FM 3-0-style planning criteria: objective clarity, intelligence preparation, combined-arms balance, sustainment, risk mitigation, and tempo or sequencing.
-
-The **wargame check** runs a stylized Lanchester-style attrition simulation where COA quality and doctrinal alignment affect effective combat power.
-
-None of these metrics is treated as ground truth. The paper is explicit that the rubric is heuristic and unvalidated. That honesty is part of the contribution.
-
-## Main Result
-
-The sampled best-response policy makes RED a tougher opponent.
-
-Across 30 scenarios:
-
-- BLUE advantage score falls from **0.521** to **0.488**
-- Nash gap rises from **0.194** to **0.259**
-- RED doctrinal alignment improves from **0.651** to **0.671**
-- BLUE wargame win rate falls from **0.967** to **0.833**
-
-The interpretation is straightforward: when RED samples eight candidate responses and keeps the strongest one, RED becomes more competitive. BLUE's advantage falls, and the wargame check confirms the same direction of effect.
-
-An interesting detail is that RED's doctrinal alignment also improves. In this generator, choosing the highest-quality response did not reduce doctrinal coherence. That is not a general claim about military planning. It is a narrow result about this synthetic action space and this heuristic rubric.
-
-## Multi-COA Comparison
-
-The paper also looks at the eight sampled RED candidates before the best one is selected.
-
-Those candidates are not all redundant. The mean candidate diversity is **0.734**, and the mean quality-score spread is **0.242**. On average, about **2.20 of 8 candidates** are Pareto-optimal on the quality and doctrinal-alignment frontier.
-
-That matters because a human planner may not want a single auto-selected COA. In many planning settings, the useful artifact is a set of meaningfully different options with different tradeoffs. COA-Bench can surface that frontier instead of collapsing everything into one answer too early.
-
-## A Useful Methodological Bug
-
-One of the most important findings was not a performance result. It was a bug in the benchmark design.
-
-The scenario generator had a `framing` parameter, intended to represent whether the scenario was framed as favorable to BLUE, neutral, or favorable to the adversary. But the parameter was only stored as metadata. It did not affect the generated COA objective text or action content.
-
-That meant a naive framing-sensitivity experiment produced exactly zero change. The problem was not that framing had no effect. The problem was that framing had never been wired into generation.
-
-The paper fixes that in a minimal, inspectable way:
-
-- Framing now changes the generated objective text.
-- BLUE-favorable framing can add an action category that broadens combined-arms balance.
-
-After the fix, framing sensitivity becomes **0.045**. The confidence interval is zero-width because the current manipulation is deterministic. The paper reports that honestly rather than pretending it is a rich stochastic effect.
-
-This is the kind of result benchmarks need more often: not just "our method scored higher," but "our evaluation harness had a silent no-op, and here is how we found it."
-
-## What COA-Bench Does Not Claim
-
-COA-Bench is not an operational battle-management system.
-
-It does not use real intelligence data, live planners, classified data, human-subject data, or deployed decision systems. The scenarios are synthetic. The wargame check is stylized. The doctrinal rubric is heuristic. The current evaluated policies are random-sampling policies, not a full LLM planning agent.
-
-The paper should be read as a methods contribution and an early falsifiable experiment, not as evidence that the system can generate real-world military plans.
-
-That boundary is especially important because BattleCOA-style planning points toward a much richer decision architecture. COA-Bench currently implements a simplified research harness around typed COAs, self-play, and offline scoring.
+Those limitations are not footnotes. They are part of the research design. Before moving to richer simulations or expert-scored environments, we need small benchmarks where assumptions are visible and failures can be found.
 
 ## Why It Matters
 
-The value of COA-Bench is that it gives us a place to ask disciplined questions about AI-assisted COA generation:
+Agentic planning systems need more than fluent outputs. They need evaluations that ask what happens when another agent pushes back.
 
-- Does self-play produce stronger adversarial responses?
-- Do generated candidates actually differ from each other?
-- Does selecting for quality destroy doctrinal coherence?
-- Can a scenario-framing variable affect generated content?
-- Which evaluation metrics move together, and which disagree?
-- Where are the benchmark assumptions too brittle?
+This paper contributes a first version of that evaluation for course-of-action generation. It shows that stronger adversarial response search changes conclusions, that candidate frontiers contain meaningful alternatives, that multi-agent council revision can recover some robustness, and that benchmark variables can silently fail if they are not wired into generated content.
 
-Those are the kinds of questions we need before claiming progress on more realistic agentic planning.
+That is the deeper message of the title: adversarial COA generation should be studied as a game between agents, not as one-shot text generation.
 
 ## Next Steps
 
-The next version should expand the scenario corpus, replace deterministic framing rules with richer sampled generation, validate the doctrinal rubric with experts, and evaluate the LLM-backed policy already present in the repository.
+The next version should expand the scenario corpus, validate the doctrine-inspired rubric with experts, evaluate LLM-backed policies, and replace deterministic revision rules with richer learned or model-guided critique. Longer term, COA-Bench should connect more directly to graph-structured BattleCOA-style planning while preserving the same reproducibility discipline.
 
-Longer term, COA-Bench should connect more directly to graph-structured BattleCOA-style planning. The current work is a smaller stepping stone: a reproducible self-play harness that makes policy comparison and benchmark failure modes visible.
-
-That is a humble but useful place to start.
+For now, the contribution is a clear starting point: a game-theoretic, multi-agent benchmark for adversarial COA generation that makes plan quality, opponent pressure, diversity, revision, and failure modes visible.
