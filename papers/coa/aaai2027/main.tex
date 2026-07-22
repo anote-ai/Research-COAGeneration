@@ -1,12 +1,12 @@
-\documentclass[letterpaper]{article}
-\usepackage[submission]{aaai2027}
-\usepackage[hyphens]{url}
-\usepackage{graphicx}
-\urlstyle{rm}
-\def\UrlFont{\rm}
-\usepackage{natbib}
-\usepackage{caption}
-\frenchspacing
+\documentclass[letterpaper]{article} % DO NOT CHANGE THIS
+\usepackage[submission]{aaai2027} % DO NOT CHANGE THIS
+\usepackage[hyphens]{url} % DO NOT CHANGE THIS
+\usepackage{graphicx} % DO NOT CHANGE THIS
+\urlstyle{rm} % DO NOT CHANGE THIS
+\def\UrlFont{\rm} % DO NOT CHANGE THIS
+\usepackage{natbib} % DO NOT CHANGE THIS AND DO NOT ADD OPTIONS
+\usepackage{caption} % DO NOT CHANGE THIS AND DO NOT ADD OPTIONS
+\frenchspacing % DO NOT CHANGE THIS
 \usepackage{booktabs}
 
 \pdfinfo{
@@ -26,6 +26,8 @@
 \begin{abstract}
 Course-of-action (COA) generation requires producing structured plans whose quality depends on adversarial response, force availability, and qualitative planning constraints. We introduce COA-Bench, a small offline benchmark for comparing COA generation policies through self-play. Following BattleCOA terminology, we reserve COA matching for asset-effect matching and COA generation for course-of-action generation; the benchmark does not implement those DecisionFunctions directly. Instead, it represents COAs as typed action chains, assigns a synthetic COA quality score, compares opposing COAs with a BLUE-vs-RED advantage score and Nash-gap distance, and evaluates doctrinal coherence with a heuristic FM 3-0-inspired rubric. In 50 synthetic scenarios spanning five operational templates, a sampled best-response policy that draws eight RED candidates reduces BLUE advantage from .516 to .485 and BLUE wargame win rate from .920 to .820 relative to a single-sample response. A two-stage multi-agent council with five BLUE proposer agents, RED-team adjudication, and critique-driven revision obtains .509 BLUE advantage and .820 BLUE win rate. We also identify and fix a benchmark-design failure in which scenario framing was stored as metadata but had no effect on generated COA content. The contribution is an inspectable evaluation harness and preliminary benchmark result, not an operational planner or evidence about real-world military decision quality.
 \end{abstract}
+
+% Identifying code and artifact links are intentionally omitted for anonymous review.
 
 \section{Introduction}
 
