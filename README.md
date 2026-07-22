@@ -13,7 +13,7 @@ results are project-first:
 
 ```text
 experiments/
-  coa/                    # COA-Bench experiment runner
+  coa/                    # DAI/AAAI COA runners plus shared logic
   meta-routing/           # DAI/AAAI meta-routing runners
 papers/
   coa/                    # COA paper drafts by venue
@@ -35,16 +35,20 @@ adversarial responses, and a council policy proposes, stress-tests, revises, and
 adjudicates candidate plans.
 
 ```bash
-python experiments/coa/run_benchmark.py
+python experiments/coa/dai2026/run_benchmark.py
+python experiments/coa/aaai2027/run_benchmark.py
 ```
 
 Primary locations:
 
 - `src/coageneration/`: COA data structures, policies, metrics, and synthetic scenario generators
-- `experiments/coa/`: reproducible COA experiment runner
-- `papers/coa/coa-bench/dai2026/`: DAI Industry Track COA paper
-- `papers/coa/coa-bench/aaai2027/`: AAAI COA paper
-- `results/coa/coa-bench/main/`: COA benchmark outputs
+- `experiments/coa/dai2026/`: DAI COA experiment entrypoint
+- `experiments/coa/aaai2027/`: AAAI COA experiment entrypoint
+- `experiments/coa/shared/`: shared COA experiment implementation
+- `papers/coa/dai2026/`: DAI Industry Track COA paper
+- `papers/coa/aaai2027/`: AAAI COA paper
+- `results/coa/dai2026/main/`: DAI COA benchmark outputs
+- `results/coa/aaai2027/main/`: AAAI COA benchmark outputs
 
 ## MetaRoute-Bench
 
@@ -128,7 +132,8 @@ return episode_summary(states)
 ```bash
 pip install -e .
 python scripts/run_demo.py
-python experiments/coa/run_benchmark.py
+python experiments/coa/dai2026/run_benchmark.py
+python experiments/coa/aaai2027/run_benchmark.py
 pytest tests/ -v
 ```
 

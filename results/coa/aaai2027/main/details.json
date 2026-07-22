@@ -22,5 +22,6 @@
     "selected_revised_candidate_rate": 0.76,
     "selection_objective": "0.45 quality + 0.25 doctrine + 0.10 diversity - 0.20 adversarial pressure"
   },
-  "source": "experiments/coa/run_benchmark.py \u2014 outcomes from the coageneration self-play simulator, not a production deployment or live LLM."
+  "venue": "aaai2027",
+  "source": "experiments/coa/aaai2027/run_benchmark.py \u2014 outcomes from the coageneration self-play simulator, not a production deployment or live LLM."
 }

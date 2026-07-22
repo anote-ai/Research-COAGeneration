@@ -50,7 +50,7 @@ This paper does not introduce a new benchmark from scratch. The \texttt{coagener
 
 Concretely, we ask: \emph{does sampling several candidate best-responses and keeping the best one change the BLUE-vs-RED advantage score, responding force's doctrinal alignment, and wargame win rate relative to generating a single response?} And, separately: \emph{does the benchmark's scenario-framing parameter actually change generated COA content, and if so, by how much?} We report measured answers to both questions over 30 scenarios (10 seeds $\times$ 3 operational templates), with bootstrap 95\% confidence intervals throughout.
 
-The implementation, experiment script, and raw results are available in this repository at \texttt{experiments/coa/run\_benchmark.py} and \texttt{results/coa/coa-bench/main/}.
+The implementation, experiment script, and raw results are available in this repository at \texttt{experiments/coa/run\_benchmark.py} and \texttt{results/coa/aaai2027/main/}.
 
 \section{Related Work}
 
@@ -158,9 +158,9 @@ python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e ".[dev]"
 python -m pytest tests/ -q
-python experiments/coa/run_benchmark.py
+python experiments/coa/aaai2027/run_benchmark.py
 \end{verbatim}
 
-The experiment script writes \texttt{results/coa/coa-bench/main/rows.csv} (one row per scenario), \texttt{summary.csv} (the bootstrap-CI summary reported in Table~\ref{tab:main} and Section~4.3--4.4), and \texttt{details.json} (run configuration). The random stream is keyed by base seed; all reported numbers are reproducible bit-for-bit given the same library version.
+The experiment script writes \texttt{results/coa/aaai2027/main/rows.csv} (one row per scenario), \texttt{summary.csv} (the bootstrap-CI summary reported in Table~\ref{tab:main} and Section~4.3--4.4), and \texttt{details.json} (run configuration). The random stream is keyed by base seed; all reported numbers are reproducible bit-for-bit given the same library version.
 
 \end{document}

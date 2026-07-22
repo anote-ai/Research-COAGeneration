@@ -2,7 +2,8 @@
 
 Results are organized by paper track first.
 
-- `coa/coa-bench/main/`: COA-Bench adversarial planning results.
+- `coa/dai2026/main/`: DAI COA-Bench adversarial planning results.
+- `coa/aaai2027/main/`: AAAI COA-Bench adversarial planning results.
 - `meta-routing/dai2026/main/`: eight-policy DAI meta-routing experiment with
   180 generated task profiles, 30 paired seeds, and 43,200 traces.
 - `meta-routing/dai2026/ablations/`: five adaptive-policy conditions and 27,000

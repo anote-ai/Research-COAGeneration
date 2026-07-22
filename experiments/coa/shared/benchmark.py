@@ -6,11 +6,14 @@ self-play engine, policies, scenario factories, and evaluation functions in a
 loop and prints aggregated, bootstrap-CI'd results.
 
 Usage:
-    python experiments/coa/run_benchmark.py
+    python experiments/coa/dai2026/run_benchmark.py
+    python experiments/coa/aaai2027/run_benchmark.py
+    python experiments/coa/shared/benchmark.py --output results/coa/aaai2027/main
 """
 
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 from collections import defaultdict
@@ -52,7 +55,20 @@ def to_payoff(quality_score: float) -> float:
     return (quality_score + 1.0) / 2.0
 
 
-def main() -> None:
+def main(
+    default_output: Path | None = None,
+    venue: str = "shared",
+    source_script: str = "experiments/coa/shared/benchmark.py",
+) -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=default_output or Path("results/coa/shared/main"),
+        help="Directory for generated COA benchmark artifacts.",
+    )
+    args = parser.parse_args()
+
     rows = []
     budget_rows = []
     council_rows = []
@@ -315,7 +331,7 @@ def main() -> None:
     )
     print(f"Framing sensitivity delta: {delta_result}")
 
-    output = Path("results/coa/coa-bench/main")
+    output = args.output
     output.mkdir(parents=True, exist_ok=True)
 
     with open(output / "rows.csv", "w", newline="", encoding="utf-8") as f:
@@ -439,8 +455,9 @@ def main() -> None:
             ),
             "selection_objective": "0.45 quality + 0.25 doctrine + 0.10 diversity - 0.20 adversarial pressure",
         },
-        "source": "experiments/coa/run_benchmark.py — outcomes from the coageneration "
-        "self-play simulator, not a production deployment or live LLM.",
+        "venue": venue,
+        "source": f"{source_script} — outcomes from the coageneration self-play "
+        "simulator, not a production deployment or live LLM.",
     }
     with open(output / "details.json", "w", encoding="utf-8") as f:
         json.dump(details, f, indent=2)

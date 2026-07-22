@@ -2,9 +2,10 @@
 
 This folder contains venue-specific versions of the COA paper track.
 
-- `coa-bench/dai2026/`: DAI Industry Track version.
-- `coa-bench/aaai2027/`: AAAI 2027 version.
+- `dai2026/`: DAI Industry Track version.
+- `aaai2027/`: AAAI 2027 version.
+- `archive/`: legacy shared draft files retained for traceability.
 
-Both papers use the same COA experiment outputs under
-`results/coa/coa-bench/main/` and the shared implementation in
-`src/coageneration`.
+Each venue paper has a matching experiment entrypoint and result directory under
+`experiments/coa/<venue>/` and `results/coa/<venue>/`. Shared implementation
+belongs in `src/coageneration`.
