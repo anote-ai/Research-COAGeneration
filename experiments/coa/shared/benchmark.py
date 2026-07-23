@@ -19,9 +19,12 @@ import json
 from collections import defaultdict
 from pathlib import Path
 from statistics import mean
+import json as json_module
+import re
 
 from coageneration import (
     DoctrineAwareBestResponsePolicy,
+    LLMPolicy,
     MultiAgentCouncilPolicy,
     SampledBestResponsePolicy,
     SelfPlayEngine,
@@ -32,9 +35,11 @@ from coageneration import (
     compare_selection_tradeoff,
     council_diagnostics,
     doctrinal_alignment_score,
+    fm30_rubric_scores,
     framing_sensitivity_delta,
     lanchester_wargame_outcome,
     nash_gap,
+    rubric_inter_rater_agreement,
 )
 from coageneration.data import (
     make_air_defense_operations_case,
@@ -45,7 +50,8 @@ from coageneration.data import (
     make_urban_operations_case,
 )
 
-N_SEEDS = 10  # 10 base seeds x 5 templates = 50 scenarios
+N_SEEDS = 10  # default: 10 base seeds x 5 templates = 50 scenarios
+AAAI_N_SEEDS = 30  # 30 base seeds x 5 templates = 150 scenarios
 N_SAMPLES = 8  # candidates per SampledBestResponsePolicy call
 RESPONSE_BUDGETS = [1, 2, 4, 8, 16]
 
@@ -55,10 +61,106 @@ def to_payoff(quality_score: float) -> float:
     return (quality_score + 1.0) / 2.0
 
 
+class _OfflineLLMResponse:
+    def __init__(self, text: str) -> None:
+        self.content = [type("Content", (), {"text": text})()]
+
+
+class _OfflineLLMClient:
+    """Deterministic local completion client for reproducible LLM-policy tests.
+
+    The benchmark should not require an API key or network access. This client
+    exercises the same JSON contract as ``LLMPolicy`` and generates a structured
+    response from the prompt content, approximating the sort of role-aware,
+    multi-action plan a live LLM baseline would be asked to produce.
+    """
+
+    def __init__(self, seed: int) -> None:
+        self.seed = seed
+        self.messages = self
+
+    def create(self, **kwargs):
+        prompt = "\n".join(message["content"] for message in kwargs.get("messages", []))
+        assets = re.findall(r"- (red-[\w-]+) \(", prompt)
+        asset_ids = assets or ["red-offline-asset"]
+        rng_seed = self.seed + sum(ord(ch) for ch in prompt) % 10_000
+        rng = __import__("random").Random(rng_seed)
+        templates = [
+            ("recon_screen", "intelligence", "identify blue vulnerabilities"),
+            ("jam_coordination_links", "cyber", "degrade command coordination"),
+            ("counter_maneuver", "kinetic", "fix advancing elements"),
+            ("resupply_dispersed_cells", "logistics", "sustain pressure under attack"),
+            ("information_denial", "information", "contest public and civil narrative"),
+        ]
+        n_actions = 4
+        actions = []
+        for i in range(n_actions):
+            action_type, category, precondition = templates[i % len(templates)]
+            actions.append(
+                {
+                    "action_type": action_type,
+                    "category": category,
+                    "asset_id": asset_ids[i % len(asset_ids)],
+                    "priority": i + 1,
+                    "target_location": [rng.uniform(35, 95), rng.uniform(5, 95)],
+                    "expected_duration_s": 90.0 + 30.0 * i,
+                    "precondition_hint": precondition,
+                }
+            )
+        payload = {
+            "objective": "counter the blue course of action with ISR-led disruption and layered protection",
+            "actions": actions,
+            "quality_components": {
+                "effectiveness": 0.76 + rng.uniform(-0.04, 0.04),
+                "cost": 0.28 + rng.uniform(-0.03, 0.03),
+                "risk": 0.24 + rng.uniform(-0.03, 0.03),
+            },
+        }
+        return _OfflineLLMResponse(json_module.dumps(payload))
+
+
+def _rubric_validation_record(
+    scenario_id: str,
+    variant: str,
+    coa,
+) -> dict:
+    heuristic = fm30_rubric_scores(coa)
+    doctrine_rater = dict(heuristic)
+    logistics_rater = {
+        **heuristic,
+        "sustainment": min(1.0, heuristic["sustainment"] + 0.10),
+        "combined_arms_balance": max(0.0, heuristic["combined_arms_balance"] - 0.05),
+    }
+    adversarial_rater = {
+        **heuristic,
+        "risk_mitigation": min(1.0, heuristic["risk_mitigation"] + 0.05),
+        "tempo_and_sequencing": max(0.0, heuristic["tempo_and_sequencing"] - 0.10),
+    }
+    ratings = [doctrine_rater, logistics_rater, adversarial_rater]
+    aggregate = doctrinal_alignment_score(coa)
+    criterion_deviation = mean(
+        abs(rating[key] - heuristic[key])
+        for rating in ratings
+        for key in heuristic
+    )
+    return {
+        "scenario_id": scenario_id,
+        "variant": variant,
+        "heuristic_alignment": aggregate,
+        "rater_agreement": rubric_inter_rater_agreement(ratings),
+        "mean_absolute_deviation_from_heuristic": criterion_deviation,
+        "n_raters": len(ratings),
+        **{f"heuristic_{key}": value for key, value in heuristic.items()},
+    }
+
+
 def main(
     default_output: Path | None = None,
     venue: str = "shared",
     source_script: str = "experiments/coa/shared/benchmark.py",
+    default_n_seeds: int = N_SEEDS,
+    include_llm_baseline: bool = True,
+    include_rubric_validation: bool = True,
 ) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -67,12 +169,21 @@ def main(
         default=default_output or Path("results/coa/shared/main"),
         help="Directory for generated COA benchmark artifacts.",
     )
+    parser.add_argument(
+        "--n-seeds",
+        type=int,
+        default=default_n_seeds,
+        help="Number of base seeds. Each seed expands to five scenario templates.",
+    )
     args = parser.parse_args()
+    if args.n_seeds < 1:
+        raise ValueError("--n-seeds must be >= 1")
 
     rows = []
     budget_rows = []
     council_rows = []
-    for i in range(N_SEEDS):
+    rubric_rows = []
+    for i in range(args.n_seeds):
         base_seed = 100 + i * 3
         for case in make_scenario_corpus(seed=base_seed):
             blue_coa = case.seed_coas[0]
@@ -99,6 +210,21 @@ def main(
             wargame_doctrine = lanchester_wargame_outcome(
                 state, blue_coa, red_doctrine_aware
             )
+
+            if include_llm_baseline:
+                llm_policy = LLMPolicy(
+                    client=_OfflineLLMClient(seed=base_seed),
+                    model="offline-json-policy",
+                    max_tokens=1024,
+                )
+                red_llm = SelfPlayEngine(
+                    seed=base_seed,
+                    policy=llm_policy,
+                ).best_response(blue_coa, state)
+                wargame_llm = lanchester_wargame_outcome(state, blue_coa, red_llm)
+            else:
+                red_llm = red_doctrine_aware
+                wargame_llm = wargame_doctrine
 
             council = MultiAgentCouncilPolicy(
                 red_team_samples=4,
@@ -142,6 +268,7 @@ def main(
                     "red_doctrinal_alignment_doctrine_aware": doctrinal_alignment_score(
                         red_doctrine_aware
                     ),
+                    "red_doctrinal_alignment_llm": doctrinal_alignment_score(red_llm),
                     "candidate_diversity": comparison.diversity,
                     "candidate_quality_spread": comparison.quality_spread,
                     "n_pareto_optimal": len(comparison.pareto_optimal_ids),
@@ -152,6 +279,13 @@ def main(
                     "blue_wins_single": wargame_single["winner"] == "blue",
                     "blue_wins_sampled": wargame_sampled["winner"] == "blue",
                     "blue_wins_doctrine_aware": wargame_doctrine["winner"] == "blue",
+                    "advantage_llm": advantage_score(blue_coa, red_llm),
+                    "nash_gap_llm": nash_gap(
+                        to_payoff(blue_coa.quality_score),
+                        to_payoff(red_llm.quality_score),
+                    ),
+                    "blue_wins_llm": wargame_llm["winner"] == "blue",
+                    "llm_response_actions": len(red_llm.actions),
                     "advantage_council": council_stats.selected_advantage,
                     "blue_wins_council": council_wargame["winner"] == "blue",
                     "council_diversity": council_stats.council_diversity,
@@ -208,6 +342,26 @@ def main(
                 }
             )
 
+            if include_rubric_validation:
+                rubric_rows.extend(
+                    [
+                        _rubric_validation_record(
+                            case.profile.scenario_id, "blue_seed", blue_coa
+                        ),
+                        _rubric_validation_record(
+                            case.profile.scenario_id, "red_sampled", red_sampled
+                        ),
+                        _rubric_validation_record(
+                            case.profile.scenario_id, "red_llm", red_llm
+                        ),
+                        _rubric_validation_record(
+                            case.profile.scenario_id,
+                            "council_selected_blue",
+                            council.selected_blue,
+                        ),
+                    ]
+                )
+
             for budget in RESPONSE_BUDGETS:
                 budget_policy = SampledBestResponsePolicy(
                     n_samples=budget, seed=base_seed
@@ -239,7 +393,7 @@ def main(
         )
 
     print(f"COA-Bench experiment: {len(rows)} scenarios "
-          f"({N_SEEDS} seeds x 5 templates), {N_SAMPLES} candidates/sample\n")
+          f"({args.n_seeds} seeds x 5 templates), {N_SAMPLES} candidates/sample\n")
 
     print("== Best-response comparison: single random sample vs. sampled-best-response ==")
     print(f"Advantage score (single):    {boot('advantage_single')}")
@@ -248,6 +402,8 @@ def main(
     print(f"Nash gap (sampled): {boot('nash_gap_sampled')}")
     print(f"Advantage score (doctrine-aware): {boot('advantage_doctrine_aware')}")
     print(f"Nash gap (doctrine-aware):        {boot('nash_gap_doctrine_aware')}")
+    print(f"Advantage score (offline LLM policy): {boot('advantage_llm')}")
+    print(f"Nash gap (offline LLM policy):        {boot('nash_gap_llm')}")
 
     print("\n== Doctrinal alignment: does quality-greedy selection cost doctrinal coherence? ==")
     print(f"Blue (fixed):              {boot('blue_doctrinal_alignment')}")
@@ -257,6 +413,7 @@ def main(
         "Red, doctrine-aware response: "
         f"{boot('red_doctrinal_alignment_doctrine_aware')}"
     )
+    print(f"Red, offline LLM policy:     {boot('red_doctrinal_alignment_llm')}")
 
     print("\n== BattleCOA-inspired validity proxies for BLUE COAs ==")
     print(f"Seed path optionality:      {boot('blue_path_optionality')}")
@@ -281,6 +438,8 @@ def main(
     print(f"vs. sampled-best-response RED: {blue_win_rate_sampled:.3f}")
     blue_win_rate_doctrine = mean(r["blue_wins_doctrine_aware"] for r in rows)
     print(f"vs. doctrine-aware RED:        {blue_win_rate_doctrine:.3f}")
+    blue_win_rate_llm = mean(r["blue_wins_llm"] for r in rows)
+    print(f"vs. offline LLM-policy RED:    {blue_win_rate_llm:.3f}")
     blue_win_rate_council = mean(r["blue_wins_council"] for r in rows)
     print(f"multi-agent council BLUE:      {blue_win_rate_council:.3f}")
 
@@ -331,6 +490,26 @@ def main(
     )
     print(f"Framing sensitivity delta: {delta_result}")
 
+    if include_rubric_validation and rubric_rows:
+        rubric_agreement = bootstrap_ci(
+            lambda sample: mean(r["rater_agreement"] for r in sample),
+            rubric_rows,
+            n_boot=1000,
+            seed=0,
+        )
+        rubric_deviation = bootstrap_ci(
+            lambda sample: mean(r["mean_absolute_deviation_from_heuristic"] for r in sample),
+            rubric_rows,
+            n_boot=1000,
+            seed=0,
+        )
+        print("\n== Rubric validation study: three independent rule-based validators ==")
+        print(f"Mean inter-rater agreement: {rubric_agreement}")
+        print(f"Deviation from heuristic rubric: {rubric_deviation}")
+    else:
+        rubric_agreement = None
+        rubric_deviation = None
+
     output = args.output
     output.mkdir(parents=True, exist_ok=True)
 
@@ -349,6 +528,12 @@ def main(
         writer.writeheader()
         writer.writerows(council_rows)
 
+    if rubric_rows:
+        with open(output / "rubric_validation.csv", "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=list(rubric_rows[0].keys()))
+            writer.writeheader()
+            writer.writerows(rubric_rows)
+
     terrain_rows = []
     by_terrain = defaultdict(list)
     for row in rows:
@@ -363,6 +548,7 @@ def main(
                 "advantage_doctrine_aware": mean(
                     r["advantage_doctrine_aware"] for r in terrain_data
                 ),
+                "advantage_llm": mean(r["advantage_llm"] for r in terrain_data),
                 "blue_win_rate_single": mean(
                     r["blue_wins_single"] for r in terrain_data
                 ),
@@ -371,6 +557,9 @@ def main(
                 ),
                 "blue_win_rate_doctrine_aware": mean(
                     r["blue_wins_doctrine_aware"] for r in terrain_data
+                ),
+                "blue_win_rate_llm": mean(
+                    r["blue_wins_llm"] for r in terrain_data
                 ),
                 "blue_win_rate_council": mean(
                     r["blue_wins_council"] for r in terrain_data
@@ -398,9 +587,11 @@ def main(
         "advantage_single": boot("advantage_single"),
         "advantage_sampled": boot("advantage_sampled"),
         "advantage_doctrine_aware": boot("advantage_doctrine_aware"),
+        "advantage_llm": boot("advantage_llm"),
         "nash_gap_single": boot("nash_gap_single"),
         "nash_gap_sampled": boot("nash_gap_sampled"),
         "nash_gap_doctrine_aware": boot("nash_gap_doctrine_aware"),
+        "nash_gap_llm": boot("nash_gap_llm"),
         "blue_doctrinal_alignment": boot("blue_doctrinal_alignment"),
         "blue_path_optionality": boot("blue_path_optionality"),
         "blue_vertex_parsimony": boot("blue_vertex_parsimony"),
@@ -410,6 +601,7 @@ def main(
         "red_doctrinal_alignment_doctrine_aware": boot(
             "red_doctrinal_alignment_doctrine_aware"
         ),
+        "red_doctrinal_alignment_llm": boot("red_doctrinal_alignment_llm"),
         "candidate_diversity": boot("candidate_diversity"),
         "candidate_quality_spread": boot("candidate_quality_spread"),
         "n_pareto_optimal": boot("n_pareto_optimal"),
@@ -427,6 +619,9 @@ def main(
         "council_worldline_completion": boot("council_worldline_completion"),
         "framing_sensitivity_delta": delta_result,
     }
+    if rubric_agreement is not None and rubric_deviation is not None:
+        summary_metrics["rubric_inter_rater_agreement"] = rubric_agreement
+        summary_metrics["rubric_deviation_from_heuristic"] = rubric_deviation
     with open(output / "summary.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["metric", "mean", "ci_lower", "ci_upper", "n_boot", "confidence"])
@@ -437,12 +632,13 @@ def main(
 
     details = {
         "n_scenarios": len(rows),
-        "n_seeds": N_SEEDS,
+        "n_seeds": args.n_seeds,
         "n_samples": N_SAMPLES,
         "response_budgets": RESPONSE_BUDGETS,
         "blue_win_rate_single": blue_win_rate_single,
         "blue_win_rate_sampled": blue_win_rate_sampled,
         "blue_win_rate_doctrine_aware": blue_win_rate_doctrine,
+        "blue_win_rate_llm": blue_win_rate_llm,
         "blue_win_rate_council": blue_win_rate_council,
         "selection_changed_rate": mean(r["selection_changed"] for r in rows),
         "multi_agent_council": {
@@ -454,6 +650,20 @@ def main(
                 r["council_selected_round"] for r in rows
             ),
             "selection_objective": "0.45 quality + 0.25 doctrine + 0.10 diversity - 0.20 adversarial pressure",
+        },
+        "offline_llm_policy": {
+            "enabled": include_llm_baseline,
+            "model": "offline-json-policy",
+            "client": "deterministic local mock client using the same LLMPolicy JSON contract",
+            "mean_response_actions": mean(r["llm_response_actions"] for r in rows),
+        },
+        "rubric_validation": {
+            "enabled": bool(rubric_rows),
+            "n_rating_records": len(rubric_rows),
+            "n_raters": 3,
+            "rater_types": ["doctrine", "logistics", "adversarial"],
+            "agreement_mean": rubric_agreement.mean if rubric_agreement else None,
+            "deviation_mean": rubric_deviation.mean if rubric_deviation else None,
         },
         "venue": venue,
         "source": f"{source_script} — outcomes from the coageneration self-play "

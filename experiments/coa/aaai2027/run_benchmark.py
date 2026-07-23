@@ -17,4 +17,7 @@ if __name__ == "__main__":
         default_output=Path("results/coa/aaai2027/main"),
         venue="aaai2027",
         source_script="experiments/coa/aaai2027/run_benchmark.py",
+        default_n_seeds=30,
+        include_llm_baseline=True,
+        include_rubric_validation=True,
     )

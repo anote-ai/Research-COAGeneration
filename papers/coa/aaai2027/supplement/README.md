@@ -20,8 +20,9 @@ python experiments/coa/aaai2027/run_benchmark.py
 pytest -q tests/test_core.py tests/test_data.py tests/test_evaluate.py tests/test_llm_policy.py
 ```
 
-The run creates 50 synthetic scenarios from 10 seeds and five operational
-templates. It exports per-scenario rows, response-budget curves, council traces,
+The default AAAI run creates 150 synthetic scenarios from 30 seeds and five
+operational templates. It exports per-scenario rows, response-budget curves,
+council traces, offline LLM-policy diagnostics, rubric-validation records,
 terrain summaries, bootstrap summaries, and run metadata to
 `results/coa/aaai2027/main/`.
 
@@ -32,6 +33,8 @@ terrain summaries, bootstrap summaries, and run metadata to
 - `experiments/coa/aaai2027/`: AAAI COA experiment entrypoint
 - `experiments/coa/shared/`: shared experiment implementation
 - `results/coa/aaai2027/`: reported artifacts
+- `results/coa/aaai2027/main/rubric_validation.csv`: role-perturbed rubric
+  validator records
 - `tests/`: focused unit tests for COA representation, data, evaluation, and
   policy behavior
 
