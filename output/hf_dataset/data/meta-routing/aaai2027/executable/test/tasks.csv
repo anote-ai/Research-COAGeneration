@@ -1,0 +1,109 @@
+task_id,split,workload,kind,prompt,expected_answer,required_actions,unavailable_actions,cost_budget
+test-data_analysis-000,test,data_analysis,direct_literal,The requested response is R000; give only that response.,R000,,,4.5
+test-data_analysis-001,test,data_analysis,aggregate,"Determine computationally the maximum across 25, 16, 36, 3, 35, 36, 20.",36,execute_code,,4.5
+test-data_analysis-002,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in other:24; green:4; green:23; green:11; other:23; other:10; other:17; other:19.,38,decompose|execute_code,,4.5
+test-data_analysis-003,test,data_analysis,direct_literal,The requested response is R003; give only that response.,R003,,,4.5
+test-data_analysis-004,test,data_analysis,aggregate,"Determine computationally the maximum across 12, 31, 5, 18, 5, 38, 27.",38,execute_code,,4.5
+test-data_analysis-005,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in green:24; other:8; other:24; other:9; other:18; other:4; other:4; green:2.,26,decompose|execute_code,,4.5
+test-data_analysis-006,test,data_analysis,direct_literal,The requested response is R006; give only that response.,R006,,,4.5
+test-data_analysis-007,test,data_analysis,aggregate,"Determine computationally the maximum across 35, 25, 18, 21, 27, 4, 20.",35,execute_code,,4.5
+test-data_analysis-008,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in other:7; other:23; other:15; green:2; other:19; green:24; green:7; green:11.,44,decompose|execute_code,,4.5
+test-data_analysis-009,test,data_analysis,direct_literal,The requested response is R009; give only that response.,R009,,,4.5
+test-data_analysis-010,test,data_analysis,aggregate,"Determine computationally the maximum across 18, 28, 4, 35, 3, 36, 19.",36,execute_code,,4.5
+test-data_analysis-011,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in other:18; green:16; other:21; other:3; green:2; green:6; green:24; green:5.,53,decompose|execute_code,,4.5
+test-data_analysis-012,test,data_analysis,direct_literal,The requested response is R012; give only that response.,R012,,,4.5
+test-data_analysis-013,test,data_analysis,aggregate,"Determine computationally the maximum across 12, 5, 23, 35, 7, 19, 22.",35,execute_code,,4.5
+test-data_analysis-014,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in other:15; green:18; other:8; green:24; other:6; other:24; other:12; other:13.,42,decompose|execute_code,,4.5
+test-data_analysis-015,test,data_analysis,direct_literal,The requested response is R015; give only that response.,R015,,,4.5
+test-data_analysis-016,test,data_analysis,aggregate,"Determine computationally the maximum across 39, 21, 5, 35, 36, 21, 30.",39,execute_code,,4.5
+test-data_analysis-017,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in green:19; other:7; green:17; other:20; green:16; green:6; other:10; green:10.,68,decompose|execute_code,,4.5
+test-data_analysis-018,test,data_analysis,direct_literal,The requested response is R018; give only that response.,R018,,,4.5
+test-data_analysis-019,test,data_analysis,aggregate,"Determine computationally the maximum across 28, 29, 36, 8, 27, 14, 31.",36,execute_code,,4.5
+test-data_analysis-020,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in other:4; other:16; other:11; green:4; green:25; other:25; other:18; green:9.,38,decompose|execute_code,,4.5
+test-data_analysis-021,test,data_analysis,direct_literal,The requested response is R021; give only that response.,R021,,,4.5
+test-data_analysis-022,test,data_analysis,aggregate,"Determine computationally the maximum across 33, 40, 17, 20, 27, 11, 26.",40,execute_code,,4.5
+test-data_analysis-023,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in green:6; other:20; other:15; other:13; green:15; green:3; green:21; other:17.,45,decompose|execute_code,,4.5
+test-data_analysis-024,test,data_analysis,direct_literal,The requested response is R024; give only that response.,R024,,,4.5
+test-data_analysis-025,test,data_analysis,aggregate,"Determine computationally the maximum across 33, 8, 34, 18, 17, 38, 33.",38,execute_code,,4.5
+test-data_analysis-026,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in other:13; green:11; green:22; other:17; other:16; green:7; green:17; green:3.,60,decompose|execute_code,,4.5
+test-data_analysis-027,test,data_analysis,direct_literal,The requested response is R027; give only that response.,R027,,,4.5
+test-data_analysis-028,test,data_analysis,aggregate,"Determine computationally the maximum across 29, 12, 19, 40, 6, 7, 34.",40,execute_code,,4.5
+test-data_analysis-029,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in green:6; other:2; green:22; green:17; other:25; other:6; green:4; green:24.,73,decompose|execute_code,,4.5
+test-data_analysis-030,test,data_analysis,direct_literal,The requested response is R030; give only that response.,R030,,,4.5
+test-data_analysis-031,test,data_analysis,aggregate,"Determine computationally the maximum across 8, 20, 6, 12, 31, 10, 10.",31,execute_code,,4.5
+test-data_analysis-032,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in green:13; green:22; green:16; green:14; other:20; green:6; green:16; other:4.,87,decompose|execute_code,,4.5
+test-data_analysis-033,test,data_analysis,direct_literal,The requested response is R033; give only that response.,R033,,,4.5
+test-data_analysis-034,test,data_analysis,aggregate,"Determine computationally the maximum across 17, 15, 13, 21, 16, 32, 20.",32,execute_code,,4.5
+test-data_analysis-035,test,data_analysis,filtered_sum,Resolve the subgroup green before computing its aggregate in other:8; other:13; green:15; other:20; other:11; green:3; other:14; green:19.,37,decompose|execute_code,,4.5
+test-research-000,test,research,direct_literal,The requested response is R000; give only that response.,R000,,,4.5
+test-research-001,test,research,research_fact,Use the provided evidence index to find code associated with Orion-01.,CODE-101,use_tool,,4.5
+test-research-002,test,research,research_multihop,Trace the two-link evidence chain from Lead-02 to laboratory to city.,Oslo,decompose|use_tool,,4.5
+test-research-003,test,research,research_conflict,Resolve conflicting records for Program-03; return the newest supported status.,active,use_tool|verify,,4.5
+test-research-004,test,research,research_outage,Evidence service outage: obtain Atlas-04's code through specialist delegation.,SP-304,delegate,use_tool,4.5
+test-research-005,test,research,direct_literal,The requested response is R005; give only that response.,R005,,,4.5
+test-research-006,test,research,research_fact,Use the provided evidence index to find code associated with Orion-06.,CODE-106,use_tool,,4.5
+test-research-007,test,research,research_multihop,Trace the two-link evidence chain from Lead-07 to laboratory to city.,Lima,decompose|use_tool,,4.5
+test-research-008,test,research,research_conflict,Resolve conflicting records for Program-08; return the newest supported status.,completed,use_tool|verify,,4.5
+test-research-009,test,research,research_outage,Evidence service outage: obtain Atlas-09's code through specialist delegation.,SP-309,delegate,use_tool,4.5
+test-research-010,test,research,direct_literal,The requested response is R010; give only that response.,R010,,,4.5
+test-research-011,test,research,research_fact,Use the provided evidence index to find code associated with Orion-11.,CODE-111,use_tool,,4.5
+test-research-012,test,research,research_multihop,Trace the two-link evidence chain from Lead-12 to laboratory to city.,Montreal,decompose|use_tool,,4.5
+test-research-013,test,research,research_conflict,Resolve conflicting records for Program-13; return the newest supported status.,active,use_tool|verify,,4.5
+test-research-014,test,research,research_outage,Evidence service outage: obtain Atlas-14's code through specialist delegation.,SP-314,delegate,use_tool,4.5
+test-research-015,test,research,direct_literal,The requested response is R015; give only that response.,R015,,,4.5
+test-research-016,test,research,research_fact,Use the provided evidence index to find code associated with Orion-16.,CODE-116,use_tool,,4.5
+test-research-017,test,research,research_multihop,Trace the two-link evidence chain from Lead-17 to laboratory to city.,Nairobi,decompose|use_tool,,4.5
+test-research-018,test,research,research_conflict,Resolve conflicting records for Program-18; return the newest supported status.,completed,use_tool|verify,,4.5
+test-research-019,test,research,research_outage,Evidence service outage: obtain Atlas-19's code through specialist delegation.,SP-319,delegate,use_tool,4.5
+test-research-020,test,research,direct_literal,The requested response is R020; give only that response.,R020,,,4.5
+test-research-021,test,research,research_fact,Use the provided evidence index to find code associated with Orion-21.,CODE-121,use_tool,,4.5
+test-research-022,test,research,research_multihop,Trace the two-link evidence chain from Lead-22 to laboratory to city.,Oslo,decompose|use_tool,,4.5
+test-research-023,test,research,research_conflict,Resolve conflicting records for Program-23; return the newest supported status.,active,use_tool|verify,,4.5
+test-research-024,test,research,research_outage,Evidence service outage: obtain Atlas-24's code through specialist delegation.,SP-324,delegate,use_tool,4.5
+test-research-025,test,research,direct_literal,The requested response is R025; give only that response.,R025,,,4.5
+test-research-026,test,research,research_fact,Use the provided evidence index to find code associated with Orion-26.,CODE-126,use_tool,,4.5
+test-research-027,test,research,research_multihop,Trace the two-link evidence chain from Lead-27 to laboratory to city.,Lima,decompose|use_tool,,4.5
+test-research-028,test,research,research_conflict,Resolve conflicting records for Program-28; return the newest supported status.,completed,use_tool|verify,,4.5
+test-research-029,test,research,research_outage,Evidence service outage: obtain Atlas-29's code through specialist delegation.,SP-329,delegate,use_tool,4.5
+test-research-030,test,research,direct_literal,The requested response is R030; give only that response.,R030,,,4.5
+test-research-031,test,research,research_fact,Use the provided evidence index to find code associated with Orion-31.,CODE-131,use_tool,,4.5
+test-research-032,test,research,research_multihop,Trace the two-link evidence chain from Lead-32 to laboratory to city.,Montreal,decompose|use_tool,,4.5
+test-research-033,test,research,research_conflict,Resolve conflicting records for Program-33; return the newest supported status.,active,use_tool|verify,,4.5
+test-research-034,test,research,research_outage,Evidence service outage: obtain Atlas-34's code through specialist delegation.,SP-334,delegate,use_tool,4.5
+test-research-035,test,research,direct_literal,The requested response is R035; give only that response.,R035,,,4.5
+test-document_processing-000,test,document_processing,direct_literal,The requested response is R000; give only that response.,R000,,,4.5
+test-document_processing-001,test,document_processing,document_extract,"Read the structured document, extracting Region: Record ID: D-001; Region: V-001; Status: valid",V-001,use_tool,,4.5
+test-document_processing-002,test,document_processing,invoice_reconcile,"Audit this billing record: extract the entries, execute the calculation, and verify the payable total: Invoice I-002; Items: 23,10,35,11; Stated total: 77",79,use_tool|execute_code|verify,,4.5
+test-document_processing-003,test,document_processing,date_normalize,Obtain an ISO date from this EU document using extraction and specialist resolution: Case C-003; Date: 13/04/2024; Locale: EU,2024-04-13,use_tool|delegate,,4.5
+test-document_processing-004,test,document_processing,crossfield_check,Plan the multi-field extraction and validate the combined identifier in: Asset record; Region=SW; Serial=8004; Owner=Team-4,SW-8004,decompose|use_tool|verify,,4.5
+test-document_processing-005,test,document_processing,direct_literal,The requested response is R005; give only that response.,R005,,,4.5
+test-document_processing-006,test,document_processing,document_extract,"Read the structured document, extracting Account: Record ID: D-006; Account: V-006; Status: valid",V-006,use_tool,,4.5
+test-document_processing-007,test,document_processing,invoice_reconcile,"Audit this billing record: extract the entries, execute the calculation, and verify the payable total: Invoice I-007; Items: 32,6,17,22; Stated total: 80",77,use_tool|execute_code|verify,,4.5
+test-document_processing-008,test,document_processing,date_normalize,Obtain an ISO date from this US document using extraction and specialist resolution: Case C-008; Date: 09/18/2026; Locale: US,2026-09-18,use_tool|delegate,,4.5
+test-document_processing-009,test,document_processing,crossfield_check,Plan the multi-field extraction and validate the combined identifier in: Asset record; Region=NE; Serial=8009; Owner=Team-4,NE-8009,decompose|use_tool|verify,,4.5
+test-document_processing-010,test,document_processing,direct_literal,The requested response is R010; give only that response.,R010,,,4.5
+test-document_processing-011,test,document_processing,document_extract,"Read the structured document, extracting Owner: Record ID: D-011; Owner: V-011; Status: valid",V-011,use_tool,,4.5
+test-document_processing-012,test,document_processing,invoice_reconcile,"Audit this billing record: extract the entries, execute the calculation, and verify the payable total: Invoice I-012; Items: 26,7,25,7; Stated total: 63",65,use_tool|execute_code|verify,,4.5
+test-document_processing-013,test,document_processing,date_normalize,Obtain an ISO date from this EU document using extraction and specialist resolution: Case C-013; Date: 23/05/2025; Locale: EU,2025-05-23,use_tool|delegate,,4.5
+test-document_processing-014,test,document_processing,crossfield_check,Plan the multi-field extraction and validate the combined identifier in: Asset record; Region=CE; Serial=8014; Owner=Team-4,CE-8014,decompose|use_tool|verify,,4.5
+test-document_processing-015,test,document_processing,direct_literal,The requested response is R015; give only that response.,R015,,,4.5
+test-document_processing-016,test,document_processing,document_extract,"Read the structured document, extracting Region: Record ID: D-016; Region: V-016; Status: valid",V-016,use_tool,,4.5
+test-document_processing-017,test,document_processing,invoice_reconcile,"Audit this billing record: extract the entries, execute the calculation, and verify the payable total: Invoice I-017; Items: 27,28,13,25; Stated total: 96",93,use_tool|execute_code|verify,,4.5
+test-document_processing-018,test,document_processing,date_normalize,Obtain an ISO date from this US document using extraction and specialist resolution: Case C-018; Date: 01/13/2024; Locale: US,2024-01-13,use_tool|delegate,,4.5
+test-document_processing-019,test,document_processing,crossfield_check,Plan the multi-field extraction and validate the combined identifier in: Asset record; Region=SW; Serial=8019; Owner=Team-4,SW-8019,decompose|use_tool|verify,,4.5
+test-document_processing-020,test,document_processing,direct_literal,The requested response is R020; give only that response.,R020,,,4.5
+test-document_processing-021,test,document_processing,document_extract,"Read the structured document, extracting Account: Record ID: D-021; Account: V-021; Status: valid",V-021,use_tool,,4.5
+test-document_processing-022,test,document_processing,invoice_reconcile,"Audit this billing record: extract the entries, execute the calculation, and verify the payable total: Invoice I-022; Items: 17,8,10,29; Stated total: 62",64,use_tool|execute_code|verify,,4.5
+test-document_processing-023,test,document_processing,date_normalize,Obtain an ISO date from this EU document using extraction and specialist resolution: Case C-023; Date: 18/06/2026; Locale: EU,2026-06-18,use_tool|delegate,,4.5
+test-document_processing-024,test,document_processing,crossfield_check,Plan the multi-field extraction and validate the combined identifier in: Asset record; Region=NE; Serial=8024; Owner=Team-4,NE-8024,decompose|use_tool|verify,,4.5
+test-document_processing-025,test,document_processing,direct_literal,The requested response is R025; give only that response.,R025,,,4.5
+test-document_processing-026,test,document_processing,document_extract,"Read the structured document, extracting Owner: Record ID: D-026; Owner: V-026; Status: valid",V-026,use_tool,,4.5
+test-document_processing-027,test,document_processing,invoice_reconcile,"Audit this billing record: extract the entries, execute the calculation, and verify the payable total: Invoice I-027; Items: 17,25,12,16; Stated total: 73",70,use_tool|execute_code|verify,,4.5
+test-document_processing-028,test,document_processing,date_normalize,Obtain an ISO date from this US document using extraction and specialist resolution: Case C-028; Date: 02/23/2025; Locale: US,2025-02-23,use_tool|delegate,,4.5
+test-document_processing-029,test,document_processing,crossfield_check,Plan the multi-field extraction and validate the combined identifier in: Asset record; Region=CE; Serial=8029; Owner=Team-4,CE-8029,decompose|use_tool|verify,,4.5
+test-document_processing-030,test,document_processing,direct_literal,The requested response is R030; give only that response.,R030,,,4.5
+test-document_processing-031,test,document_processing,document_extract,"Read the structured document, extracting Region: Record ID: D-031; Region: V-031; Status: valid",V-031,use_tool,,4.5
+test-document_processing-032,test,document_processing,invoice_reconcile,"Audit this billing record: extract the entries, execute the calculation, and verify the payable total: Invoice I-032; Items: 7,14,31,34; Stated total: 84",86,use_tool|execute_code|verify,,4.5
+test-document_processing-033,test,document_processing,date_normalize,Obtain an ISO date from this EU document using extraction and specialist resolution: Case C-033; Date: 13/07/2024; Locale: EU,2024-07-13,use_tool|delegate,,4.5
+test-document_processing-034,test,document_processing,crossfield_check,Plan the multi-field extraction and validate the combined identifier in: Asset record; Region=SW; Serial=8034; Owner=Team-4,SW-8034,decompose|use_tool|verify,,4.5
+test-document_processing-035,test,document_processing,direct_literal,The requested response is R035; give only that response.,R035,,,4.5

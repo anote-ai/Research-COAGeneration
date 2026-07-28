@@ -1,0 +1,118 @@
+{
+  "action_counts": {
+    "adaptive": {
+      "answer": 5400,
+      "decompose": 1530,
+      "delegate": 720,
+      "execute_code": 1800,
+      "use_tool": 2730,
+      "verify": 3690
+    },
+    "adaptive_no_decompose": {
+      "answer": 5400,
+      "delegate": 930,
+      "execute_code": 1830,
+      "use_tool": 2880,
+      "verify": 3870
+    },
+    "adaptive_no_recovery": {
+      "answer": 5400,
+      "decompose": 1530,
+      "delegate": 720,
+      "execute_code": 1800,
+      "use_tool": 2730,
+      "verify": 3690
+    },
+    "adaptive_no_verify": {
+      "answer": 5400,
+      "decompose": 1830,
+      "delegate": 930,
+      "execute_code": 2250,
+      "use_tool": 3150
+    },
+    "adaptive_single_action": {
+      "answer": 5400,
+      "decompose": 450,
+      "delegate": 90,
+      "execute_code": 1320,
+      "use_tool": 1560,
+      "verify": 1980
+    }
+  },
+  "configuration": {
+    "note": "Results are from the seeded offline execution model, not production deployment.",
+    "policies": [
+      "adaptive",
+      "adaptive_no_decompose",
+      "adaptive_no_recovery",
+      "adaptive_no_verify",
+      "adaptive_single_action"
+    ],
+    "seeds": 30,
+    "tasks": 180
+  },
+  "failure_modes": {
+    "adaptive": {
+      "delegate_failure": 16,
+      "execute_code_failure": 37,
+      "none": 4231,
+      "task_failure": 1060,
+      "use_tool_failure": 56
+    },
+    "adaptive_no_decompose": {
+      "delegate_failure": 19,
+      "execute_code_failure": 52,
+      "none": 4086,
+      "task_failure": 1190,
+      "use_tool_failure": 53
+    },
+    "adaptive_no_recovery": {
+      "delegate_failure": 62,
+      "execute_code_failure": 125,
+      "none": 4009,
+      "task_failure": 999,
+      "use_tool_failure": 205
+    },
+    "adaptive_no_verify": {
+      "delegate_failure": 18,
+      "execute_code_failure": 42,
+      "none": 3978,
+      "task_failure": 1295,
+      "use_tool_failure": 67
+    },
+    "adaptive_single_action": {
+      "delegate_failure": 2,
+      "execute_code_failure": 24,
+      "none": 3661,
+      "task_failure": 1688,
+      "use_tool_failure": 25
+    }
+  },
+  "workload_success": {
+    "adaptive": {
+      "data_analysis": 0.8022222222222222,
+      "document_processing": 0.7461111111111111,
+      "research": 0.835
+    },
+    "adaptive_no_decompose": {
+      "data_analysis": 0.775,
+      "document_processing": 0.7411111111111112,
+      "research": 0.79
+    },
+    "adaptive_no_recovery": {
+      "data_analysis": 0.7716666666666666,
+      "document_processing": 0.7472222222222222,
+      "research": 0.8305555555555556
+    },
+    "adaptive_no_verify": {
+      "data_analysis": 0.7611111111111111,
+      "document_processing": 0.7044444444444444,
+      "research": 0.7766666666666666
+    },
+    "adaptive_single_action": {
+      "data_analysis": 0.6988888888888889,
+      "document_processing": 0.6583333333333333,
+      "research": 0.6872222222222222
+    }
+  }
+}

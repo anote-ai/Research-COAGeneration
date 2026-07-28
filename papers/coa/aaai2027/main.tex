@@ -15,7 +15,7 @@
 
 \setcounter{secnumdepth}{1}
 
-\title{Adversarial Course-of-Action Generation: Game-Theoretic Multi-Agent Algorithms for COA matching \& COA generation}
+\title{COA-Bench: Adversarial Evaluation of Structured Plan-Generation Agents}
 \author{Anonymous Submission}
 \affiliations{}
 
@@ -24,28 +24,28 @@
 \maketitle
 
 \begin{abstract}
-Course-of-action (COA) generation requires producing structured plans whose quality depends on adversarial response, force availability, and qualitative planning constraints. We introduce COA-Bench, an offline benchmark for comparing COA generation policies through self-play. Following BattleCOA terminology, we reserve COA matching for asset-effect matching and COA generation for course-of-action generation; the benchmark does not implement those DecisionFunctions directly. Instead, it represents COAs as typed action chains, assigns a synthetic COA quality score, compares opposing COAs with a BLUE-vs-RED advantage score and Nash-gap distance, and evaluates doctrinal coherence with a heuristic FM 3-0-inspired rubric. In 150 synthetic scenarios spanning five operational templates, a sampled best-response policy that draws eight RED candidates reduces BLUE advantage from .518 to .486 and BLUE wargame win rate from .900 to .820 relative to a single-sample response. An offline LLM-policy baseline using the same JSON contract reaches .496 BLUE advantage and .700 BLUE win rate, and a two-stage multi-agent council obtains .509 BLUE advantage and .813 BLUE win rate. A three-rater rubric-validation study over 600 rating records yields .978 inter-rater agreement. The contribution is an inspectable evaluation harness and preliminary benchmark result, not an operational planner or evidence about real-world military decision quality.
+Structured plan-generation agents are often evaluated as if a plan has quality in isolation, yet adversarial settings require asking how a candidate behaves when an opponent can search for responses. We introduce COA-Bench, an offline benchmark for adversarial evaluation of structured plan-generation agents. The benchmark uses course-of-action (COA) generation as a motivating domain, but the contribution is a general evaluation object: a typed plan, an adversarial response set, selector diagnostics, and traceable candidate-frontier metrics. COA-Bench represents plans as typed action chains with optional branches, assigns synthetic quality scores, compares opposing plans with BLUE-vs-RED advantage and Nash-gap diagnostics, and evaluates qualitative constraint coherence with a transparent heuristic rubric. In 150 synthetic scenarios spanning five planning templates, a sampled best-response policy that draws eight RED candidates reduces BLUE advantage from .518 to .486 and BLUE wargame win rate from .900 to .820 relative to a single-sample response. An offline LLM-policy contract baseline reaches .496 BLUE advantage and .700 BLUE win rate, while a two-stage multi-agent council obtains .509 BLUE advantage and .813 BLUE win rate. A three-rater rubric-sensitivity study over 600 rating records yields .978 inter-rater agreement. COA-Bench is not an operational planner and provides no evidence about real-world decision quality; it is a reproducible benchmark artifact for studying adversarial plan evaluation, response-budget sensitivity, candidate frontiers, and multi-agent critique-and-revision traces.
 \end{abstract}
 
 % Identifying code and artifact links are intentionally omitted for anonymous review.
 
 \section{Introduction}
 
-Course-of-action generation is an adversarial planning problem. A candidate COA must be assessed not only by its nominal effectiveness, but also by how an opposing force may respond and whether the plan remains coherent under resource, timing, and risk constraints. This makes COA generation a useful setting for studying agentic planning and evaluation: the artifact is structured, the opponent matters, and a single scalar success metric can hide important tradeoffs.
+Plan-generation agents are commonly evaluated on whether they produce plausible final answers, valid tool traces, or executable action sequences. In adversarial settings, however, a candidate plan is not meaningful in isolation. Its apparent strength depends on how a responder searches, which constraints are emphasized, whether the candidate set contains meaningful alternatives, and whether critique-and-revision changes the selected plan. Course-of-action (COA) generation is a compact testbed for this broader problem: the artifact is structured, the opponent matters, and a single scalar success metric can hide important tradeoffs.
 
-We present COA-Bench, an offline benchmark for comparing COA generation policies through self-play. The current benchmark is intentionally small and synthetic. It is designed to make assumptions inspectable before moving to richer simulations, expert scoring, or live model-backed generation.
+We present COA-Bench, an offline benchmark for adversarial evaluation of structured plan-generation agents. The benchmark uses COA terminology because it provides a naturally adversarial setting, but the AI contribution is methodological: COA-Bench turns a generated plan, an adversarial response distribution, and a multi-COA candidate frontier into a reproducible evaluation object. The current benchmark is intentionally small and synthetic. It is designed to make assumptions inspectable before moving to richer simulations, expert scoring, or live model-backed generation.
 
-The benchmark is organized around a gap in current agent evaluation. Many agent benchmarks ask whether an agent completes a task, invokes the right tool, or reaches a final answer. COA generation instead requires comparing \emph{sets} of possible plans under adversarial response. A generated plan can be syntactically valid and high scoring in isolation, yet brittle once an opponent samples plausible counter-COAs. COA-Bench therefore evaluates not just final plan quality, but also response-budget sensitivity, candidate-frontier structure, doctrine-inspired diagnostics, and trace-level explanations of why an option was selected.
+The benchmark is organized around a gap in current agent evaluation. Many agent benchmarks ask whether an agent completes a task, invokes the right tool, or reaches a final answer. Adversarial plan generation instead requires comparing \emph{sets} of possible plans under response search. A generated plan can be syntactically valid and high scoring in isolation, yet brittle once a responder samples plausible counter-plans. COA-Bench therefore evaluates not just final plan quality, but also response-budget sensitivity, candidate-frontier structure, constraint-coherence diagnostics, and trace-level explanations of why an option was selected.
 
 The paper makes three contributions:
 
 \begin{itemize}
-    \item a formal adversarial COA-generation setup connecting asset-effect matching, course-of-action generation, and best-response evaluation while keeping BattleCOA DecisionFunctions distinct from benchmark metrics;
-    \item a reproducible offline benchmark with typed COA traces, BLUE/RED policy comparison, doctrine-inspired diagnostics, response-budget curves, candidate diversity, and Pareto-frontier analysis; and
-    \item empirical evidence over 150 scenarios that sampled adversarial response, an offline LLM-policy responder, and multi-agent council generation change win-rate and plan-quality conclusions, plus a rubric-validation check and a benchmark-development finding showing that scenario framing was a silent no-op until wired into generated content.
+    \item a formal adversarial plan-generation setup in which a structured candidate is evaluated against sampled response sets rather than a fixed answer key;
+    \item a reproducible offline benchmark with typed plan traces, BLUE/RED policy comparison, constraint-coherence diagnostics, response-budget curves, candidate diversity, and Pareto-frontier analysis; and
+    \item empirical evidence over 150 scenarios that sampled adversarial response, an offline LLM-policy contract baseline, and multi-agent council generation change win-rate and plan-quality conclusions, plus a rubric-sensitivity check and a benchmark-development finding showing that scenario framing was a silent no-op until wired into generated content.
 \end{itemize}
 
-The scope boundary is central. COA-Bench studies typed course-of-action artifacts and synthetic evaluation signals; it does not claim to implement a full BattleCOA decision architecture.
+The scope boundary is central. COA-Bench studies typed synthetic plan artifacts and synthetic evaluation signals. It does not implement an operational BattleCOA decision architecture, does not use real operational data, and should not be used for real-world planning decisions.
 
 \section{Related Work}
 
@@ -55,24 +55,24 @@ General-purpose evaluation efforts such as BIG-bench~\citep{srivastava2023beyond
 \paragraph{Self-play.}
 AlphaZero~\citep{silver2018alphazero}, AlphaStar~\citep{vinyals2019alphastar}, and Pluribus~\citep{brown2019superhuman} demonstrate the value of self-play in adversarial games. CICERO extends strategic self-play into natural-language negotiation~\citep{bakhtin2022cicero}. COA-Bench uses self-play as an evaluation mechanism, not as a training algorithm.
 
-\paragraph{Military decision models.}
-Lanchester's attrition equations~\citep{lanchester1916} and Schelling's strategic analysis~\citep{schelling1960} motivate simplified adversarial abstractions. COA-Bench's wargame check is deliberately stylized and is reported only as a secondary diagnostic. The doctrinal rubric is inspired by FM 3-0~\citep{fm30}, but is not a substitute for expert doctrine assessment.
+\paragraph{Adversarial decision models.}
+Lanchester's attrition equations~\citep{lanchester1916} and Schelling's strategic analysis~\citep{schelling1960} motivate simplified adversarial abstractions. COA-Bench's wargame check is deliberately stylized and is reported only as a secondary diagnostic. The qualitative rubric is inspired by FM 3-0~\citep{fm30}, but is used only as a transparent constraint-coherence proxy and is not a substitute for expert assessment.
 
 \paragraph{Agent evaluation.}
-ReAct~\citep{yao2023react} motivates evaluating reasoning and action together, while AgentBench~\citep{liu2024agentbench} evaluates agents across interactive settings. ALFWorld connects abstract textual reasoning to embodied action~\citep{shridhar2021alfworld}, and WebArena evaluates autonomous agents in realistic web environments~\citep{zhou2024webarena}. SWE-bench grounds evaluation in executable software tasks~\citep{jimenez2024swebench}; $\tau$-bench and ToolSandbox evaluate stateful tool-using agents in domain and conversational environments~\citep{yao2024taubench,lu2025toolsandbox}. AgentDiagnose argues that trajectory-level diagnosis is needed to expose failures hidden by final success~\citep{ou2025agentdiagnose}. COA-Bench contributes a narrower artifact: paired evaluation of structured COA generation policies under adversarial response, with traces and candidate-set metrics oriented toward plan comparison rather than tool execution alone.
+ReAct~\citep{yao2023react} motivates evaluating reasoning and action together, while AgentBench~\citep{liu2024agentbench} evaluates agents across interactive settings. ALFWorld connects abstract textual reasoning to embodied action~\citep{shridhar2021alfworld}, and WebArena evaluates autonomous agents in realistic web environments~\citep{zhou2024webarena}. SWE-bench grounds evaluation in executable software tasks~\citep{jimenez2024swebench}; $\tau$-bench and ToolSandbox evaluate stateful tool-using agents in domain and conversational environments~\citep{yao2024taubench,lu2025toolsandbox}. AgentDiagnose argues that trajectory-level diagnosis is needed to expose failures hidden by final success~\citep{ou2025agentdiagnose}. COA-Bench contributes a narrower artifact: paired evaluation of structured plan-generation policies under adversarial response, with traces and candidate-set metrics oriented toward plan comparison rather than tool execution alone.
 
 \paragraph{Planning and tool orchestration.}
-ACPBench generates action-change planning tasks with provably checkable answers~\citep{kokel2025acpbench}, and PlanningArena evaluates planning and tool learning across multiple dimensions~\citep{zheng2025planningarena}. Toolformer and ToolLLM study API/tool use by language models~\citep{schick2023toolformer,qin2024toolllm}, while LLMCompiler and SPIRAL study function-call planning and reflective symbolic search~\citep{kim2024llmcompiler,zhang2026spiral}. Tree of Thoughts explores multiple reasoning paths before committing to an answer~\citep{yao2023tree}, and Self-Refine and Reflexion show that feedback-driven revision can improve agent outputs at test time~\citep{madaan2023selfrefine,shinn2023reflexion}. These works motivate executable or structured evaluation of agent plans. COA-Bench differs by making the adversarial response itself part of the evaluation unit: a generated COA is judged against a responding COA and a candidate frontier, not only against a static answer key.
+ACPBench generates action-change planning tasks with provably checkable answers~\citep{kokel2025acpbench}, and PlanningArena evaluates planning and tool learning across multiple dimensions~\citep{zheng2025planningarena}. Toolformer and ToolLLM study API/tool use by language models~\citep{schick2023toolformer,qin2024toolllm}, while LLMCompiler and SPIRAL study function-call planning and reflective symbolic search~\citep{kim2024llmcompiler,zhang2026spiral}. Tree of Thoughts explores multiple reasoning paths before committing to an answer~\citep{yao2023tree}, and Self-Refine and Reflexion show that feedback-driven revision can improve agent outputs at test time~\citep{madaan2023selfrefine,shinn2023reflexion}. These works motivate executable or structured evaluation of agent plans. COA-Bench differs by making the adversarial response itself part of the evaluation unit: a generated plan is judged against a responding plan and a candidate frontier, not only against a static answer key.
 
 \paragraph{How COA-Bench extends these projects.}
 The main improvement over broad benchmark suites such as BIG-bench and HELM is not scale, but evaluation granularity: COA-Bench treats each instance as a structured adversarial trace rather than a prompt-response pair. Compared with WebArena, ALFWorld, SWE-bench, $\tau$-bench, and ToolSandbox, our benchmark shifts the target from task completion or tool correctness to robust option generation under an adaptive opponent. Compared with Tree of Thoughts, Self-Refine, Reflexion, and SPIRAL, the revision loop is not evaluated only by final-answer success; it is tied to explicit RED-team pressure, proposal diversity, revised diversity, robustness margin, and pressure reduction. This creates a complementary benchmark setting for agentic planning research: systems can be compared on whether they generate diverse, inspectable, adversarially stress-tested plans rather than merely plausible reasoning traces.
 
 \paragraph{Novelty boundary.}
-The benchmark is not a new self-play learning algorithm, combat model, or general-purpose planner. Its novelty is the controlled combination of five elements that are usually evaluated separately: structured COA artifacts, adversarial best-response sampling, multi-agent proposal and critique, heuristic doctrine-aware diagnostics, and reproducible trace-level evaluation of candidate sets. The matched single-sample versus sampled-response comparison isolates the effect of adversarial candidate generation, while the framing no-op analysis demonstrates why benchmark variables must be tied to generated content before claims about sensitivity or robustness are meaningful.
+The benchmark is not a new self-play learning algorithm, combat model, or general-purpose planner. Its novelty is the controlled combination of five elements that are usually evaluated separately: structured plan artifacts, adversarial best-response sampling, multi-agent proposal and critique, heuristic constraint-aware diagnostics, and reproducible trace-level evaluation of candidate sets. The matched single-sample versus sampled-response comparison isolates the effect of adversarial candidate generation, while the framing no-op analysis demonstrates why benchmark variables must be tied to generated content before claims about sensitivity or robustness are meaningful.
 
 \section{Problem Formulation}
 
-Let $s \in \mathcal{S}$ be a synthetic scenario. A BLUE policy $\pi_B$ produces a structured COA $c_B \in \mathcal{C}$; a RED policy $\pi_R$ produces responses conditioned on $s$ and optionally $c_B$. The benchmark computes a utility-like advantage signal $U(c_B,c_R,s)$, a doctrine-inspired diagnostic vector $D(c,s)$, and candidate-set properties such as diversity and Pareto-frontier size. In the single-response setting, RED samples one $c_R$. In the sampled best-response setting, RED samples $C_R=\{c_R^1,\ldots,c_R^k\}$ and selects the response with highest adversarial score. The central evaluation question is whether the apparent quality of $c_B$ is stable as the response policy becomes more adversarial.
+Let $s \in \mathcal{S}$ be a synthetic scenario. A BLUE policy $\pi_B$ produces a structured COA $c_B \in \mathcal{C}$; a RED policy $\pi_R$ produces responses conditioned on $s$ and optionally $c_B$. The benchmark computes a utility-like advantage signal $U(c_B,c_R,s)$, a constraint-inspired diagnostic vector $D(c,s)$, and candidate-set properties such as diversity and Pareto-frontier size. In the single-response setting, RED samples one $c_R$. In the sampled best-response setting, RED samples $C_R=\{c_R^1,\ldots,c_R^k\}$ and selects the response with highest adversarial score. The central evaluation question is whether the apparent quality of $c_B$ is stable as the response policy becomes more adversarial.
 
 This differs from static planning benchmarks that compare a generated plan to a fixed answer key. Here, the evaluation object is the tuple $(s,c_B,C_R,U,D)$: a scenario, a structured plan, an adversarial response distribution, and inspectable traces that explain why a candidate was selected.
 
@@ -82,19 +82,19 @@ For multi-agent COA generation, BLUE proposer agents produce $B^0=\{b_1,\ldots,b
 S(b_i) = \alpha Q(b_i)+\beta D(b_i)+\gamma V(b_i,B)-\rho P(b_i,R_i),
 \end{equation}
 
-where $Q$ is rescaled quality, $D$ is doctrine alignment, $V$ is candidate diversity, and $P$ is adversarial pressure. The top $h=2$ candidates enter a deliberation round. Each is revised with a mitigation action conditioned on the strongest RED critique, producing $B^1$. Final selection is:
+where $Q$ is rescaled quality, $D$ is constraint alignment, $V$ is candidate diversity, and $P$ is adversarial pressure. The top $h=2$ candidates enter a deliberation round. Each is revised with a mitigation action conditioned on the strongest RED critique, producing $B^1$. Final selection is:
 
 \begin{equation}
 b^\star = \arg\max_{b \in B^0 \cup B^1} S(b).
 \end{equation}
 
-We additionally report the robustness margin $M=S(b^\star)-\max_{b\in B^0}S(b)$, pressure reduction $\Delta P=\bar{P}_{\mathrm{shortlist}}-P(b^\star,R^\star)$, and the rate at which the final selected COA comes from the revised set. This makes the benchmark a small multi-agent game over proposal, response, critique, repair, and selection, not only a pairwise score over fixed COAs.
+We additionally report the robustness margin $M=S(b^\star)-\max_{b\in B^0}S(b)$, pressure reduction $\Delta P=\bar{P}_{\mathrm{shortlist}}-P(b^\star,R^\star)$, and the rate at which the final selected plan comes from the revised set. This makes the benchmark a small multi-agent game over proposal, response, critique, repair, and selection, not only a pairwise score over fixed plans.
 
 \section{Benchmark}
 
 \subsection{Benchmark Axes}
 
-COA-Bench is defined by six benchmark axes rather than by one aggregate score. First, \emph{representation validity} asks whether a policy emits typed COA objects with actions, chains, branches, force labels, and objectives that downstream evaluators can inspect. Second, \emph{BattleCOA structure} asks whether the synthetic COA approximates Boot Camp concepts such as BattleCOAPaths, parsimonious BattleEvent vertices, and participant worldlines. Third, \emph{adversarial robustness} asks how BLUE quality changes as RED response budget increases. Fourth, \emph{frontier quality} asks whether candidate sets contain diverse and Pareto-nondominated alternatives rather than redundant samples. Fifth, \emph{doctrine-sensitive selection} asks whether a selector can trade synthetic quality against qualitative structure. Sixth, \emph{trace reproducibility} asks whether every table can be regenerated from per-scenario artifacts.
+COA-Bench is defined by six benchmark axes rather than by one aggregate score. First, \emph{representation validity} asks whether a policy emits typed plan objects with actions, chains, branches, force labels, and objectives that downstream evaluators can inspect. Second, \emph{plan structure} asks whether the synthetic plan contains optional paths, parsimonious event structure, and participant worldlines. Third, \emph{adversarial robustness} asks how BLUE quality changes as RED response budget increases. Fourth, \emph{frontier quality} asks whether candidate sets contain diverse and Pareto-nondominated alternatives rather than redundant samples. Fifth, \emph{constraint-sensitive selection} asks whether a selector can trade synthetic quality against qualitative structure. Sixth, \emph{trace reproducibility} asks whether every table can be regenerated from per-scenario artifacts.
 
 \begin{table}[t]
 \centering
@@ -106,10 +106,10 @@ COA-Bench is defined by six benchmark axes rather than by one aggregate score. F
 Axis & Diagnostics \\
 \midrule
 Representation & typed actions, chains, branches, tool-call slots \\
-BattleCOA structure & path optionality, vertex parsimony, worldline completion \\
+Plan structure & path optionality, vertex parsimony, worldline completion \\
 Robustness & response-budget curve, BLUE advantage, win rate \\
 Frontier & action diversity, quality spread, Pareto count \\
-Doctrine & rubric score, quality regret, doctrinal gain \\
+Constraint & rubric score, quality regret, structural gain \\
 Traceability & per-scenario rows, council traces, run metadata \\
 \bottomrule
 \end{tabular}
@@ -117,7 +117,7 @@ Traceability & per-scenario rows, council traces, run metadata \\
 
 \subsection{Representation}
 
-A COA contains an objective, force assignment, domain tag, action chain, optional conditional branch, and optional tool calls. Actions have categories, targets, priorities, and metadata. The BattleCOA Boot Camp material describes COA generation as growing a BattleCOA hypergraph from a principal EffectEffectorMatch, where vertices are BattleEvents and subgraphs encode BattleCOAPaths. COA-Bench does not implement the full hypergraph formalism, but its action chains and conditional branches provide a lightweight graph surrogate: chain edges encode temporal order and branches encode mutually exclusive implementation paths such as route choices, strike-or-withdraw decisions, or support-package alternatives.
+A COA contains an objective, force assignment, domain tag, action chain, optional conditional branch, and optional tool calls. Actions have categories, targets, priorities, and metadata. The BattleCOA Boot Camp material describes COA generation as growing a hypergraph from a principal EffectEffectorMatch, where vertices are events and subgraphs encode alternative paths. COA-Bench does not implement the full hypergraph formalism, but its action chains and conditional branches provide a lightweight graph surrogate: chain edges encode temporal order and branches encode mutually exclusive implementation paths such as route choices, proceed-or-withdraw decisions, or support-package alternatives.
 
 Each COA receives a synthetic quality score
 
@@ -127,11 +127,11 @@ q = w_e e - w_c c - w_r r,
 
 where $e$ is effectiveness, $c$ is cost, $r$ is risk, and default weights are $w_e=.5$, $w_c=.3$, and $w_r=.2$. This is a benchmark metric, not asset-effect matching.
 
-\subsection{BattleCOA-Inspired Diagnostics}
+\subsection{Structured-Plan Diagnostics}
 
-The Boot Camp material emphasizes that good BattleCOAs should be physically possible, tactically sound, greedy with viable assets, parsimonious with vertices, complete in participant worldlines, and explicit about consequences of action. COA-Bench operationalizes a subset as transparent software diagnostics. Path optionality $O$ is the fraction of chain steps containing conditional branches. Vertex parsimony $P_V$ is the ratio of unique $(asset, action, category)$ event signatures to total event signatures. Worldline completion $W$ is the fraction of assets whose actions include both a start-state proxy, such as transit, deploy, marshal, prepare, assess, scan, or recon, and an end-state proxy, such as return, withdraw, hold, evade, relocate, continue, support, or mitigation.
+The motivating planning literature emphasizes that good candidate plans should be feasible, resource-aware, parsimonious, complete in participant worldlines, and explicit about consequences of action. COA-Bench operationalizes a subset as transparent software diagnostics. Path optionality $O$ is the fraction of chain steps containing conditional branches. Vertex parsimony $P_V$ is the ratio of unique $(asset, action, category)$ event signatures to total event signatures. Worldline completion $W$ is the fraction of assets whose actions include both a start-state proxy, such as transit, deploy, marshal, prepare, assess, scan, or recon, and an end-state proxy, such as return, withdraw, hold, evade, relocate, continue, support, or mitigation.
 
-These diagnostics are intentionally conservative proxies. In the current run, seed BLUE COAs have path optionality .099, vertex parsimony .571, and worldline completion .000, while selected council COAs have path optionality .000, vertex parsimony .500, and worldline completion .207. The low worldline score is a useful benchmark finding: the current synthetic generator creates plausible action chains but rarely models full participant disposition from initial circumstances to final state. The metric therefore identifies a concrete future improvement rather than silently rewarding incomplete BattleCOA structure.
+These diagnostics are intentionally conservative proxies. In the current run, seed BLUE COAs have path optionality .099, vertex parsimony .571, and worldline completion .000, while selected council COAs have path optionality .000, vertex parsimony .500, and worldline completion .207. The low worldline score is a useful benchmark finding: the current synthetic generator creates plausible action chains but rarely models full participant disposition from initial circumstances to final state. The metric therefore identifies a concrete future improvement rather than silently rewarding incomplete plan structure.
 
 \subsection{Pairwise Metrics}
 
@@ -160,25 +160,25 @@ We also report Nash-gap distance after rescaling quality scores to $[0,1]$ payof
 \end{tabular}
 \end{table}
 
-\subsection{Doctrinal and Wargame Diagnostics}
+\subsection{Constraint and Wargame Diagnostics}
 
-The heuristic doctrinal score aggregates objective clarity, intelligence preparation, combined-arms balance, sustainment, risk mitigation, and tempo or sequencing. The wargame diagnostic is a stylized Lanchester-style simulation in which each side's effective combat power depends on raw asset capability, synthetic quality, and doctrinal score.
+The heuristic constraint-coherence score aggregates objective clarity, information preparation, resource balance, sustainment, risk mitigation, and tempo or sequencing. The wargame diagnostic is a stylized Lanchester-style simulation in which each side's effective power depends on raw asset capability, synthetic quality, and constraint-coherence score.
 
 \subsection{Baselines and Controls}
 
-The benchmark includes deliberately simple baselines. The single-sample RED policy estimates how a COA looks under shallow opposition. The quality-greedy best-of-$k$ policy measures sensitivity to adversarial search budget. The doctrine-aware policy controls for the possibility that high synthetic quality is not the same as a coherent plan. The offline LLM-policy baseline uses the same JSON schema and parser as a live model-backed policy, but a deterministic local completion client replaces the external model for reproducibility. The council policy then changes the BLUE generator itself by adding proposal, critique, repair, and adjudication. These baselines are calibration points that make later live LLM-backed or learned policies comparable under the same trace schema.
+The benchmark includes deliberately simple baselines. The single-sample RED policy estimates how a plan looks under shallow opposition. The quality-greedy best-of-$k$ policy measures sensitivity to adversarial search budget. The constraint-aware policy controls for the possibility that high synthetic quality is not the same as a coherent plan. The offline LLM-policy baseline uses the same JSON schema and parser as a live model-backed policy, but a deterministic local completion client replaces the external model for reproducibility. The council policy then changes the BLUE generator itself by adding proposal, critique, repair, and adjudication. These baselines are calibration points that make later live LLM-backed or learned policies comparable under the same trace schema.
 
 \subsection{Technical Implementation}
 
-The implementation separates scenario construction, policy generation, and evaluation into typed modules. Scenarios are Pydantic objects containing assets, force labels, terrain metadata, and seed COAs. Policies share a common interface, so the evaluator can swap a single-sample baseline, sampled best response, doctrine-aware selector, offline LLM-policy responder, or multi-agent council without changing the experiment driver. This modularity is important for benchmarking because a live LLM policy can replace the offline completion client while preserving identical scenarios, response budgets, metrics, and CSV schemas.
+The implementation separates scenario construction, policy generation, and evaluation into typed modules. Scenarios are Pydantic objects containing assets, force labels, terrain metadata, and seed COAs. Policies share a common interface, so the evaluator can swap a single-sample baseline, sampled best response, constraint-aware selector, offline LLM-policy responder, or multi-agent council without changing the experiment driver. This modularity is important for benchmarking because a live LLM policy can replace the offline completion client while preserving identical scenarios, response budgets, metrics, and CSV schemas.
 
-The two-stage council is implemented as an explicit generate--stress-test--revise--adjudicate loop. Five BLUE proposer roles create role-specialized COA variants. For each BLUE candidate, a RED policy samples multiple responses and the highest-pressure response becomes the critique signal. The adjudicator scores candidates using quality, doctrine proxy, diversity, and adversarial pressure; the top two candidates are then revised with mitigation actions keyed to RED pressure category and evaluated again. The run writes both first-round and revised candidates to trace files, making it possible to distinguish a genuine repair effect from a scoring artifact.
+The two-stage council is implemented as an explicit generate--stress-test--revise--adjudicate loop. Five BLUE proposer roles create role-specialized COA variants. For each BLUE candidate, a RED policy samples multiple responses and the highest-pressure response becomes the critique signal. The adjudicator scores candidates using quality, constraint proxy, diversity, and adversarial pressure; the top two candidates are then revised with mitigation actions keyed to RED pressure category and evaluated again. The run writes both first-round and revised candidates to trace files, making it possible to distinguish a genuine repair effect from a scoring artifact.
 
 \section{Evaluation}
 
 \subsection{Protocol}
 
-We generate 150 scenarios from 30 seeds and five templates: urban stability, maritime interdiction, multi-domain combat, suppression of enemy air defenses, and humanitarian evacuation. The latter two templates add coordinated ISR/cyber/kinetic timing and protection/logistics/information constraints. For each scenario, the first BLUE seed COA is fixed. RED responds with a single random best response, a quality-greedy best-of-eight response, a doctrine-aware best-of-eight response, or an offline LLM-policy response produced through the same JSON schema used by the live LLM wrapper. We also sweep response budgets $k \in \{1,2,4,8,16\}$. We report percentile-bootstrap 95\% intervals over scenarios.
+We generate 150 scenarios from 30 seeds and five synthetic planning templates: urban stability, maritime interdiction, multi-domain coordination, air-defense suppression, and humanitarian evacuation. These templates are not operational cases; they are structured stressors for evaluating resource coordination, sequencing, protection, logistics, information flow, and adversarial response. For each scenario, the first BLUE seed COA is fixed. RED responds with a single random best response, a quality-greedy best-of-eight response, a constraint-aware best-of-eight response, or an offline LLM-policy response produced through the same JSON schema used by the live LLM wrapper. We also sweep response budgets $k \in \{1,2,4,8,16\}$. We report percentile-bootstrap 95\% intervals over scenarios.
 
 \begin{table}[t]
 \centering
@@ -187,11 +187,11 @@ We generate 150 scenarios from 30 seeds and five templates: urban stability, mar
 \label{tab:main}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Metric & Single & Quality & Doctrine & LLM-pol. \\
+Metric & Single & Quality & Constraint & LLM-pol. \\
 \midrule
 BLUE advantage & .518 & .486 & .489 & .496 \\
 Nash gap & .198 & .260 & .255 & .241 \\
-RED doctrine & .730 & .731 & .758 & 1.000 \\
+RED constraint & .730 & .731 & .758 & 1.000 \\
 BLUE win rate & .900 & .820 & .807 & .700 \\
 \bottomrule
 \end{tabular}
@@ -233,17 +233,34 @@ Revised selected rate & .753 \\
 \end{tabular}
 \end{table}
 
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Component analyses from existing traces. These are not new learned-policy ablations; they isolate how response budget, selector objective, LLM-contract behavior, and council revision affect the reported evaluation object.}
+\label{tab:components}
+\begin{tabular}{@{}lp{.55\linewidth}@{}}
+\toprule
+Component & Observed effect \\
+\midrule
+Response search & BLUE advantage drops .518 $\rightarrow$ .486 from $k=1$ to $k=8$ \\
+Constraint selector & changes 54\% of selected RED responses; .036 quality regret, .099 structural gain \\
+LLM contract & produces four-action structured responses; BLUE win rate drops to .700 \\
+Council revision & final plan comes from revised set in 75.3\%; revised diversity .630 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Results}
 
-Table~\ref{tab:main} shows that sampled best-response produces a stronger RED opponent. BLUE advantage falls from .518 to .486, and BLUE wargame win rate falls from .900 to .820. The doctrine-aware selector produces a similar adversarial effect (.489 advantage, .807 BLUE win rate) while exposing a different selection objective. The offline LLM-policy responder is not a live model result; it is a reproducible contract test for the LLM wrapper. It produces highly structured responses, which raises RED doctrine to 1.000 and lowers BLUE win rate to .700.
+Table~\ref{tab:main} shows that sampled best-response produces a stronger RED opponent. BLUE advantage falls from .518 to .486, and BLUE wargame win rate falls from .900 to .820. The constraint-aware selector produces a similar adversarial effect (.489 advantage, .807 BLUE win rate) while exposing a different selection objective. The offline LLM-policy responder is not a live model result; it is a reproducible contract test for the LLM wrapper. It produces highly structured responses, which raises RED constraint coherence to 1.000 and lowers BLUE win rate to .700.
 
-The candidate set also contains nontrivial variation. Across sampled RED candidates, mean action-type diversity is .681, mean quality-score spread is .255, and an average of 2.17 of 8 candidates are Pareto-optimal on the quality and doctrinal-alignment frontier. The doctrine-aware selector changes the chosen response in 54\% of scenarios, incurring .036 quality regret while gaining .099 doctrinal alignment. Table~\ref{tab:budget} shows monotonic adversarial pressure: BLUE advantage drops from .518 at $k=1$ to .503 at $k=2$, .492 at $k=4$, .486 at $k=8$, and .480 at $k=16$.
+The candidate set also contains nontrivial variation. Across sampled RED candidates, mean action-type diversity is .681, mean quality-score spread is .255, and an average of 2.17 of 8 candidates are Pareto-optimal on the quality and constraint-alignment frontier. The constraint-aware selector changes the chosen response in 54\% of scenarios, incurring .036 quality regret while gaining .099 structural alignment. Table~\ref{tab:budget} shows monotonic adversarial pressure: BLUE advantage drops from .518 at $k=1$ to .503 at $k=2$, .492 at $k=4$, .486 at $k=8$, and .480 at $k=16$.
 
 Table~\ref{tab:council} evaluates the two-stage multi-agent council. The council changes BLUE generation rather than only changing RED response selection: five proposer agents generate role-specialized BLUE candidates, RED-team agents respond to each candidate, an adjudicator shortlists two candidates, and a revision operator adds mitigation actions keyed to the strongest RED critique before final selection. The selected council COAs achieve .509 BLUE advantage and .813 BLUE win rate, partially recovering performance lost under stronger RED response search. The final COA comes from the revised set in 75.3\% of scenarios, revised-candidate diversity is .630, and the positive robustness margin indicates that the selected plan usually improves over the best unrevised first-round option. Pressure reduction is small and uncertain, so the current algorithm should be interpreted as a repair-and-selection baseline rather than a strong robust-optimization method.
 
-\subsection{Rubric Validation}
+\subsection{Rubric Sensitivity}
 
-We add a small rubric-validation study using three independent deterministic validators representing doctrine, logistics, and adversarial-review emphases. They rate 600 COA records: seed BLUE, sampled RED, offline LLM-policy RED, and selected council BLUE for every scenario. Mean pairwise agreement is .978 [.977, .978], and mean absolute deviation from the base heuristic rubric is .011 [.011, .011]. This is not expert human validation, but it tests whether the reported rubric is brittle to small, role-specific scoring perturbations.
+We add a small rubric-sensitivity study using three independent deterministic validators representing constraint, logistics, and adversarial-review emphases. They rate 600 COA records: seed BLUE, sampled RED, offline LLM-policy RED, and selected council BLUE for every scenario. Mean pairwise agreement is .978 [.977, .978], and mean absolute deviation from the base heuristic rubric is .011 [.011, .011]. This is not expert human validation, but it tests whether the reported rubric is brittle to small, role-specific scoring perturbations.
 
 \subsection{Scenario-Framing Finding}
 
@@ -251,7 +268,7 @@ The original benchmark stored scenario framing as metadata but did not use it wh
 
 \subsection{Policy and Corpus Additions}
 
-The expanded artifact adds two pieces of algorithmic structure. First, response policies are explicit classes with a common interface, which lets the benchmark compare single-sample, quality-greedy, and doctrine-aware response behavior without changing the evaluator. Second, the scenario corpus now includes two cases designed to stress different dimensions of COA generation: air-defense suppression, where timing and cross-domain coordination matter, and humanitarian evacuation, where protection, sustainment, and information actions dominate. These additions are still synthetic, but they make the benchmark less dependent on one narrow combat template and expose whether a response policy is simply exploiting the quality score or changing the qualitative structure of selected COAs.
+The expanded artifact adds two pieces of algorithmic structure. First, response policies are explicit classes with a common interface, which lets the benchmark compare single-sample, quality-greedy, and constraint-aware response behavior without changing the evaluator. Second, the scenario corpus now includes cases designed to stress different dimensions of synthetic plan generation: air-defense suppression, where timing and cross-domain coordination matter, and humanitarian evacuation, where protection, sustainment, and information actions dominate. These additions are still synthetic, but they make the benchmark less dependent on one narrow template and expose whether a response policy is simply exploiting the quality score or changing the qualitative structure of selected COAs.
 
 The third addition is the multi-agent council algorithm. Its proposer roles are maneuver, intelligence, cyber, sustainment, and protection. Each role perturbs the seed COA with a role-specific action, then RED-team sampling approximates the best adversarial response to that candidate. The top two candidates are revised using a deterministic critique-to-mitigation map: kinetic pressure triggers dispersion and hardening, cyber pressure triggers out-of-band communications, logistics pressure triggers redundant supply routing, intelligence pressure triggers deception and counter-reconnaissance, and information pressure triggers a public-information cell. This creates a richer experimental object: the system can be evaluated on proposal diversity, revised diversity, adjudicator confidence, robustness margin, and robustness to per-candidate RED pressure.
 
@@ -263,50 +280,54 @@ The response policies expose a small but important distinction between adversari
 c_R^Q = \arg\max_{c \in C_R} q(c),
 \end{equation}
 
-where $q(c)$ is the synthetic quality score. The doctrine-aware response selects
+where $q(c)$ is the synthetic quality score. The constraint-aware response selects
 
 \begin{equation}
 c_R^D = \arg\max_{c \in C_R} \lambda \frac{q(c)+1}{2} + (1-\lambda)D(c),
 \end{equation}
 
-where $D(c)$ is the doctrine-inspired alignment score and $\lambda=.7$ in the reported run. We then compute two diagnostic quantities:
+where $D(c)$ is the constraint-inspired alignment score and $\lambda=.7$ in the reported run. We then compute two diagnostic quantities:
 
 \begin{equation}
 \Delta_q = q(c_R^Q) - q(c_R^D), \quad
 \Delta_D = D(c_R^D) - D(c_R^Q).
 \end{equation}
 
-The first is quality regret from not choosing the quality maximum. The second is doctrinal gain from choosing the composite response. These diagnostics make the candidate frontier interpretable: if $\Delta_q$ is small and $\Delta_D$ is positive, the candidate set contains a response that is nearly as strong by the synthetic quality score but better structured by the doctrine proxy. This is why the doctrine-aware result is more informative than simply adding another aggregate win rate.
+The first is quality regret from not choosing the quality maximum. The second is structural gain from choosing the composite response. These diagnostics make the candidate frontier interpretable: if $\Delta_q$ is small and $\Delta_D$ is positive, the candidate set contains a response that is nearly as strong by the synthetic quality score but better structured by the constraint proxy. This is why the constraint-aware result is more informative than simply adding another aggregate win rate.
 
 \subsection{Artifact Schema}
 
 The experiment writes per-scenario rows, bootstrap summaries, response-budget curves, terrain-family summaries, and run metadata. This schema is intentionally simple. It lets a reviewer reproduce every table in the paper, inspect whether one scenario family dominates the result, and rerun the same analysis with a future learned policy. The benchmark therefore contributes not only a particular result, but also a reusable evaluation object: scenarios, candidate sets, selected responses, and diagnostics under a fixed reporting interface.
 
-The new council trace file records selected BLUE and RED IDs, selected advantage, BLUE/RED doctrinal alignment, council diversity, revised diversity, consensus gap, adversarial pressure, robustness margin, pressure reduction, number of initial and revised BLUE candidates, selected round, and wargame outcome. This is important for reproducibility because a multi-agent algorithm can appear strong for several different reasons: it may generate more diverse BLUE options, repair weak candidates, select higher-quality options, avoid high-pressure RED responses, or simply exploit a scoring artifact. The trace schema makes those explanations separable.
+The new council trace file records selected BLUE and RED IDs, selected advantage, BLUE/RED constraint alignment, council diversity, revised diversity, consensus gap, adversarial pressure, robustness margin, pressure reduction, number of initial and revised BLUE candidates, selected round, and wargame outcome. This is important for reproducibility because a multi-agent algorithm can appear strong for several different reasons: it may generate more diverse BLUE options, repair weak candidates, select higher-quality options, avoid high-pressure RED responses, or simply exploit a scoring artifact. The trace schema makes those explanations separable.
+
+\subsection{Trace Example}
+
+One trace illustrates the evaluation object. In scenario \texttt{urban-100}, the single-response RED baseline yields BLUE advantage .551. When RED samples eight candidates, BLUE advantage falls to .492; the candidate set has action-type diversity .827 and three Pareto-optimal responses. The constraint-aware selector changes the RED response for this scenario, gaining .135 structural alignment at .003 quality regret. The council trace then records selected BLUE and RED candidate IDs, selected advantage .504, council diversity .890, revised diversity .667, and the round from which the selected BLUE plan was chosen. The example is small, but it shows why the artifact is not just a final score: a reviewer can inspect response search, selector tradeoffs, and council repair behavior for the same scenario.
 
 \section{Discussion}
 
-The results support three narrow claims. First, evaluating against a sampled adversarial response can change the apparent strength of a COA. Second, sampled candidate sets can contain meaningful diversity and Pareto alternatives, which is useful when a planner needs options rather than one selected answer. Third, transparent benchmark artifacts expose silent implementation failures, as shown by the framing no-op.
+The results support three narrow claims. First, evaluating against a sampled adversarial response can change the apparent strength of a generated plan. Second, sampled candidate sets can contain meaningful diversity and Pareto alternatives, which is useful when an agent should surface options rather than one selected answer. Third, transparent benchmark artifacts expose silent implementation failures, as shown by the framing no-op.
 
 From an AAAI perspective, the most important claim is methodological rather than operational. COA-Bench introduces a small but explicit evaluation object: a structured plan, an adversarial response distribution, and a multi-COA candidate frontier. This object is distinct from final-answer agent benchmarks, static planning benchmarks, and pure self-play games. It lets researchers ask whether a generation policy remains strong when the opponent is sampled more aggressively, whether the selected plan sacrifices qualitative planning features, how response-budget curves change apparent robustness, and whether benchmark controls actually perturb the generated artifact.
 
-The novelty is therefore not a new combat simulator, a trained game-playing policy, or an operational military planner. It is a benchmark formulation for COA-generating agents in which the unit of evaluation is a structured plan under adversarial response sampling and multi-agent proposal, critique, repair, and adjudication. By making response budget, candidate diversity, revised diversity, doctrine-inspired diagnostics, council consensus, adversarial pressure, robustness margin, pressure reduction, and scenario-control sensitivity observable, COA-Bench turns COA generation into a reproducible object of algorithmic study rather than an opaque demonstration of plausible plan text.
+The novelty is therefore not a new operational simulator, a trained game-playing policy, or an operational planner. It is a benchmark formulation for structured plan-generating agents in which the unit of evaluation is a structured plan under adversarial response sampling and multi-agent proposal, critique, repair, and adjudication. By making response budget, candidate diversity, revised diversity, constraint-inspired diagnostics, council consensus, adversarial pressure, robustness margin, pressure reduction, and scenario-control sensitivity observable, COA-Bench turns adversarial plan generation into a reproducible object of algorithmic study rather than an opaque demonstration of plausible plan text.
 
-The benchmark is preliminary. The policies are random-sampling policies, deterministic council heuristics, and an offline LLM-policy contract test rather than trained planners or live model calls. The scenario corpus is larger than the initial draft but still templated. The doctrinal rubric is heuristic, although the role-perturbed validation check suggests that aggregate conclusions are not driven by a single exact weighting. The wargame check is a simplified diagnostic. These constraints make COA-Bench more appropriate as an evaluation artifact and research scaffold than as evidence of operational decision quality.
+The benchmark is preliminary. The policies are random-sampling policies, deterministic council heuristics, and an offline LLM-policy contract test rather than trained planners or live model calls. The scenario corpus is larger than the initial draft but still templated. The constraint rubric is heuristic, although the role-perturbed sensitivity check suggests that aggregate conclusions are not driven by a single exact weighting. The wargame check is a simplified diagnostic. These constraints make COA-Bench more appropriate as an evaluation artifact and research scaffold than as evidence of operational decision quality.
 
 \section{Threats to Validity and Ethics}
 
-COA-Bench uses synthetic scenarios only. It contains no classified data, proprietary data, human-subject data, real intelligence, live planner input, or deployed decision-system integration. It performs no external action. The main internal-validity risk is metric misspecification: synthetic quality, doctrine heuristics, and stylized wargame outcomes may not match expert judgment. The main external-validity risk is scenario simplicity: 150 templated cases cannot represent real operational planning. The main construct-validity risk is that COA matching and COA generation motivate the setting, while the present artifact evaluates typed COA traces rather than implementing the full DecisionFunction pipeline. Because COA generation is associated with high-impact defense contexts, future work would require expert validation, data governance, access controls, human review, and strict limits on autonomous use.
+COA-Bench uses synthetic scenarios only. It contains no classified data, proprietary data, human-subject data, real intelligence, live planner input, or deployed decision-system integration. It performs no external action. The main internal-validity risk is metric misspecification: synthetic quality, constraint heuristics, and stylized wargame outcomes may not match expert judgment. The main external-validity risk is scenario simplicity: 150 templated cases cannot represent real operational planning. The main construct-validity risk is that COA matching and COA generation motivate the setting, while the present artifact evaluates typed COA traces rather than implementing the full DecisionFunction pipeline. Because COA generation is associated with high-impact defense contexts, future work would require expert validation, data governance, access controls, human review, and strict limits on autonomous use.
 
-The current metrics should not be interpreted as doctrinal validity or tactical correctness. They are inspectable benchmark signals intended to support reproducible research.
+The current metrics should not be interpreted as doctrinal validity, domain correctness, or operational usefulness. They are inspectable benchmark signals intended to support reproducible research.
 
 \section{Conclusion}
 
-COA-Bench is a self-play benchmark for structured course-of-action generation. It shows that sampled best-response produces a tougher synthetic opponent, that an offline LLM-policy interface can be evaluated under the same trace schema, that candidate sets contain diverse options, and that transparent evaluation can reveal benchmark-design failures. The next step is to add expert validation, evaluate live LLM-backed and learned policies, and more directly model the asset-effect matching and course-of-action generation DecisionFunctions.
+COA-Bench is a self-play benchmark for adversarial evaluation of structured plan-generation agents. It shows that sampled best-response produces a tougher synthetic opponent, that an offline LLM-policy interface can be evaluated under the same trace schema, that candidate sets contain diverse options, and that transparent evaluation can reveal benchmark-design failures. The next step is to add expert validation, evaluate live LLM-backed and learned policies, add broader non-defense planning templates, and more directly model the asset-effect matching and course-of-action generation DecisionFunctions.
 
 \section*{Ethical Statement}
 
-This work uses only synthetic data and offline code. It is not an operational battle-management system and should not be used for real-world military planning. Any future deployment-oriented work would require expert review, institutional governance, and safeguards appropriate to high-impact defense applications.
+This work uses only synthetic data and offline code. It is not an operational planning system and should not be used for real-world planning. Any future deployment-oriented work would require expert review, institutional governance, and safeguards appropriate to high-impact applications.
 
 \bibliography{references}
 
