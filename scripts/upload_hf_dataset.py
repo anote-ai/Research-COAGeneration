@@ -1,8 +1,7 @@
-"""Stage and upload Research COAGeneration datasets to Hugging Face.
+"""Stage and upload Research COAGeneration COA datasets to Hugging Face.
 
 Usage:
     python scripts/upload_hf_dataset.py --repo-id YOUR_USERNAME/research-coageneration
-    python scripts/upload_hf_dataset.py --repo-id YOUR_USERNAME/research-coageneration --tracks meta-routing
 
 Authentication:
     hf auth login
@@ -20,13 +19,12 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_STAGE = REPO_ROOT / "output" / "hf_dataset"
 TRACK_SOURCES = {
     "coa": REPO_ROOT / "results" / "coa",
-    "meta-routing": REPO_ROOT / "results" / "meta-routing",
 }
 
 
 DATASET_CARD = """---
 license: mit
-pretty_name: Research COAGeneration
+pretty_name: Research COAGeneration COA
 tags:
 - synthetic-data
 - benchmark
@@ -34,36 +32,27 @@ tags:
 - game-theory
 - course-of-action-generation
 - adversarial-planning
-- agentic-systems
-- meta-routing
 ---
 
-# Research COAGeneration Dataset
+# Research COAGeneration COA Dataset
 
 This dataset contains synthetic benchmark outputs from the Research
-COAGeneration repository. It can include the COA track, the meta-routing track,
-or both, depending on which folders were uploaded.
+COAGeneration repository.
 
 ## Contents
 
 - `data/coa/dai2026/main/` - DAI 2026 COA benchmark outputs
 - `data/coa/aaai2027/main/` - AAAI 2027 COA benchmark outputs
-- `data/meta-routing/dai2026/` - DAI 2026 meta-routing benchmark outputs
-- `data/meta-routing/aaai2027/` - AAAI 2027 executable, challenge, ablation,
-  and sensitivity outputs
 
 COA result folders contain per-scenario rows, summary tables, response-budget
 curves, council traces, terrain summaries, rubric validation where available,
-and run metadata. Meta-routing folders contain task splits, traces, comparisons,
-summaries, ablations, sensitivity tables, and generated figures where available.
+and run metadata.
 
 ## Important Use Notice
 
 This dataset is for academic research only. COA scenarios, assets, policies,
 and strategies are synthetic and do not represent real military doctrine,
-operations, or advice. Meta-routing tasks and traces are synthetic/offline
-benchmark artifacts and do not claim production or live-LLM behavior unless
-explicitly stated in the source paper or repository.
+operations, or advice.
 
 ## License
 
@@ -137,7 +126,7 @@ def main() -> None:
     parser.add_argument(
         "--tracks",
         nargs="+",
-        choices=["coa", "meta-routing", "all"],
+        choices=["coa"],
         default=["coa"],
         help="Dataset tracks to stage/upload. Default: coa.",
     )
@@ -160,7 +149,7 @@ def main() -> None:
     args = parser.parse_args()
 
     stage = args.stage.resolve()
-    tracks = ["coa", "meta-routing"] if "all" in args.tracks else args.tracks
+    tracks = args.tracks
     stage_dataset(tracks, stage)
 
     files = sorted(path.relative_to(stage) for path in stage.rglob("*") if path.is_file())

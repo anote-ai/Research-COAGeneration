@@ -1,8 +1,7 @@
 # Benchmarks
 
-Benchmark specifications are separated by research question. Generated outputs
-and experiment results do not belong here; they are written to `results/`.
+COA benchmark specifications and generated outputs are represented by the COA
+source, experiments, and `results/coa` artifacts in this repository.
 
-- `operational/`: DAI synthetic operational workload profiles
-- `executable/`: AAAI executable tasks and held-out generalization splits
-- `multilingual/`: ORACLE multilingual and culturally grounded task suite
+Meta-routing benchmark specifications live in the sibling
+`../Research-MetaRouting/benchmarks` project.
