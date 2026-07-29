@@ -44,5 +44,7 @@ Submission-ready artifacts are in `submission/`:
 - `DAI26_COA_Submission.pdf`
 - `DAI26_COA_Source.zip`
 
-Before final upload, replace the author, affiliation, city, country, email, and
-short-author placeholders in `main.tex`, then rebuild the PDF and source zip.
+Before final upload, confirm all OpenReview fields in
+`submission/OPENREVIEW_FIELDS.md`, then upload the PDF. The source zip is
+included for convenience if the venue requests source files or artifact
+material.

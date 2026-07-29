@@ -160,7 +160,7 @@ The heuristic doctrinal rubric scores objective clarity, intelligence preparatio
 
 \subsection{Protocol}
 
-We generate 50 scenarios from 10 base seeds and five templates: urban stability operations, maritime interdiction, multi-domain combat, suppression of enemy air defenses, and humanitarian evacuation. The two added templates stress different parts of the artifact. The air-defense case requires coordinated ISR, electromagnetic/cyber activity, and time-sensitive kinetic sequencing. The humanitarian evacuation case requires security, logistics, medical staging, and public-information actions under higher law-of-armed-conflict ambiguity. For each scenario, we keep the first BLUE seed COA fixed and generate RED responses in three ways:
+We generate 50 scenarios from 10 base seeds and five templates: urban stability operations, maritime interdiction, multi-domain combat, suppression of enemy air defenses, and humanitarian evacuation. The two added templates stress different parts of the artifact. The air-defense case requires coordinated ISR, electromagnetic/cyber activity, and time-sensitive kinetic sequencing. The humanitarian evacuation case requires security, logistics, medical staging, and public-information actions under higher law-of-armed-conflict ambiguity. For each scenario, we keep the first BLUE seed COA fixed and generate RED responses in four ways:
 
 \begin{enumerate}
   \item a single random best response from \texttt{SelfPlayEngine}; and
@@ -280,10 +280,6 @@ Because COA generation concerns high-impact defense contexts, any future live ev
 \section{Conclusion}
 
 COA-Bench provides a small, inspectable benchmark for evaluating course-of-action generation policies under adversarial self-play. It shows that sampled best-response produces a tougher synthetic opponent, that candidate sets contain meaningful diversity, and that transparent artifacts can expose benchmark-design failures such as no-op scenario framing. The result is a preliminary but useful foundation for stronger BattleCOA-oriented benchmarks.
-
-\begin{acks}
-No human participants, proprietary data, classified data, or operational systems were used in the reported offline benchmark. Funding sources, organizational support, and individual acknowledgments should be completed by the authors before final submission if applicable.
-\end{acks}
 
 \section*{Generative AI Disclosure}
 Generative AI tools materially assisted with software implementation, experiment scripting, terminology review, and manuscript drafting. The authors are responsible for reviewing the code, verifying the generated results against the released artifacts, checking all citations, and approving the final claims and text.

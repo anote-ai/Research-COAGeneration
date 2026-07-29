@@ -54,6 +54,8 @@ The submission directory contains:
 - `AAAI27_COA_Anonymous.pdf`: anonymous main paper
 - `AAAI27_COA_ReproducibilityChecklist.pdf`: separate completed checklist
 - `code_data_supplement.zip`: identity-scanned reproducibility package
+- `OPENREVIEW_FIELDS.md`: copy-paste values and upload paths for the
+  OpenReview full-submission form
 
 The manuscript and supplement use synthetic, offline scenarios only. They do not
 contain classified data, real intelligence data, or live military planning
