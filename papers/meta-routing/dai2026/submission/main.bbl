@@ -1,0 +1,325 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{18}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{} and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showURL}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showURL #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[Chen et~al\mbox{.}(2024)]%
+        {chen2024frugalgpt}
+\bibfield{author}{\bibinfo{person}{Lingjiao Chen}, \bibinfo{person}{Matei
+  Zaharia}, {and} \bibinfo{person}{James Zou}.}
+  \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{FrugalGPT: How to Use Large Language Models While
+  Reducing Cost and Improving Performance}.
+\newblock \bibinfo{journal}{\emph{Transactions on Machine Learning Research}}
+  (\bibinfo{year}{2024}).
+\newblock
+\urldef\tempurl%
+\url{https://openreview.net/forum?id=cSimKw5p6R}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Du et~al\mbox{.}(2024)]%
+        {du2024anytool}
+\bibfield{author}{\bibinfo{person}{Yu Du}, \bibinfo{person}{Fangyun Wei}, {and}
+  \bibinfo{person}{Hongyang Zhang}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{AnyTool: Self-Reflective, Hierarchical Agents for
+  Large-Scale API Calls}. In \bibinfo{booktitle}{\emph{Proceedings of the 41st
+  International Conference on Machine Learning}}.
+\newblock
+\urldef\tempurl%
+\url{https://openreview.net/forum?id=qFILbkTQWw}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Jeong et~al\mbox{.}(2024)]%
+        {jeong2024adaptiverag}
+\bibfield{author}{\bibinfo{person}{Soyeong Jeong}, \bibinfo{person}{Jinheon
+  Baek}, \bibinfo{person}{Sukmin Cho}, \bibinfo{person}{Sung~Ju Hwang}, {and}
+  \bibinfo{person}{Jong Park}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Adaptive-{RAG}: Learning to Adapt
+  Retrieval-Augmented Large Language Models through Question Complexity}. In
+  \bibinfo{booktitle}{\emph{Proceedings of the 2024 Conference of the North
+  American Chapter of the Association for Computational Linguistics: Human
+  Language Technologies}}. \bibinfo{publisher}{Association for Computational
+  Linguistics}, \bibinfo{pages}{7036--7050}.
+\newblock
+\href{https://doi.org/10.18653/v1/2024.naacl-long.389}{doi:\nolinkurl{10.18653/v1/2024.naacl-long.389}}
+
+
+\bibitem[Jimenez et~al\mbox{.}(2024)]%
+        {jimenez2024swebench}
+\bibfield{author}{\bibinfo{person}{Carlos~E. Jimenez}, \bibinfo{person}{John
+  Yang}, \bibinfo{person}{Alexander Wettig}, \bibinfo{person}{Shunyu Yao},
+  \bibinfo{person}{Kexin Pei}, \bibinfo{person}{Ofir Press}, {and}
+  \bibinfo{person}{Karthik Narasimhan}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{SWE-bench: Can Language Models Resolve Real-World
+  GitHub Issues?}. In \bibinfo{booktitle}{\emph{International Conference on
+  Learning Representations}}.
+\newblock
+\urldef\tempurl%
+\url{https://openreview.net/forum?id=VTF8yNQM66}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Kim et~al\mbox{.}(2024)]%
+        {kim2024llmcompiler}
+\bibfield{author}{\bibinfo{person}{Sehoon Kim}, \bibinfo{person}{Suhong Moon},
+  \bibinfo{person}{Ryan Tabrizi}, \bibinfo{person}{Nicholas Lee},
+  \bibinfo{person}{Michael~W. Mahoney}, \bibinfo{person}{Kurt Keutzer}, {and}
+  \bibinfo{person}{Amir Gholami}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{An LLM Compiler for Parallel Function Calling}. In
+  \bibinfo{booktitle}{\emph{Proceedings of the 41st International Conference on
+  Machine Learning}} \emph{(\bibinfo{series}{Proceedings of Machine Learning
+  Research}, Vol.~\bibinfo{volume}{235})}. \bibinfo{pages}{24370--24391}.
+\newblock
+\urldef\tempurl%
+\url{https://proceedings.mlr.press/v235/kim24y.html}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Kokel et~al\mbox{.}(2025)]%
+        {kokel2025acpbench}
+\bibfield{author}{\bibinfo{person}{Harsha Kokel}, \bibinfo{person}{Michael
+  Katz}, \bibinfo{person}{Kavitha Srinivas}, {and} \bibinfo{person}{Shirin
+  Sohrabi}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{{ACPBench}: Reasoning About Action, Change, and
+  Planning}.
+\newblock \bibinfo{journal}{\emph{Proceedings of the AAAI Conference on
+  Artificial Intelligence}} \bibinfo{volume}{39}, \bibinfo{number}{25}
+  (\bibinfo{year}{2025}), \bibinfo{pages}{26559--26568}.
+\newblock
+\href{https://doi.org/10.1609/aaai.v39i25.34857}{doi:\nolinkurl{10.1609/aaai.v39i25.34857}}
+
+
+\bibitem[Li et~al\mbox{.}(2023)]%
+        {li2023apibank}
+\bibfield{author}{\bibinfo{person}{Minghao Li}, \bibinfo{person}{Yingxiu Zhao},
+  \bibinfo{person}{Bowen Yu}, \bibinfo{person}{Feifan Song},
+  \bibinfo{person}{Hangyu Li}, \bibinfo{person}{Haiyang Yu},
+  \bibinfo{person}{Zhoujun Li}, \bibinfo{person}{Fei Huang}, {and}
+  \bibinfo{person}{Yongbin Li}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{{API}-Bank: A Comprehensive Benchmark for
+  Tool-Augmented {LLM}s}. In \bibinfo{booktitle}{\emph{Proceedings of the 2023
+  Conference on Empirical Methods in Natural Language Processing}}.
+  \bibinfo{publisher}{Association for Computational Linguistics},
+  \bibinfo{pages}{3102--3116}.
+\newblock
+\href{https://doi.org/10.18653/v1/2023.emnlp-main.187}{doi:\nolinkurl{10.18653/v1/2023.emnlp-main.187}}
+
+
+\bibitem[Liu et~al\mbox{.}(2024)]%
+        {liu2024agentbench}
+\bibfield{author}{\bibinfo{person}{Xiao Liu}, \bibinfo{person}{Hao Yu},
+  \bibinfo{person}{Hanchen Zhang}, \bibinfo{person}{Yifan Xu},
+  \bibinfo{person}{Xuanyu Lei}, \bibinfo{person}{Hanyu Lai},
+  \bibinfo{person}{Yu Gu}, \bibinfo{person}{Hangliang Ding},
+  \bibinfo{person}{Kaiwen Men}, \bibinfo{person}{Kejuan Yang}, {et~al\mbox{.}}}
+  \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{AgentBench: Evaluating LLMs as Agents}. In
+  \bibinfo{booktitle}{\emph{International Conference on Learning
+  Representations}}.
+\newblock
+\urldef\tempurl%
+\url{https://openreview.net/forum?id=zAdUB0aCTQ}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Ong et~al\mbox{.}(2025)]%
+        {ong2025routellm}
+\bibfield{author}{\bibinfo{person}{Isaac Ong}, \bibinfo{person}{Amjad
+  Almahairi}, \bibinfo{person}{Vincent Wu}, \bibinfo{person}{Wei-Lin Chiang},
+  \bibinfo{person}{Tianhao Wu}, \bibinfo{person}{Joseph~E. Gonzalez},
+  \bibinfo{person}{M.~Waleed Kadous}, {and} \bibinfo{person}{Ion Stoica}.}
+  \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{RouteLLM: Learning to Route LLMs with Preference
+  Data}. In \bibinfo{booktitle}{\emph{International Conference on Learning
+  Representations}}.
+\newblock
+\urldef\tempurl%
+\url{https://openreview.net/forum?id=8sSqNntaMr}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Ou et~al\mbox{.}(2025)]%
+        {ou2025agentdiagnose}
+\bibfield{author}{\bibinfo{person}{Tianyue Ou}, \bibinfo{person}{Wanyao Guo},
+  \bibinfo{person}{Apurva Gandhi}, \bibinfo{person}{Graham Neubig}, {and}
+  \bibinfo{person}{Xiang Yue}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{{A}gent{D}iagnose: An Open Toolkit for Diagnosing
+  {LLM} Agent Trajectories}. In \bibinfo{booktitle}{\emph{Proceedings of the
+  2025 Conference on Empirical Methods in Natural Language Processing: System
+  Demonstrations}}. \bibinfo{publisher}{Association for Computational
+  Linguistics}, \bibinfo{pages}{207--215}.
+\newblock
+\href{https://doi.org/10.18653/v1/2025.emnlp-demos.15}{doi:\nolinkurl{10.18653/v1/2025.emnlp-demos.15}}
+
+
+\bibitem[Qin et~al\mbox{.}(2024)]%
+        {qin2024toolllm}
+\bibfield{author}{\bibinfo{person}{Yujia Qin}, \bibinfo{person}{Shihao Liang},
+  \bibinfo{person}{Yining Ye}, \bibinfo{person}{Kunlun Zhu},
+  \bibinfo{person}{Lan Yan}, \bibinfo{person}{Yaxi Lu}, \bibinfo{person}{Yankai
+  Lin}, \bibinfo{person}{Xin Cong}, \bibinfo{person}{Xiangru Tang},
+  \bibinfo{person}{Bill Qian}, {et~al\mbox{.}}}
+  \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{ToolLLM: Facilitating Large Language Models to
+  Master 16000+ Real-world APIs}. In \bibinfo{booktitle}{\emph{International
+  Conference on Learning Representations}}.
+\newblock
+\urldef\tempurl%
+\url{https://openreview.net/forum?id=dHng2O0Jjr}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Schick et~al\mbox{.}(2023)]%
+        {schick2023toolformer}
+\bibfield{author}{\bibinfo{person}{Timo Schick}, \bibinfo{person}{Jane
+  Dwivedi-Yu}, \bibinfo{person}{Roberto Dessi}, \bibinfo{person}{Roberta
+  Raileanu}, \bibinfo{person}{Maria Lomeli}, \bibinfo{person}{Eric Hambro},
+  \bibinfo{person}{Luke Zettlemoyer}, \bibinfo{person}{Nicola Cancedda}, {and}
+  \bibinfo{person}{Thomas Scialom}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{Toolformer: Language Models Can Teach Themselves to
+  Use Tools}. In \bibinfo{booktitle}{\emph{Advances in Neural Information
+  Processing Systems}}, Vol.~\bibinfo{volume}{36}.
+\newblock
+\urldef\tempurl%
+\url{https://proceedings.neurips.cc/paper_files/paper/2023/hash/d842425e4bf79ba039352da0f658a906-Abstract-Conference.html}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Su et~al\mbox{.}(2026)]%
+        {su2026cprouter}
+\bibfield{author}{\bibinfo{person}{Jiayuan Su}, \bibinfo{person}{Fulin Lin},
+  \bibinfo{person}{Zhaopeng Feng}, \bibinfo{person}{Han Zheng},
+  \bibinfo{person}{Teng Wang}, \bibinfo{person}{Zhenyu Xiao},
+  \bibinfo{person}{Xinlong Zhao}, \bibinfo{person}{Zuozhu Liu},
+  \bibinfo{person}{Lu Cheng}, {and} \bibinfo{person}{Hongwei Wang}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{{CP}-Router: An Uncertainty-Aware Router Between
+  {LLM} and {LRM}}.
+\newblock \bibinfo{journal}{\emph{Proceedings of the AAAI Conference on
+  Artificial Intelligence}} \bibinfo{volume}{40}, \bibinfo{number}{39}
+  (\bibinfo{year}{2026}), \bibinfo{pages}{33065--33073}.
+\newblock
+\href{https://doi.org/10.1609/aaai.v40i39.40589}{doi:\nolinkurl{10.1609/aaai.v40i39.40589}}
+
+
+\bibitem[Xu et~al\mbox{.}(2024)]%
+        {xu2024restful}
+\bibfield{author}{\bibinfo{person}{Han Xu}, \bibinfo{person}{Ruining Zhao},
+  \bibinfo{person}{Jindong Wang}, {and} \bibinfo{person}{Haipeng Chen}.}
+  \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{{REST}ful-Llama: Connecting User Queries to
+  {REST}ful {API}s}. In \bibinfo{booktitle}{\emph{Proceedings of the 2024
+  Conference on Empirical Methods in Natural Language Processing: Industry
+  Track}}. \bibinfo{publisher}{Association for Computational Linguistics},
+  \bibinfo{pages}{1433--1443}.
+\newblock
+\href{https://doi.org/10.18653/v1/2024.emnlp-industry.105}{doi:\nolinkurl{10.18653/v1/2024.emnlp-industry.105}}
+
+
+\bibitem[Yan et~al\mbox{.}(2026)]%
+        {yan2026zerorouter}
+\bibfield{author}{\bibinfo{person}{Cheng Yan}, \bibinfo{person}{Wuyang Zhang},
+  \bibinfo{person}{Zhiyuan Ning}, \bibinfo{person}{Fan Xu},
+  \bibinfo{person}{Ziyang Tao}, \bibinfo{person}{Lu Zhang},
+  \bibinfo{person}{Bing Yin}, {and} \bibinfo{person}{Yanyong Zhang}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{Breaking Model Lock-in: Cost-Efficient Zero-Shot
+  {LLM} Routing via a Universal Latent Space}.
+\newblock \bibinfo{journal}{\emph{Proceedings of the AAAI Conference on
+  Artificial Intelligence}} \bibinfo{volume}{40}, \bibinfo{number}{43}
+  (\bibinfo{year}{2026}), \bibinfo{pages}{36483--36490}.
+\newblock
+\href{https://doi.org/10.1609/aaai.v40i43.40970}{doi:\nolinkurl{10.1609/aaai.v40i43.40970}}
+
+
+\bibitem[Yao et~al\mbox{.}(2024)]%
+        {yao2024taubench}
+\bibfield{author}{\bibinfo{person}{Shunyu Yao}, \bibinfo{person}{Noah Shinn},
+  \bibinfo{person}{Pedram Razavi}, {and} \bibinfo{person}{Karthik Narasimhan}.}
+  \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{tau-bench: A Benchmark for Tool-Agent-User
+  Interaction in Real-World Domains}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2406.12045}}
+  (\bibinfo{year}{2024}).
+\newblock
+\urldef\tempurl%
+\url{https://arxiv.org/abs/2406.12045}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Yao et~al\mbox{.}(2023)]%
+        {yao2023react}
+\bibfield{author}{\bibinfo{person}{Shunyu Yao}, \bibinfo{person}{Jeffrey Zhao},
+  \bibinfo{person}{Dian Yu}, \bibinfo{person}{Nan Du}, \bibinfo{person}{Izhak
+  Shafran}, \bibinfo{person}{Karthik Narasimhan}, {and} \bibinfo{person}{Yuan
+  Cao}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{ReAct: Synergizing Reasoning and Acting in Language
+  Models}. In \bibinfo{booktitle}{\emph{International Conference on Learning
+  Representations}}.
+\newblock
+\urldef\tempurl%
+\url{https://openreview.net/forum?id=WE_vluYUL-X}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Zhang et~al\mbox{.}(2026)]%
+        {zhang2026spiral}
+\bibfield{author}{\bibinfo{person}{Yifan Zhang}, \bibinfo{person}{Giridhar
+  Ganapavarapu}, \bibinfo{person}{Srideepika Jayaraman},
+  \bibinfo{person}{Bhavna Agrawal}, \bibinfo{person}{Dhaval Patel}, {and}
+  \bibinfo{person}{Achille Fokoue}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{{SPIRAL}: Symbolic {LLM} Planning via Grounded and
+  Reflective Search}.
+\newblock \bibinfo{journal}{\emph{Proceedings of the AAAI Conference on
+  Artificial Intelligence}} \bibinfo{volume}{40}, \bibinfo{number}{43}
+  (\bibinfo{year}{2026}), \bibinfo{pages}{36527--36535}.
+\newblock
+\href{https://doi.org/10.1609/aaai.v40i43.40975}{doi:\nolinkurl{10.1609/aaai.v40i43.40975}}
+
+
+\end{thebibliography}

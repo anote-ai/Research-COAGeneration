@@ -1,0 +1,178 @@
+\begin{thebibliography}{22}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[{Chen, Liang, and Wang(2025)}]{chen2025smurfs}
+Chen, J.; Liang, J.; and Wang, B. 2025.
+\newblock Smurfs: Multi-Agent System using Context-Efficient {DFSDT} for Tool
+  Planning.
+\newblock In \emph{Proceedings of the 2025 Conference of the Nations of the
+  Americas Chapter of the Association for Computational Linguistics: Human
+  Language Technologies (Volume 1: Long Papers)}, 3281--3298. Association for
+  Computational Linguistics.
+
+\bibitem[{Chen, Zaharia, and Zou(2024)}]{chen2024frugalgpt}
+Chen, L.; Zaharia, M.; and Zou, J. 2024.
+\newblock FrugalGPT: How to Use Large Language Models While Reducing Cost and
+  Improving Performance.
+\newblock \emph{Transactions on Machine Learning Research}.
+
+\bibitem[{Du, Wei, and Zhang(2024)}]{du2024anytool}
+Du, Y.; Wei, F.; and Zhang, H. 2024.
+\newblock AnyTool: Self-Reflective, Hierarchical Agents for Large-Scale API
+  Calls.
+\newblock In \emph{Proceedings of the 41st International Conference on Machine
+  Learning}.
+
+\bibitem[{Jeong et~al.(2024)Jeong, Baek, Cho, Hwang, and
+  Park}]{jeong2024adaptiverag}
+Jeong, S.; Baek, J.; Cho, S.; Hwang, S.~J.; and Park, J. 2024.
+\newblock Adaptive-{RAG}: Learning to Adapt Retrieval-Augmented Large Language
+  Models through Question Complexity.
+\newblock In \emph{Proceedings of the 2024 Conference of the North American
+  Chapter of the Association for Computational Linguistics: Human Language
+  Technologies}, 7036--7050. Association for Computational Linguistics.
+
+\bibitem[{Jimenez et~al.(2024)Jimenez, Yang, Wettig, Yao, Pei, Press, and
+  Narasimhan}]{jimenez2024swebench}
+Jimenez, C.~E.; Yang, J.; Wettig, A.; Yao, S.; Pei, K.; Press, O.; and
+  Narasimhan, K. 2024.
+\newblock SWE-bench: Can Language Models Resolve Real-World GitHub Issues?
+\newblock In \emph{International Conference on Learning Representations}.
+
+\bibitem[{Kim et~al.(2024)Kim, Moon, Tabrizi, Lee, Mahoney, Keutzer, and
+  Gholami}]{kim2024llmcompiler}
+Kim, S.; Moon, S.; Tabrizi, R.; Lee, N.; Mahoney, M.~W.; Keutzer, K.; and
+  Gholami, A. 2024.
+\newblock An LLM Compiler for Parallel Function Calling.
+\newblock In \emph{Proceedings of the 41st International Conference on Machine
+  Learning}, volume 235 of \emph{Proceedings of Machine Learning Research},
+  24370--24391.
+
+\bibitem[{Kokel et~al.(2025)Kokel, Katz, Srinivas, and
+  Sohrabi}]{kokel2025acpbench}
+Kokel, H.; Katz, M.; Srinivas, K.; and Sohrabi, S. 2025.
+\newblock {ACPBench}: Reasoning About Action, Change, and Planning.
+\newblock \emph{Proceedings of the AAAI Conference on Artificial Intelligence},
+  39(25): 26559--26568.
+
+\bibitem[{Li et~al.(2023)Li, Zhao, Yu, Song, Li, Yu, Li, Huang, and
+  Li}]{li2023apibank}
+Li, M.; Zhao, Y.; Yu, B.; Song, F.; Li, H.; Yu, H.; Li, Z.; Huang, F.; and Li,
+  Y. 2023.
+\newblock {API}-Bank: A Comprehensive Benchmark for Tool-Augmented {LLM}s.
+\newblock In \emph{Proceedings of the 2023 Conference on Empirical Methods in
+  Natural Language Processing}, 3102--3116. Association for Computational
+  Linguistics.
+
+\bibitem[{Liu et~al.(2024)Liu, Yu, Zhang, Xu, Lei, Lai, Gu, Ding, Men, Yang
+  et~al.}]{liu2024agentbench}
+Liu, X.; Yu, H.; Zhang, H.; Xu, Y.; Lei, X.; Lai, H.; Gu, Y.; Ding, H.; Men,
+  K.; Yang, K.; et~al. 2024.
+\newblock AgentBench: Evaluating LLMs as Agents.
+\newblock In \emph{International Conference on Learning Representations}.
+
+\bibitem[{Lu et~al.(2025)Lu, Holleis, Zhang, Aumayer, Nan, Bai, Ma, Ma, Li,
+  Yin, Wang, and Pang}]{lu2025toolsandbox}
+Lu, J.; Holleis, T.; Zhang, Y.; Aumayer, B.; Nan, F.; Bai, H.; Ma, S.; Ma, S.;
+  Li, M.; Yin, G.; Wang, Z.; and Pang, R. 2025.
+\newblock {T}ool{S}andbox: A Stateful, Conversational, Interactive Evaluation
+  Benchmark for {LLM} Tool Use Capabilities.
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  NAACL 2025}, 1160--1183. Association for Computational Linguistics.
+
+\bibitem[{Ong et~al.(2025)Ong, Almahairi, Wu, Chiang, Wu, Gonzalez, Kadous, and
+  Stoica}]{ong2025routellm}
+Ong, I.; Almahairi, A.; Wu, V.; Chiang, W.-L.; Wu, T.; Gonzalez, J.~E.; Kadous,
+  M.~W.; and Stoica, I. 2025.
+\newblock RouteLLM: Learning to Route LLMs with Preference Data.
+\newblock In \emph{International Conference on Learning Representations}.
+
+\bibitem[{Ou et~al.(2025)Ou, Guo, Gandhi, Neubig, and
+  Yue}]{ou2025agentdiagnose}
+Ou, T.; Guo, W.; Gandhi, A.; Neubig, G.; and Yue, X. 2025.
+\newblock {A}gent{D}iagnose: An Open Toolkit for Diagnosing {LLM} Agent
+  Trajectories.
+\newblock In \emph{Proceedings of the 2025 Conference on Empirical Methods in
+  Natural Language Processing: System Demonstrations}, 207--215. Association
+  for Computational Linguistics.
+
+\bibitem[{Qin et~al.(2024)Qin, Liang, Ye, Zhu, Yan, Lu, Lin, Cong, Tang, Qian
+  et~al.}]{qin2024toolllm}
+Qin, Y.; Liang, S.; Ye, Y.; Zhu, K.; Yan, L.; Lu, Y.; Lin, Y.; Cong, X.; Tang,
+  X.; Qian, B.; et~al. 2024.
+\newblock ToolLLM: Facilitating Large Language Models to Master 16000+
+  Real-world APIs.
+\newblock In \emph{International Conference on Learning Representations}.
+
+\bibitem[{Schick et~al.(2023)Schick, Dwivedi-Yu, Dessi, Raileanu, Lomeli,
+  Hambro, Zettlemoyer, Cancedda, and Scialom}]{schick2023toolformer}
+Schick, T.; Dwivedi-Yu, J.; Dessi, R.; Raileanu, R.; Lomeli, M.; Hambro, E.;
+  Zettlemoyer, L.; Cancedda, N.; and Scialom, T. 2023.
+\newblock Toolformer: Language Models Can Teach Themselves to Use Tools.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~36.
+
+\bibitem[{Su et~al.(2026)Su, Lin, Feng, Zheng, Wang, Xiao, Zhao, Liu, Cheng,
+  and Wang}]{su2026cprouter}
+Su, J.; Lin, F.; Feng, Z.; Zheng, H.; Wang, T.; Xiao, Z.; Zhao, X.; Liu, Z.;
+  Cheng, L.; and Wang, H. 2026.
+\newblock {CP}-Router: An Uncertainty-Aware Router Between {LLM} and {LRM}.
+\newblock \emph{Proceedings of the AAAI Conference on Artificial Intelligence},
+  40(39): 33065--33073.
+
+\bibitem[{Wang et~al.(2026)Wang, Li, Zhang, Chen, Chen, Jian, Zhang, and
+  Hu}]{wang2026iclrouter}
+Wang, C.; Li, H.; Zhang, Y.; Chen, L.; Chen, J.; Jian, P.; Zhang, Q.; and Hu,
+  S. 2026.
+\newblock {ICL}-Router: In-Context Learned Model Representations for {LLM}
+  Routing.
+\newblock \emph{Proceedings of the AAAI Conference on Artificial Intelligence},
+  40(39): 33413--33421.
+
+\bibitem[{Xu et~al.(2024)Xu, Zhao, Wang, and Chen}]{xu2024restful}
+Xu, H.; Zhao, R.; Wang, J.; and Chen, H. 2024.
+\newblock {REST}ful-Llama: Connecting User Queries to {REST}ful {API}s.
+\newblock In \emph{Proceedings of the 2024 Conference on Empirical Methods in
+  Natural Language Processing: Industry Track}, 1433--1443. Association for
+  Computational Linguistics.
+
+\bibitem[{Yan et~al.(2026)Yan, Zhang, Ning, Xu, Tao, Zhang, Yin, and
+  Zhang}]{yan2026zerorouter}
+Yan, C.; Zhang, W.; Ning, Z.; Xu, F.; Tao, Z.; Zhang, L.; Yin, B.; and Zhang,
+  Y. 2026.
+\newblock Breaking Model Lock-in: Cost-Efficient Zero-Shot {LLM} Routing via a
+  Universal Latent Space.
+\newblock \emph{Proceedings of the AAAI Conference on Artificial Intelligence},
+  40(43): 36483--36490.
+
+\bibitem[{Yao et~al.(2024)Yao, Shinn, Razavi, and Narasimhan}]{yao2024taubench}
+Yao, S.; Shinn, N.; Razavi, P.; and Narasimhan, K. 2024.
+\newblock tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World
+  Domains.
+\newblock \emph{arXiv preprint arXiv:2406.12045}.
+
+\bibitem[{Yao et~al.(2023)Yao, Zhao, Yu, Du, Shafran, Narasimhan, and
+  Cao}]{yao2023react}
+Yao, S.; Zhao, J.; Yu, D.; Du, N.; Shafran, I.; Narasimhan, K.; and Cao, Y.
+  2023.
+\newblock ReAct: Synergizing Reasoning and Acting in Language Models.
+\newblock In \emph{International Conference on Learning Representations}.
+
+\bibitem[{Zhang et~al.(2026)Zhang, Ganapavarapu, Jayaraman, Agrawal, Patel, and
+  Fokoue}]{zhang2026spiral}
+Zhang, Y.; Ganapavarapu, G.; Jayaraman, S.; Agrawal, B.; Patel, D.; and Fokoue,
+  A. 2026.
+\newblock {SPIRAL}: Symbolic {LLM} Planning via Grounded and Reflective Search.
+\newblock \emph{Proceedings of the AAAI Conference on Artificial Intelligence},
+  40(43): 36527--36535.
+
+\bibitem[{Zheng et~al.(2025)Zheng, Cui, Xie, Pan, Chen, and
+  He}]{zheng2025planningarena}
+Zheng, Z.; Cui, T.; Xie, C.; Pan, J.; Chen, Q.; and He, L. 2025.
+\newblock {P}lanning{A}rena: A Modular Benchmark for Multidimensional
+  Evaluation of Planning and Tool Learning.
+\newblock In \emph{Proceedings of the 63rd Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, 31047--31086.
+  Association for Computational Linguistics.
+
+\end{thebibliography}
