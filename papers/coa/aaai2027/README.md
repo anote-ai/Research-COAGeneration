@@ -57,6 +57,11 @@ The submission directory contains:
 - `OPENREVIEW_FIELDS.md`: copy-paste values and upload paths for the
   OpenReview full-submission form
 
+The non-anonymous arXiv copy is separate:
+
+- `arxiv.tex`: named-author preprint source
+- `submission/AAAI27_COA_arXiv.pdf`: named-author preprint PDF
+
 The manuscript and supplement use synthetic, offline scenarios only. They do not
 contain classified data, real intelligence data, or live military planning
 outputs.
